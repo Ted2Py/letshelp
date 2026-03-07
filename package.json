@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "pnpm run db:migrate && next build",
-    "build:ci": "next build",
+    "build": "next build",
+    "build:migrate": "pnpm run db:migrate && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
