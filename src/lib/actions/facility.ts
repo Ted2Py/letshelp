@@ -14,14 +14,14 @@ import { headers } from 'next/headers';
 import { eq, and, desc, gte, count } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { user } from '@/lib/schema';
 import {
   facilities,
   facilityStaff,
   residents,
   supportSessions,
   userRoles,
-  user,
-} from '@/lib/schema';
+} from '@/lib/schema-letshelp';
 
 /**
  * Check if current user is a facility admin

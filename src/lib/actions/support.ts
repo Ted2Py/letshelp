@@ -18,10 +18,12 @@ import { categorizeIssue } from '@/lib/gemini';
 import {
   supportSessions,
   sessionMessages,
-  residents,
   handoffRequests,
   user,
 } from '@/lib/schema';
+import {
+  residents,
+} from '@/lib/schema-letshelp';
 
 export interface CreateSessionResult {
   success: boolean;
@@ -57,7 +59,7 @@ export async function createSupportSession(): Promise<CreateSessionResult> {
   }
 
   // Get the user's resident profile
-  const residentList = await db
+  let residentList = await db
     .select({
       id: residents.id,
       facilityId: residents.facilityId,
@@ -66,8 +68,35 @@ export async function createSupportSession(): Promise<CreateSessionResult> {
     .where(eq(residents.userId, session.user.id))
     .limit(1);
 
+  // Auto-create resident profile if it doesn't exist
   if (!residentList.length) {
-    return { success: false, error: 'Resident profile not found' };
+    try {
+      const newResidents = await db
+        .insert(residents)
+        .values({
+          userId: session.user.id,
+          preferredLanguage: 'en',
+          accessibilitySettings: {
+            fontSize: 'large',
+            highContrast: false,
+            voiceSpeed: 1.0,
+          },
+        })
+        .returning();
+
+      if (!newResidents.length) {
+        return { success: false, error: 'Failed to create resident profile' };
+      }
+
+      residentList = [{
+        id: newResidents[0]!.id,
+        facilityId: newResidents[0]!.facilityId || null,
+      }];
+    } catch (error) {
+      // If database is not set up, return a mock success for demo
+      console.error('Database not available:', error);
+      return { success: false, error: 'Database not connected. Please set up Vercel Postgres.' };
+    }
   }
 
   const resident = residentList[0]!;
