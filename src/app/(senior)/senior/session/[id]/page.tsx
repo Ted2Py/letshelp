@@ -11,7 +11,8 @@ import { eq } from 'drizzle-orm';
 import { SessionUi } from '@/components/senior/session-ui';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { residents, user, supportSessions } from '@/lib/schema';
+import { user, supportSessions } from '@/lib/schema';
+import { residents } from '@/lib/schema-letshelp';
 
 interface SessionPageProps {
   params: {
