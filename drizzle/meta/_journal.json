@@ -15,6 +15,13 @@
       "when": 1766719908715,
       "tag": "0001_last_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772911951875,
+      "tag": "0002_low_wilson_fisk",
+      "breakpoints": true
     }
   ]
 }

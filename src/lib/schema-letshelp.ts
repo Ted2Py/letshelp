@@ -1,7 +1,7 @@
 // LetsHelp Database Schema
 // This extends the base Better Auth schema with LetsHelp-specific tables
 
-import { pgTable, text, timestamp, integer, json, boolean, uuid, index, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, json, index, pgEnum } from "drizzle-orm/pg-core";
 import { user } from "./schema";
 
 // Enums

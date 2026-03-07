@@ -22,4 +22,23 @@ export const auth = betterAuth({
       console.log(`\n${"=".repeat(60)}\nEMAIL VERIFICATION\nUser: ${user.email}\nVerification URL: ${url}\n${"=".repeat(60)}\n`)
     },
   },
+  // Google OAuth for seniors (one-click sign-in)
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET || "",
+      redirectUri: process.env.GOOGLE_OAUTH_REDIRECT_URI || "http://localhost:3000/api/auth/callback/google",
+      enabled: !!(process.env.GOOGLE_OAUTH_CLIENT_ID && process.env.GOOGLE_OAUTH_CLIENT_SECRET),
+    },
+  },
+  // Advanced session configuration
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // Update session every 24 hours
+  },
+  // Rate limiting
+  rateLimit: {
+    window: 60, // 1 minute
+    max: 10, // 10 requests per minute
+  },
 })
