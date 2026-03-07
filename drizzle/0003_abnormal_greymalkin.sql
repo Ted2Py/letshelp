@@ -1,0 +1,1 @@
+ALTER TABLE "support_sessions" ALTER COLUMN "facility_id" DROP NOT NULL;

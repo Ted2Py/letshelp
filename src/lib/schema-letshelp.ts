@@ -104,7 +104,6 @@ export const supportSessions = pgTable(
       .notNull()
       .references(() => residents.id, { onDelete: "cascade" }),
     facilityId: text("facility_id")
-      .notNull()
       .references(() => facilities.id, { onDelete: "set null" }),
     startTime: timestamp("start_time").defaultNow().notNull(),
     endTime: timestamp("end_time"),
