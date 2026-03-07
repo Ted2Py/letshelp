@@ -18,36 +18,47 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Agentic Coding Boilerplate",
-    template: "%s | Agentic Coding Boilerplate",
+    default: "LetsHelp - Patient Tech Support for Seniors",
+    template: "%s | LetsHelp",
   },
   description:
-    "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling - perfect for building AI-powered applications and autonomous agents by Leon van Zyl",
+    "AI-powered tech support for seniors. An assistant that sees your screen, hears your voice, and guides you step-by-step through any tech problem. Available 24/7.",
   keywords: [
-    "Next.js",
-    "React",
-    "TypeScript",
-    "AI",
-    "OpenRouter",
-    "Boilerplate",
-    "Authentication",
-    "PostgreSQL",
+    "senior tech support",
+    "elderly tech help",
+    "AI tech support",
+    "senior computer help",
+    "elderly assistance",
+    "senior living technology",
+    "patient tech support",
+    "screen sharing support",
+    "senior-friendly technology",
+    "aging in place tech",
   ],
-  authors: [{ name: "Leon van Zyl" }],
-  creator: "Leon van Zyl",
+  authors: [{ name: "LetsHelp" }],
+  creator: "LetsHelp",
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Agentic Coding Boilerplate",
-    title: "Agentic Coding Boilerplate",
+    siteName: "LetsHelp",
+    title: "LetsHelp - Patient Tech Support for Seniors",
     description:
-      "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling",
+      "AI-powered tech support that sees your screen and guides you step-by-step. Perfect for seniors who need patient, on-demand help with technology.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "LetsHelp - Senior Tech Support",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Agentic Coding Boilerplate",
+    title: "LetsHelp - Patient Tech Support for Seniors",
     description:
-      "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling",
+      "AI-powered tech support that sees your screen and guides you step-by-step. Available 24/7 for seniors.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -59,19 +70,37 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Agentic Coding Boilerplate",
+  name: "LetsHelp",
   description:
-    "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling",
-  applicationCategory: "DeveloperApplication",
+    "AI-powered tech support for seniors. An assistant that sees your screen, hears your voice, and guides you step-by-step through any tech problem.",
+  applicationCategory: "UtilitiesApplication",
   operatingSystem: "Any",
   offers: {
     "@type": "Offer",
-    price: "0",
+    price: "20",
     priceCurrency: "USD",
+    priceSpecification: {
+      "@type": "UnitPriceSpecification",
+      price: "20",
+      priceCurrency: "USD",
+      billingDuration: "P1M",
+    },
   },
-  author: {
-    "@type": "Person",
-    name: "Leon van Zyl",
+  audience: {
+    "@type": "PeopleAudience",
+    suggestedGender: ["female", "male"],
+    suggestedMinAge: 65,
+  },
+  featureList: [
+    "Screen sharing support",
+    "Voice-guided instructions",
+    "24/7 availability",
+    "Patient, personalized assistance",
+    "Human volunteer backup",
+  ],
+  provider: {
+    "@type": "Organization",
+    name: "LetsHelp",
   },
 };
 
