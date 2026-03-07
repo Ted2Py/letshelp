@@ -41,4 +41,12 @@ export const auth = betterAuth({
     window: 60, // 1 minute
     max: 10, // 10 requests per minute
   },
+  // Redirect after sign in
+  advanced: {
+    // Generate redirect callback URL after successful sign in
+    generateId: () => crypto.randomUUID(),
+    crossSubDomainCookies: {
+      enabled: false
+    }
+  }
 })

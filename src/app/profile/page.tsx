@@ -65,17 +65,17 @@ export default function ProfilePage() {
 
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4">
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold">Your Profile</h1>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          onClick={() => router.back()}
+          onClick={() => router.push("/senior")}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          Back to LetsHelp
         </Button>
-        <h1 className="text-3xl font-bold">Your Profile</h1>
       </div>
 
       <div className="grid gap-6">
