@@ -1,88 +1,158 @@
-# Agentic Coding Boilerplate - AI Assistant Guidelines
+# LetsHelp - AI Assistant Guidelines
 
 ## Project Overview
 
-This is a Next.js 16 boilerplate for building AI-powered applications with authentication, database, and modern UI components.
+LetsHelp is an AI-powered tech support platform for seniors. Seniors connect to an AI assistant that can see their screen in real-time, hear their voice, and guide them step-by-step through their specific tech problems.
+
+### Mission
+
+Sixty million Americans over 65 lack accessible, patient tech support. LetsHelp provides on-demand, personalized AI assistance through real-time screen sharing and voice guidance.
+
+### Target Users
+
+- **Primary**: Senior living facilities (B2B) - $15/resident/month
+- **Secondary**: Seniors living at home (B2C) - $20/month (future)
 
 ### Tech Stack
 
 - **Framework**: Next.js 16 with App Router, React 19, TypeScript
-- **AI Integration**: Vercel AI SDK 5 + OpenRouter (access to 100+ AI models)
-- **Authentication**: BetterAuth with Email/Password
-- **Database**: PostgreSQL with Drizzle ORM
+- **AI Integration**: Google Gemini Live API (real-time audio + video)
+- **Authentication**: BetterAuth with Google OAuth for seniors, Email/Password for staff
+- **Database**: PostgreSQL (Neon in production) with Drizzle ORM
 - **UI**: shadcn/ui components with Tailwind CSS 4
 - **Styling**: Tailwind CSS with dark mode support (next-themes)
+- **Payments**: Stripe for facility subscriptions
+- **File Storage**: Vercel Blob (production) / local (development)
 
-## AI Integration with OpenRouter
+---
+
+## AI Integration with Google Gemini Live API
 
 ### Key Points
 
-- This project uses **OpenRouter** as the AI provider, NOT direct OpenAI
-- OpenRouter provides access to 100+ AI models through a single unified API
-- Default model: `openai/gpt-5-mini` (configurable via `OPENROUTER_MODEL` env var)
-- Users browse models at: https://openrouter.ai/models
-- Users get API keys from: https://openrouter.ai/settings/keys
+- This project uses **Google Gemini Live API** (NOT OpenRouter)
+- Model: `gemini-2.5-flash-native-audio-preview-12-2025`
+- Supports: Real-time bidirectional audio, video/screen sharing, 70+ languages
+- Documentation available in `google_live_api_docs/`
+
+### Live API Implementation
+
+The Live API requires a WebSocket connection for real-time streaming:
+
+**Server-side (recommended):**
+- Import from `@google/genai`
+- Use ephemeral tokens for secure client connections
+- Never expose API key to client
+
+**Client-side:**
+- WebSocket connection to Live API
+- Screen capture via `getDisplayMedia()` WebRTC API
+- Audio streaming via Web Audio API
 
 ### AI Implementation Files
 
-- `src/app/api/chat/route.ts` - Chat API endpoint using OpenRouter
-- Package: `@openrouter/ai-sdk-provider` (not `@ai-sdk/openai`)
-- Import: `import { openrouter } from "@openrouter/ai-sdk-provider"`
+- `src/lib/gemini.ts` - Gemini client configuration and utilities
+- `src/app/api/support/` - Support session API endpoints
+- `src/components/senior/` - Senior-friendly UI components
+
+---
+
+## Database Schema
+
+### Core Tables
+
+**Better Auth Tables** (in `src/lib/schema.ts`):
+- `user` - User accounts
+- `session` - Auth sessions
+- `account` - OAuth accounts
+- `verification` - Email verification codes
+
+**LetsHelp Tables** (in `src/lib/schema-letshelp.ts`):
+- `facilities` - Senior living communities
+- `facility_staff` - Facility admin/staff relationships
+- `residents` - Seniors using the service
+- `support_sessions` - AI support sessions
+- `session_messages` - Detailed session analytics
+- `handoff_requests` - Volunteer handoff queue
+- `usage_analytics` - Aggregated usage metrics
+- `invoices` - Stripe invoice records
+- `user_roles` - User role assignments (senior, admin, volunteer)
+- `ai_session_tokens` - Ephemeral token management
+
+### Relationships
+
+```
+facilities (1) ----< (*) residents
+facilities (1) ----< (*) facility_staff
+residents (1) ----< (*) support_sessions
+support_sessions (1) ----< (*) session_messages
+support_sessions (1) ----< (*) handoff_requests
+```
+
+---
 
 ## Project Structure
 
 ```
 src/
-├── app/                          # Next.js App Router
+├── app/
 │   ├── (auth)/                  # Auth route group
-│   │   ├── login/               # Login page
-│   │   ├── register/            # Registration page
-│   │   ├── forgot-password/     # Forgot password page
-│   │   └── reset-password/      # Reset password page
+│   ├── (facility)/              # Facility admin dashboard
+│   │   ├── dashboard/           # Analytics overview
+│   │   ├── residents/           # Resident management
+│   │   ├── billing/             # Subscription management
+│   │   └── settings/            # Facility settings
+│   ├── (senior)/                # Senior experience
+│   │   ├── senior/              # Senior home with "Get Help Now"
+│   │   ├── session/             # Active AI support session
+│   │   └── history/             # Session history
+│   ├── (marketing)/             # Public marketing pages
+│   │   ├── page.tsx             # Landing page
+│   │   ├── about/               # About LetsHelp
+│   │   ├── pricing/             # Pricing page
+│   │   └── contact/             # Contact form
 │   ├── api/
-│   │   ├── auth/[...all]/       # Better Auth catch-all route
-│   │   ├── chat/route.ts        # AI chat endpoint (OpenRouter)
-│   │   └── diagnostics/         # System diagnostics
-│   ├── chat/page.tsx            # AI chat interface (protected)
-│   ├── dashboard/page.tsx       # User dashboard (protected)
-│   ├── profile/page.tsx         # User profile (protected)
-│   ├── page.tsx                 # Home/landing page
-│   └── layout.tsx               # Root layout
+│   │   ├── auth/[...all]/       # Better Auth catch-all
+│   │   ├── support/             # AI support endpoints
+│   │   │   ├── connect/         # Initialize session
+│   │   │   ├── token/           # Ephemeral token
+│   │   │   └── handoff/         # Volunteer request
+│   │   ├── facilities/          # Facility management
+│   │   ├── residents/           # Resident management
+│   │   ├── billing/             # Stripe integration
+│   │   └── webhooks/
+│   │       └── stripe/          # Stripe webhooks
+│   └── layout.tsx
 ├── components/
 │   ├── auth/                    # Authentication components
-│   │   ├── sign-in-button.tsx   # Sign in form
-│   │   ├── sign-up-form.tsx     # Sign up form
-│   │   ├── forgot-password-form.tsx
-│   │   ├── reset-password-form.tsx
-│   │   ├── sign-out-button.tsx
-│   │   └── user-profile.tsx
-│   ├── ui/                      # shadcn/ui components
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── dialog.tsx
-│   │   ├── dropdown-menu.tsx
-│   │   ├── avatar.tsx
-│   │   ├── badge.tsx
-│   │   ├── separator.tsx
-│   │   ├── mode-toggle.tsx      # Dark/light mode toggle
-│   │   └── github-stars.tsx
-│   ├── site-header.tsx          # Main navigation header
-│   ├── site-footer.tsx          # Footer component
-│   ├── theme-provider.tsx       # Dark mode provider
-│   ├── setup-checklist.tsx      # Setup guide component
-│   └── starter-prompt-modal.tsx # Starter prompts modal
-└── lib/
-    ├── auth.ts                  # Better Auth server config
-    ├── auth-client.ts           # Better Auth client hooks
-    ├── db.ts                    # Database connection
-    ├── schema.ts                # Drizzle schema (users, sessions, etc.)
-    ├── storage.ts               # File storage abstraction (Vercel Blob / local)
-    └── utils.ts                 # Utility functions (cn, etc.)
+│   ├── senior/                  # Senior-specific components
+│   │   ├── get-help-button.tsx  # Large "Get Help Now" CTA
+│   │   ├── session-ui.tsx       # Active session UI
+│   │   └── history-card.tsx     # Session history item
+│   ├── facility/                # Facility dashboard components
+│   │   ├── analytics-card.tsx   # Usage statistics
+│   │   ├── resident-list.tsx    # Resident management
+│   │   └── billing-summary.tsx  # Billing info
+│   └── ui/                      # shadcn/ui components
+├── lib/
+│   ├── auth.ts                  # Better Auth server config
+│   ├── auth-client.ts           # Better Auth client hooks
+│   ├── gemini.ts                # Gemini Live API client
+│   ├── stripe.ts                # Stripe integration
+│   ├── db.ts                    # Database connection
+│   ├── schema.ts                # Drizzle schema (base)
+│   ├── schema-letshelp.ts       # LetsHelp tables
+│   ├── storage.ts               # File storage abstraction
+│   └── utils.ts                 # Utility functions
+└── styles/
+    └── globals.css              # Tailwind + custom styles
 ```
+
+---
 
 ## Environment Variables
 
-Required environment variables (see `env.example`):
+Required environment variables (see `.env.example`):
 
 ```env
 # Database
@@ -91,43 +161,78 @@ POSTGRES_URL=postgresql://user:password@localhost:5432/db_name
 # Better Auth
 BETTER_AUTH_SECRET=32-char-random-string
 
-# AI via OpenRouter
-OPENROUTER_API_KEY=sk-or-v1-your-key
-OPENROUTER_MODEL=openai/gpt-5-mini  # or any model from openrouter.ai/models
+# Google OAuth (for seniors)
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+GOOGLE_OAUTH_REDIRECT_URI=http://localhost:3000/api/auth/callback/google
+
+# Google Gemini Live API
+GOOGLE_GENAI_API_KEY=
+GOOGLE_CLOUD_PROJECT_ID=
+
+# Stripe Payments
+STRIPE_SECRET_KEY=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_MONTHLY_PRICE_ID=
+STRIPE_ANNUAL_PRICE_ID=
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# File Storage (optional)
-BLOB_READ_WRITE_TOKEN=  # Leave empty for local dev, set for Vercel Blob in production
+# File Storage
+BLOB_READ_WRITE_TOKEN=  # Vercel Blob (production only)
 ```
+
+---
 
 ## Available Scripts
 
 ```bash
-npm run dev          # Start dev server (DON'T run this yourself - ask user)
-npm run build        # Build for production (runs db:migrate first)
-npm run build:ci     # Build without database (for CI/CD pipelines)
-npm run start        # Start production server
-npm run lint         # Run ESLint (ALWAYS run after changes)
-npm run typecheck    # TypeScript type checking (ALWAYS run after changes)
-npm run db:generate  # Generate database migrations
-npm run db:migrate   # Run database migrations
-npm run db:push      # Push schema changes to database
-npm run db:studio    # Open Drizzle Studio (database GUI)
-npm run db:dev       # Push schema for development
-npm run db:reset     # Reset database (drop all tables)
+pnpm run dev          # Start dev server
+pnpm run build        # Build for production
+pnpm run start        # Start production server
+pnpm run lint         # Run ESLint
+pnpm run typecheck    # TypeScript type checking
+pnpm run db:generate  # Generate database migrations
+pnpm run db:migrate   # Run database migrations
+pnpm run db:push      # Push schema changes
+pnpm run db:studio    # Open Drizzle Studio
 ```
 
-## Documentation Files
+---
 
-The project includes technical documentation in `docs/`:
+## Senior-Friendly Design Guidelines
 
-- `docs/technical/ai/streaming.md` - AI streaming implementation guide
-- `docs/technical/ai/structured-data.md` - Structured data extraction
-- `docs/technical/react-markdown.md` - Markdown rendering guide
-- `docs/technical/betterauth/polar.md` - Polar payment integration
-- `docs/business/starter-prompt.md` - Business context for AI prompts
+### Critical for LetsHelp
+
+**Typography:**
+- Base font size: 18px minimum
+- Large text mode: 24px
+- Extra-large mode: 28px
+- High contrast mode available
+
+**Buttons:**
+- Minimum touch target: 44px × 44px
+- Clear, descriptive labels
+- No jargon or technical terms
+
+**Colors:**
+- Avoid red/green (color blindness common in seniors)
+- Use blue for primary actions
+- High contrast ratios (WCAG AAA)
+
+**Navigation:**
+- Single-page flows when possible
+- Clear progress indicators
+- Back button always visible
+
+**Audio:**
+- Voice responses from AI
+- Adjustable speech rate
+- 70+ language support
+
+---
 
 ## Guidelines for AI Assistants
 
@@ -136,115 +241,77 @@ The project includes technical documentation in `docs/`:
 1. **ALWAYS run lint and typecheck** after completing changes:
 
    ```bash
-   npm run lint && npm run typecheck
+   pnpm run lint && pnpm run typecheck
    ```
 
 2. **NEVER start the dev server yourself**
+   - Ask user to provide dev server output if needed
 
-   - If you need dev server output, ask the user to provide it
-   - Don't run `npm run dev` or `pnpm dev`
+3. **Use Google Gemini Live API, NOT OpenRouter/OpenAI**
+   - Import from `@google/genai`
+   - Model: `gemini-2.5-flash-native-audio-preview-12-2025`
+   - Use ephemeral tokens for client connections
 
-3. **Use OpenRouter, NOT OpenAI directly**
-
-   - Import from `@openrouter/ai-sdk-provider`
-   - Use `openrouter()` function, not `openai()`
-   - Model names follow OpenRouter format: `provider/model-name`
-
-4. **Styling Guidelines**
-
-   - Stick to standard Tailwind CSS utility classes
-   - Use shadcn/ui color tokens (e.g., `bg-background`, `text-foreground`)
-   - Avoid custom colors unless explicitly requested
-   - Support dark mode with appropriate Tailwind classes
+4. **Senior-First Design**
+   - Always consider senior accessibility
+   - Large fonts, high contrast, simple language
+   - Test with senior persona in mind
 
 5. **Authentication**
-
-   - Server-side: Import from `@/lib/auth` (Better Auth instance)
-   - Client-side: Import hooks from `@/lib/auth-client`
-   - Protected routes should check session in Server Components
-   - Use existing auth components from `src/components/auth/`
+   - Server-side: Import from `@/lib/auth`
+   - Client-side: Import from `@/lib/auth-client`
+   - Google OAuth for seniors, email/password for staff
 
 6. **Database Operations**
-
-   - Use Drizzle ORM (imported from `@/lib/db`)
-   - Schema is defined in `@/lib/schema`
+   - Use Drizzle ORM from `@/lib/db`
+   - Schema: `@/lib/schema` (base) and `@/lib/schema-letshelp`
    - Always run migrations after schema changes
-   - PostgreSQL is the database (not SQLite, MySQL, etc.)
 
 7. **File Storage**
+   - Use `@/lib/storage` abstraction
+   - Local in dev, Vercel Blob in production
+   - Store session recordings securely
 
-   - Use the storage abstraction from `@/lib/storage`
-   - Automatically uses local storage (dev) or Vercel Blob (production)
-   - Import: `import { upload, deleteFile } from "@/lib/storage"`
-   - Example: `const result = await upload(buffer, "avatar.png", "avatars")`
-   - Storage switches based on `BLOB_READ_WRITE_TOKEN` environment variable
+---
 
-8. **Component Creation**
+## Common Tasks
 
-   - Use existing shadcn/ui components when possible
-   - Follow the established patterns in `src/components/ui/`
-   - Support both light and dark modes
-   - Use TypeScript with proper types
+**Adding a senior page:**
+1. Create in `src/app/(senior)/[route]/page.tsx`
+2. Use large fonts, simple language
+3. Add accessibility attributes
 
-9. **API Routes**
-   - Follow Next.js 16 App Router conventions
-   - Use Route Handlers (route.ts files)
-   - Return Response objects
-   - Handle errors appropriately
+**Adding facility admin page:**
+1. Create in `src/app/(facility)/[route]/page.tsx`
+2. Check for admin role in middleware
+3. Show facility-specific data
 
-### Best Practices
+**Adding AI support endpoint:**
+1. Create in `src/app/api/support/[route]/route.ts`
+2. Use Gemini client from `@/lib/gemini`
+3. Handle ephemeral tokens securely
 
-- Read existing code patterns before creating new features
-- Maintain consistency with established file structure
-- Use the documentation files when implementing related features
-- Test changes with lint and typecheck before considering complete
-- When modifying AI functionality, refer to `docs/technical/ai/` guides
+**Working with sessions:**
+1. Session record in `support_sessions` table
+2. Messages in `session_messages` table
+3. Analytics updated via `usage_analytics` table
 
-### Common Tasks
+**Modifying database:**
+1. Update schema in `src/lib/schema-letshelp.ts`
+2. Generate migration: `pnpm run db:generate`
+3. Apply migration: `pnpm run db:migrate`
 
-**Adding a new page:**
+---
 
-1. Create in `src/app/[route]/page.tsx`
-2. Use Server Components by default
-3. Add to navigation if needed
+## PRD Reference
 
-**Adding a new API route:**
+Full Product Requirements Document available at `docs/PRD.md`
 
-1. Create in `src/app/api/[route]/route.ts`
-2. Export HTTP method handlers (GET, POST, etc.)
-3. Use proper TypeScript types
-
-**Adding authentication to a page:**
-
-1. Import auth instance: `import { auth } from "@/lib/auth"`
-2. Get session: `const session = await auth.api.getSession({ headers: await headers() })`
-3. Check session and redirect if needed
-
-**Working with the database:**
-
-1. Update schema in `src/lib/schema.ts`
-2. Generate migration: `npm run db:generate`
-3. Apply migration: `npm run db:migrate`
-4. Import `db` from `@/lib/db` to query
-
-**Modifying AI chat:**
-
-1. Backend: `src/app/api/chat/route.ts`
-2. Frontend: `src/app/chat/page.tsx`
-3. Reference streaming docs: `docs/technical/ai/streaming.md`
-4. Remember to use OpenRouter, not direct OpenAI
-
-**Working with file storage:**
-
-1. Import storage functions: `import { upload, deleteFile } from "@/lib/storage"`
-2. Upload files: `const result = await upload(fileBuffer, "filename.png", "folder")`
-3. Delete files: `await deleteFile(result.url)`
-4. Storage automatically uses local filesystem in dev, Vercel Blob in production
-5. Local files are saved to `public/uploads/` and served at `/uploads/`
-
-## Package Manager
-
-This project uses **pnpm** (see `pnpm-lock.yaml`). When running commands:
-
-- Use `pnpm` instead of `npm` when possible
-- Scripts defined in package.json work with `pnpm run [script]`
+Key features for MVP:
+1. AI Tech Support Session (screen + voice)
+2. Authentication (Google OAuth)
+3. Facility Admin Dashboard
+4. Senior-Friendly UI
+5. Analytics & Tracking
+6. Stripe Billing
+7. Volunteer Handoff (basic)

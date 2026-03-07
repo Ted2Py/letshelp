@@ -80,3 +80,6 @@ export const verification = pgTable("verification", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+// LetsHelp-specific tables
+export * from "./schema-letshelp";
