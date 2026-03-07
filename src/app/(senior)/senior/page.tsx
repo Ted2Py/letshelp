@@ -19,7 +19,7 @@ export default async function SeniorPage() {
   });
 
   if (!session) {
-    redirect('/auth/signin');
+    redirect('/login');
   }
 
   const history = await getSessionHistory(5);

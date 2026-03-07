@@ -52,12 +52,12 @@ export default function LandingPage() {
               </a>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/auth/signin">
+              <Link href="/login">
                 <Button variant="ghost" size="sm">
                   Sign In
                 </Button>
               </Link>
-              <Link href="/auth/signin">
+              <Link href="/login">
                 <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                   Get Started
                 </Button>
@@ -85,7 +85,7 @@ export default function LandingPage() {
                 step-by-step through any tech problem. Available 24/7. Never frustrated.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/auth/signin">
+                <Link href="/login">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6">
                     Start Free Trial
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -445,7 +445,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <Button className="w-full" size="lg" asChild>
-                <Link href="/auth/signin?plan=facility">
+                <Link href="/login?plan=facility">
                   Contact Sales
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -485,7 +485,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <Button className="w-full" size="lg" variant="outline" asChild>
-                <Link href="/auth/signin?plan=individual">
+                <Link href="/login?plan=individual">
                   Start Free Trial
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -557,7 +557,7 @@ export default function LandingPage() {
             Start your free trial today. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/signin">
+            <Link href="/login">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-6">
                 Get Started Now
                 <ArrowRight className="ml-2 h-5 w-5" />

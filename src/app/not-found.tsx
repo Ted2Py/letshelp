@@ -27,7 +27,7 @@ export default function NotFound() {
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="text-lg" asChild>
-            <Link href="/auth/signin">
+            <Link href="/login">
               <MessageSquare className="h-5 w-5 mr-2" />
               Sign In
             </Link>

@@ -25,7 +25,7 @@ export default async function FacilityBillingPage() {
   });
 
   if (!session) {
-    redirect("/auth/signin");
+    redirect("/login");
   }
 
   const billing = await getFacilityBilling();

@@ -27,7 +27,7 @@ export default async function SeniorHistoryPage() {
   });
 
   if (!session) {
-    redirect("/auth/signin");
+    redirect("/login");
   }
 
   const history = await getSessionHistory(20);

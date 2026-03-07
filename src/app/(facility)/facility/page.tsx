@@ -19,7 +19,7 @@ export default async function FacilityDashboardPage() {
   });
 
   if (!session) {
-    redirect('/auth/signin');
+    redirect('/login');
   }
 
   const analytics = await getFacilityAnalytics();

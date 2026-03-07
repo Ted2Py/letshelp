@@ -26,7 +26,7 @@ export default async function FacilitySettingsPage() {
   });
 
   if (!session) {
-    redirect("/auth/signin");
+    redirect("/login");
   }
 
   const facility = await getAdminFacility();
