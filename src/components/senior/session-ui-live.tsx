@@ -29,6 +29,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   const [isScreenShared, setIsScreenShared] = useState(false);
   const [showHandoffConfirm, setShowHandoffConfirm] = useState(false);
   const [aiResponse, setAiResponse] = useState('');
+  const [needsStart, setNeedsStart] = useState(true);
 
   const liveClientRef = useRef<GeminiLiveClient | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
@@ -42,13 +43,13 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
     'extra-large': 'text-2xl',
   };
 
-  // Initialize Live API connection
+  // Initialize Live API connection (without microphone)
   useEffect(() => {
     let mounted = true;
 
     const initLiveApi = async () => {
       try {
-        // Get ephemeral token from server
+        // Get config from server
         const response = await fetch('/api/support/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -89,32 +90,16 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
         liveClientRef.current = client;
 
-        // Connect to Live API
+        // Connect to Live API (without microphone yet)
         await client.connect();
 
-        // Start audio capture after connection
-        try {
-          await client.startAudioCapture();
-        } catch (micError) {
-          console.error('Microphone access denied:', micError);
-          setSessionState('error');
-          setAiResponse("I need access to your microphone to help you. Please allow microphone access and refresh the page.");
-          return;
-        }
-
-        // Set initial AI message
-        setAiResponse("Hi! I'm here to help. Would you like to share your screen with me?");
+        // Set ready state
+        setSessionState('connected');
+        setAiResponse("I'm ready to help! Click the 'Start' button below to begin talking.");
       } catch (error: any) {
         console.error('Failed to initialize Live API:', error);
-
-        // Check for permission errors
-        if (error.name === 'NotAllowedError' || error.message?.includes('Permission denied')) {
-          setSessionState('error');
-          setAiResponse("I need access to your microphone to help you. Please allow microphone access and refresh the page.");
-        } else {
-          setSessionState('error');
-          setAiResponse("I'm having trouble connecting. Please check your internet connection and make sure you've allowed microphone access.");
-        }
+        setSessionState('error');
+        setAiResponse("I'm having trouble connecting. Please check your internet connection and try again.");
       }
     };
 
@@ -198,6 +183,28 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
     } catch (err) {
       console.error('Failed to toggle screen share:', err);
       alert('Could not share screen. Please make sure you allow screen sharing permissions.');
+    }
+  };
+
+  const handleStartSession = async () => {
+    if (!liveClientRef.current) {
+      setAiResponse('Still connecting... Please wait a moment.');
+      return;
+    }
+
+    try {
+      await liveClientRef.current.startAudioCapture();
+      setNeedsStart(false);
+      setAiResponse("Hi! I'm here to help. Would you like to share your screen with me?");
+    } catch (error: any) {
+      console.error('Failed to start audio capture:', error);
+
+      // Check for permission errors
+      if (error.name === 'NotAllowedError' || error.message?.includes('Permission denied')) {
+        setAiResponse("I need access to your microphone to help you. Please allow microphone access and then click Start again.");
+      } else {
+        setAiResponse("I couldn't access your microphone. Please check your browser permissions and try again.");
+      }
     }
   };
 
@@ -287,40 +294,59 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
       {/* Control Bar */}
       <div className="bg-background border-t p-6">
         <div className="max-w-4xl mx-auto flex items-center justify-center gap-6 flex-wrap">
+          {/* Start Button */}
+          {needsStart && (
+            <Button
+              onClick={handleStartSession}
+              size="lg"
+              className="h-20 px-12 rounded-xl text-2xl font-bold bg-green-600 hover:bg-green-700"
+              aria-label="Start session"
+            >
+              <PhoneOff className="mr-3 h-8 w-8" />
+              Start
+            </Button>
+          )}
+
           {/* Microphone Toggle */}
-          <Button
-            onClick={toggleMute}
-            size="lg"
-            variant={isMuted ? 'destructive' : 'default'}
-            className="h-20 w-20 rounded-full text-2xl"
-            aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
-          >
-            {isMuted ? <MicOff className="h-10 w-10" /> : <Mic className="h-10 w-10" />}
-          </Button>
+          {!needsStart && (
+            <Button
+              onClick={toggleMute}
+              size="lg"
+              variant={isMuted ? 'destructive' : 'default'}
+              className="h-20 w-20 rounded-full text-2xl"
+              aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+            >
+              {isMuted ? <MicOff className="h-10 w-10" /> : <Mic className="h-10 w-10" />}
+            </Button>
+          )}
 
           {/* Screen Share Toggle */}
-          <Button
-            onClick={toggleScreenShare}
-            size="lg"
-            variant={isScreenShared ? 'default' : 'outline'}
-            className="h-20 px-8 rounded-xl text-xl font-bold"
-            aria-label={isScreenShared ? 'Stop screen sharing' : 'Share screen'}
-            disabled={sessionState !== 'listening' && sessionState !== 'speaking'}
-          >
-            {isScreenShared ? 'Stop Sharing' : 'Share Screen'}
-          </Button>
+          {!needsStart && (
+            <Button
+              onClick={toggleScreenShare}
+              size="lg"
+              variant={isScreenShared ? 'default' : 'outline'}
+              className="h-20 px-8 rounded-xl text-xl font-bold"
+              aria-label={isScreenShared ? 'Stop screen sharing' : 'Share screen'}
+              disabled={sessionState !== 'listening' && sessionState !== 'speaking'}
+            >
+              {isScreenShared ? 'Stop Sharing' : 'Share Screen'}
+            </Button>
+          )}
 
           {/* Request Human Button */}
-          <Button
-            onClick={() => setShowHandoffConfirm(true)}
-            size="lg"
-            variant="outline"
-            className="h-20 px-8 rounded-xl text-xl font-bold"
-            aria-label="Request human volunteer"
-          >
-            <Hand className="mr-2 h-8 w-8" />
-            Get a Human
-          </Button>
+          {!needsStart && (
+            <Button
+              onClick={() => setShowHandoffConfirm(true)}
+              size="lg"
+              variant="outline"
+              className="h-20 px-8 rounded-xl text-xl font-bold"
+              aria-label="Request human volunteer"
+            >
+              <Hand className="mr-2 h-8 w-8" />
+              Get a Human
+            </Button>
+          )}
 
           {/* End Call Button */}
           <Button
