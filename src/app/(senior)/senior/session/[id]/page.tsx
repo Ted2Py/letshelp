@@ -8,7 +8,7 @@
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { eq } from 'drizzle-orm';
-import { SessionUi } from '@/components/senior/session-ui';
+import { SessionUi } from '@/components/senior/session-ui-live';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { user, supportSessions } from '@/lib/schema';
