@@ -15,12 +15,15 @@ import { user, supportSessions } from '@/lib/schema';
 import { residents } from '@/lib/schema-letshelp';
 
 interface SessionPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function SessionPage({ params }: SessionPageProps) {
+  // Await params in Next.js 16
+  const { id } = await params;
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -44,7 +47,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
     .from(supportSessions)
     .innerJoin(residents, eq(supportSessions.residentId, residents.id))
     .innerJoin(user, eq(residents.userId, user.id))
-    .where(eq(supportSessions.id, params.id))
+    .where(eq(supportSessions.id, id))
     .limit(1);
 
   if (!sessionList.length) {
@@ -82,7 +85,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
 
   return (
     <SessionUi
-      sessionId={params.id}
+      sessionId={id}
       initialSettings={{
         fontSize: (settings.fontSize as 'normal' | 'large' | 'extra-large') || 'large',
         highContrast: (settings.highContrast as boolean) || false,
