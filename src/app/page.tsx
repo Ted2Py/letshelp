@@ -1,8 +1,10 @@
 /**
  * LetsHelp Marketing Landing Page
  *
- * The main landing page for both B2B (facilities) and B2C (families) audiences.
+ * A warm, professional landing page for both B2B (facilities) and B2C (families).
  * Features: Hero, Problem/Solution, How It Works, Features, Pricing, FAQ, Footer
+ *
+ * Design: Trustworthy, human-centered with distinctive typography and warm colors.
  */
 
 import Link from "next/link";
@@ -18,47 +20,47 @@ import {
   MessageSquare,
   Headphones,
   DollarSign,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#FEF9F3]">
       {/* Navigation */}
-      <nav className="border-b bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="border-b-4 border-[#1E5A8D] bg-white/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                <Headphones className="h-5 w-5 text-white" />
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] flex items-center justify-center shadow-lg">
+                <Headphones className="h-7 w-7 text-white" />
               </div>
-              <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+              <span className="text-2xl font-bold text-[#1E3A5F] font-[Fraunces,serif]">
                 LetsHelp
               </span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#how-it-works" className="text-sm hover:text-blue-600 transition-colors">
+              <a href="#how-it-works" className="text-lg font-medium text-[#5A6B7F] hover:text-[#1E5A8D] transition-colors">
                 How It Works
               </a>
-              <a href="#features" className="text-sm hover:text-blue-600 transition-colors">
+              <a href="#features" className="text-lg font-medium text-[#5A6B7F] hover:text-[#1E5A8D] transition-colors">
                 Features
               </a>
-              <a href="#pricing" className="text-sm hover:text-blue-600 transition-colors">
+              <a href="#pricing" className="text-lg font-medium text-[#5A6B7F] hover:text-[#1E5A8D] transition-colors">
                 Pricing
               </a>
-              <a href="#faq" className="text-sm hover:text-blue-600 transition-colors">
+              <a href="#faq" className="text-lg font-medium text-[#5A6B7F] hover:text-[#1E5A8D] transition-colors">
                 FAQ
               </a>
             </div>
             <div className="flex items-center gap-3">
               <Link href="/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="lg" className="text-lg">
                   Sign In
                 </Button>
               </Link>
               <Link href="/login">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Button size="lg" className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] hover:from-[#1E4A6D] hover:to-[#1E5090] text-lg px-6 h-14">
                   Get Started
                 </Button>
               </Link>
@@ -68,435 +70,433 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium">
-                <Shield className="h-4 w-4" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#1E5A8D] via-[#2563EB] to-[#3B82F6] text-white py-20 md:py-32">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-teal-300 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8 animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/20 text-white font-medium backdrop-blur-sm">
+                <Sparkles className="h-5 w-5" />
                 Trusted by senior living communities
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight font-[Fraunces,serif]">
                 Patient Tech Support,{" "}
-                <span className="text-blue-600 dark:text-blue-400">On Demand</span>
+                <span className="text-[#FCD34D]">On Demand</span>
               </h1>
-              <p className="text-xl text-muted-foreground max-w-xl">
+
+              <p className="text-2xl text-white/90 max-w-xl leading-relaxed">
                 An AI assistant that sees your screen, hears your voice, and guides you
-                step-by-step through any tech problem. Available 24/7. Never frustrated.
+                step-by-step. Available 24/7. Never frustrated.
               </p>
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/login">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6">
+                  <Button
+                    size="lg"
+                    className="bg-white text-[#1E5A8D] hover:bg-gray-100 text-xl px-10 py-7 rounded-2xl font-bold shadow-xl btn-press"
+                  >
                     Start Free Trial
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-3 h-6 w-6" />
                   </Button>
                 </Link>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6" asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-3 border-white text-white hover:bg-white/10 text-xl px-10 py-7 rounded-2xl font-bold"
+                  asChild
+                >
                   <a href="#how-it-works">See How It Works</a>
                 </Button>
               </div>
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+
+              <div className="flex items-center gap-8 text-lg text-white/90">
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-6 w-6 text-[#34D399]" />
                   No credit card required
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-6 w-6 text-[#34D399]" />
                   Cancel anytime
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="aspect-square rounded-3xl bg-gradient-to-br from-blue-500 to-blue-700 p-8 text-white flex flex-col justify-center items-center text-center">
-                <Video className="h-24 w-24 mb-6 opacity-90" />
-                <p className="text-2xl font-semibold mb-4">
-                  "How do I play classical music on my phone?"
+
+            <div className="relative animate-slide-up" style={{ animationDelay: '200ms' }}>
+              <div className="aspect-square rounded-3xl bg-gradient-to-br from-[#F59E0B] to-[#D97706] p-10 text-white flex flex-col justify-center items-center text-center shadow-2xl">
+                <Video className="h-28 w-28 mb-8 opacity-90" />
+                <p className="text-3xl font-bold mb-6 font-[Fraunces,serif]">
+                  "How do I video call my grandkids?"
                 </p>
-                <p className="text-lg opacity-90">
-                  LetsHelp sees your screen and guides you, step by step.
+                <p className="text-xl opacity-90 leading-relaxed">
+                  LetsHelp sees your screen and guides you through every step.
                 </p>
-                <div className="mt-8 px-6 py-3 bg-white/20 rounded-full text-sm">
-                  <Clock className="inline h-4 w-4 mr-2" />
-                  Average resolution: 5 minutes
+                <div className="mt-8 px-8 py-4 bg-white/20 rounded-full backdrop-blur-sm">
+                  <Clock className="inline h-6 w-6 mr-3" />
+                  <span className="text-lg font-semibold">Average resolution: 5 minutes</span>
                 </div>
               </div>
+
+              {/* Decorative elements */}
+              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-[#34D399]/20 rounded-full blur-2xl"></div>
+              <div className="absolute -top-8 -right-8 w-40 h-40 bg-[#FCD34D]/20 rounded-full blur-2xl"></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Problem Section */}
-      <section className="py-20 bg-white dark:bg-gray-900">
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
               The Tech Support Problem for Seniors
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
               Sixty million Americans over 65 struggle with technology daily.
             </p>
           </div>
+
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-8 border-red-200 dark:border-red-900">
-              <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
-                <Users className="h-6 w-6 text-red-600 dark:text-red-400" />
+            {[
+              {
+                icon: Users,
+                title: 'Family is Too Busy',
+                description: 'Adult children are busy or live far away. They want to help but can\'t always be available. Seniors feel guilty asking repeatedly.',
+                color: 'bg-red-50',
+                iconColor: 'text-red-500',
+              },
+              {
+                icon: DollarSign,
+                title: 'Professional Help is Expensive',
+                description: 'In-person tech support costs $100-125 per hour and requires booking days in advance. Not practical for quick questions.',
+                color: 'bg-orange-50',
+                iconColor: 'text-orange-500',
+              },
+              {
+                icon: MessageSquare,
+                title: 'Hotlines Can\'t See Your Screen',
+                description: 'Phone support can\'t visualize what you\'re seeing. They give generic advice that doesn\'t match your specific situation.',
+                color: 'bg-amber-50',
+                iconColor: 'text-amber-500',
+              },
+            ].map((problem, i) => (
+              <div
+                key={i}
+                className="bg-[#FEF9F3] rounded-3xl shadow-lg p-10 border-4 border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              >
+                <div className={`h-16 w-16 rounded-2xl ${problem.color} flex items-center justify-center mb-6`}>
+                  <problem.icon className={`h-8 w-8 ${problem.iconColor}`} />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1E3A5F] mb-4 font-[Fraunces,serif]">
+                  {problem.title}
+                </h3>
+                <p className="text-lg text-[#5A6B7F] leading-relaxed">
+                  {problem.description}
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-3">Family is Too Busy</h3>
-              <p className="text-muted-foreground">
-                Adult children are busy or live far away. They want to help but can't
-                always be available. Seniors feel guilty asking repeatedly.
-              </p>
-            </Card>
-            <Card className="p-8 border-red-200 dark:border-red-900">
-              <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
-                <DollarSign className="h-6 w-6 text-red-600 dark:text-red-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Professional Help is Expensive</h3>
-              <p className="text-muted-foreground">
-                In-person tech support costs $100-125 per hour and requires booking days
-                in advance. Not practical for quick questions.
-              </p>
-            </Card>
-            <Card className="p-8 border-red-200 dark:border-red-900">
-              <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
-                <MessageSquare className="h-6 w-6 text-red-600 dark:text-red-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Hotlines Can't See Your Screen</h3>
-              <p className="text-muted-foreground">
-                Phone support can't visualize what you're seeing. They give generic
-                advice that doesn't match your specific situation.
-              </p>
-            </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Solution Section */}
-      <section className="py-20 bg-blue-50 dark:bg-gray-800">
+      <section className="py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-[Fraunces,serif]">
               Enter LetsHelp: Your Patient Tech Friend
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-2xl text-white/90 max-w-2xl mx-auto">
               AI-powered support that sees your screen and guides you through any problem.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="flex gap-4">
-                <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <Video className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Sees Your Screen in Real-Time
-                  </h3>
-                  <p className="text-muted-foreground">
-                    The AI sees exactly what you see, enabling personalized guidance for
-                    your specific device and problem.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <Heart className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Infinite Patience
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Never sighs, never gets frustrated, happy to explain the same step
-                    as many times as needed.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <Clock className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Available 24/7</h3>
-                  <p className="text-muted-foreground">
-                    Get help whenever you need it. Day or night, weekday or weekend.
-                    No waiting, no appointments.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center">
-              <Card className="p-8 max-w-md">
-                <div className="text-center space-y-4">
-                  <div className="h-20 w-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
-                    <Check className="h-10 w-10 text-green-600 dark:text-green-400" />
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              {[
+                {
+                  icon: Video,
+                  title: 'Sees Your Screen in Real-Time',
+                  description: 'The AI sees exactly what you see, enabling personalized guidance for your specific device and problem.',
+                },
+                {
+                  icon: Heart,
+                  title: 'Infinite Patience',
+                  description: 'Never sighs, never gets frustrated, happy to explain the same step as many times as needed.',
+                },
+                {
+                  icon: Clock,
+                  title: 'Available 24/7',
+                  description: 'Get help whenever you need it. Day or night, weekday or weekend. No waiting, no appointments.',
+                },
+              ].map((feature, i) => (
+                <div key={i} className="flex gap-5 items-start">
+                  <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <feature.icon className="h-8 w-8 text-[#FCD34D]" />
                   </div>
-                  <h3 className="text-2xl font-bold">Problem Solved</h3>
-                  <p className="text-muted-foreground">
-                    "I learned how to FaceTime my grandkids in just 5 minutes. LetsHelp
-                    showed me exactly which buttons to press!"
-                  </p>
-                  <p className="text-sm text-muted-foreground">— Eleanor, age 78</p>
+                  <div>
+                    <h3 className="text-2xl font-bold mb-3 font-[Fraunces,serif]">
+                      {feature.title}
+                    </h3>
+                    <p className="text-xl text-white/90 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
-              </Card>
+              ))}
+            </div>
+
+            <div className="flex justify-center">
+              <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-md text-center">
+                <div className="h-24 w-24 rounded-full bg-[#34D399]/20 flex items-center justify-center mx-auto mb-6">
+                  <Check className="h-12 w-12 text-[#34D399]" />
+                </div>
+                <h3 className="text-3xl font-bold text-[#1E3A5F] mb-4 font-[Fraunces,serif]">
+                  Problem Solved
+                </h3>
+                <p className="text-xl text-[#5A6B7F] leading-relaxed mb-4">
+                  "I learned how to FaceTime my grandkids in just 5 minutes. LetsHelp
+                  showed me exactly which buttons to press!"
+                </p>
+                <p className="text-lg font-semibold text-[#1E5A8D]">— Eleanor, age 78</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-white dark:bg-gray-900">
+      <section id="how-it-works" className="py-24 bg-[#FEF9F3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
               How It Works
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
               Getting help is as easy as pressing a button
             </p>
           </div>
+
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="h-16 w-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6">
-                1
+            {[
+              {
+                step: '1',
+                title: 'Press "Get Help"',
+                description: 'Click the big button in the app or on our website. No account needed to start.',
+                color: 'from-[#1E5A8D] to-[#2563EB]',
+              },
+              {
+                step: '2',
+                title: 'Share Your Screen',
+                description: 'Allow screen sharing so the AI can see exactly what you\'re seeing. One click, secure and private.',
+                color: 'from-teal-500 to-teal-600',
+              },
+              {
+                step: '3',
+                title: 'Follow Along',
+                description: 'Talk to the AI like a friend. It guides you step-by-step until your problem is solved.',
+                color: 'from-[#F59E0B] to-[#D97706]',
+              },
+            ].map((step, i) => (
+              <div key={i} className="text-center">
+                <div className={`
+                  h-24 w-24 rounded-full bg-gradient-to-br ${step.color} text-white
+                  flex items-center justify-center text-4xl font-bold mx-auto mb-6
+                  shadow-lg
+                `}>
+                  {step.step}
+                </div>
+                <h3 className="text-2xl font-bold text-[#1E3A5F] mb-4 font-[Fraunces,serif]">
+                  {step.title}
+                </h3>
+                <p className="text-xl text-[#5A6B7F] leading-relaxed">
+                  {step.description}
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-3">Press "Get Help"</h3>
-              <p className="text-muted-foreground">
-                Click the big blue button in the app or on our website. No account
-                needed to start.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="h-16 w-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6">
-                2
-              </div>
-              <h3 className="text-xl font-bold mb-3">Share Your Screen</h3>
-              <p className="text-muted-foreground">
-                Allow screen sharing so the AI can see exactly what you're seeing. One
-                click, secure and private.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="h-16 w-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6">
-                3
-              </div>
-              <h3 className="text-xl font-bold mb-3">Follow Along</h3>
-              <p className="text-muted-foreground">
-                Talk to the AI like a friend. It guides you step-by-step until your
-                problem is solved.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-800">
+      <section id="features" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
               Everything Seniors Need
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
               Designed specifically for older adults who didn't grow up with technology
             </p>
           </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="p-6">
-              <Video className="h-10 w-10 text-blue-600 mb-4" />
-              <h3 className="text-lg font-bold mb-2">Screen Sharing</h3>
-              <p className="text-sm text-muted-foreground">
-                The AI sees exactly what you see on your device for personalized help
-              </p>
-            </Card>
-            <Card className="p-6">
-              <MessageSquare className="h-10 w-10 text-blue-600 mb-4" />
-              <h3 className="text-lg font-bold mb-2">Voice Conversation</h3>
-              <p className="text-sm text-muted-foreground">
-                Talk naturally—the AI understands and speaks in a friendly, clear way
-              </p>
-            </Card>
-            <Card className="p-6">
-              <Shield className="h-10 w-10 text-blue-600 mb-4" />
-              <h3 className="text-lg font-bold mb-2">Private & Secure</h3>
-              <p className="text-sm text-muted-foreground">
-                Sessions are encrypted. Only you can see and hear the conversation
-              </p>
-            </Card>
-            <Card className="p-6">
-              <Clock className="h-10 w-10 text-blue-600 mb-4" />
-              <h3 className="text-lg font-bold mb-2">24/7 Availability</h3>
-              <p className="text-sm text-muted-foreground">
-                Help is always available—day or night, weekends, holidays
-              </p>
-            </Card>
-            <Card className="p-6">
-              <Users className="h-10 w-10 text-blue-600 mb-4" />
-              <h3 className="text-lg font-bold mb-2">Human Backup</h3>
-              <p className="text-sm text-muted-foreground">
-                Connect with a real volunteer if the AI can't solve your problem
-              </p>
-            </Card>
-            <Card className="p-6">
-              <Heart className="h-10 w-10 text-blue-600 mb-4" />
-              <h3 className="text-lg font-bold mb-2">Senior-Friendly Design</h3>
-              <p className="text-sm text-muted-foreground">
-                Large text, clear buttons, simple navigation designed for older adults
-              </p>
-            </Card>
+            {[
+              { icon: Video, title: 'Screen Sharing', desc: 'The AI sees exactly what you see on your device for personalized help' },
+              { icon: MessageSquare, title: 'Voice Conversation', desc: 'Talk naturally—the AI understands and speaks in a friendly, clear way' },
+              { icon: Shield, title: 'Private & Secure', desc: 'Sessions are encrypted. Only you can see and hear the conversation' },
+              { icon: Clock, title: '24/7 Availability', desc: 'Help is always available—day or night, weekends, holidays' },
+              { icon: Users, title: 'Human Backup', desc: 'Connect with a real volunteer if the AI can\'t solve your problem' },
+              { icon: Heart, title: 'Senior-Friendly Design', desc: 'Large text, clear buttons, simple navigation designed for older adults' },
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="bg-[#FEF9F3] rounded-3xl p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                <feature.icon className="h-12 w-12 text-[#1E5A8D] mb-4" />
+                <h3 className="text-xl font-bold text-[#1E3A5F] mb-3 font-[Fraunces,serif]">
+                  {feature.title}
+                </h3>
+                <p className="text-lg text-[#5A6B7F] leading-relaxed">
+                  {feature.desc}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Social Proof / Testimonials */}
-      <section className="py-20 bg-blue-600 text-white">
+      <section className="py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-[Fraunces,serif]">
               Trusted by Seniors and Facilities
             </h2>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+            <p className="text-2xl text-white/90 max-w-2xl mx-auto">
               Join thousands of seniors who've solved their tech problems with LetsHelp
             </p>
           </div>
+
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-6 bg-white/10 border-white/20 text-white">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-yellow-400">★</span>
-                ))}
+            {[
+              {
+                text: "I finally learned how to use Zoom! Now I have coffee with my friends every week.",
+                author: "Margaret, 82",
+              },
+              {
+                text: "My daughter set this up for me. Now I don't have to call her at work for every little thing.",
+                author: "Robert, 76",
+              },
+              {
+                text: "Our residents love it. They're more independent and staff spends less time on tech support.",
+                author: "Sarah, Activities Director",
+              },
+            ].map((testimonial, i) => (
+              <div
+                key={i}
+                className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border-2 border-white/20"
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, j) => (
+                    <span key={j} className="text-3xl text-[#FCD34D]">★</span>
+                  ))}
+                </div>
+                <p className="text-xl text-white/90 mb-6 leading-relaxed">
+                  "{testimonial.text}"
+                </p>
+                <p className="font-bold text-[#FCD34D]">— {testimonial.author}</p>
               </div>
-              <p className="mb-4 opacity-90">
-                "I finally learned how to use Zoom! Now I have coffee with my friends
-                every week."
-              </p>
-              <p className="font-semibold">— Margaret, 82</p>
-            </Card>
-            <Card className="p-6 bg-white/10 border-white/20 text-white">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-yellow-400">★</span>
-                ))}
-              </div>
-              <p className="mb-4 opacity-90">
-                "My daughter set this up for me. Now I don't have to call her at work
-                for every little thing."
-              </p>
-              <p className="font-semibold">— Robert, 76</p>
-            </Card>
-            <Card className="p-6 bg-white/10 border-white/20 text-white">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-yellow-400">★</span>
-                ))}
-              </div>
-              <p className="mb-4 opacity-90">
-                "Our residents love it. They're more independent and staff spends less
-                time on tech support."
-              </p>
-              <p className="font-semibold">— Sarah, Activities Director</p>
-            </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-white dark:bg-gray-900">
+      <section id="pricing" className="py-24 bg-[#FEF9F3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
               Simple, Affordable Pricing
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
               Choose the plan that works for you
             </p>
           </div>
+
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* B2B Plan */}
-            <Card className="p-8 border-2 border-blue-200 dark:border-blue-800">
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold mb-2">For Senior Living Facilities</h3>
-                <p className="text-muted-foreground">Provide LetsHelp as a resident amenity</p>
+            <div className="bg-white rounded-3xl shadow-xl p-10 border-4 border-[#1E5A8D] relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-[#1E5A8D] text-white px-4 py-2 rounded-bl-2xl font-bold text-sm">
+                POPULAR
               </div>
-              <div className="text-center mb-6">
-                <div className="text-5xl font-bold">$15</div>
-                <div className="text-muted-foreground">per resident per month</div>
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-[#1E3A5F] mb-3 font-[Fraunces,serif]">
+                  For Senior Living Facilities
+                </h3>
+                <p className="text-lg text-[#5A6B7F]">Provide LetsHelp as a resident amenity</p>
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Unlimited sessions for all residents</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Admin dashboard with analytics</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Resident management tools</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Billing & usage reports</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Volume discounts available</span>
-                </li>
+              <div className="text-center mb-8">
+                <div className="text-6xl font-bold text-[#1E5A8D]">$15</div>
+                <div className="text-xl text-[#5A6B7F]">per resident per month</div>
+              </div>
+              <ul className="space-y-4 mb-10">
+                {[
+                  'Unlimited sessions for all residents',
+                  'Admin dashboard with analytics',
+                  'Resident management tools',
+                  'Billing & usage reports',
+                  'Volume discounts available',
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-lg">
+                    <Check className="h-6 w-6 text-teal-600 flex-shrink-0" />
+                    <span className="text-[#1E3A5F]">{item}</span>
+                  </li>
+                ))}
               </ul>
-              <Button className="w-full" size="lg" asChild>
-                <Link href="/login?plan=facility">
+              <Link href="/login?plan=facility">
+                <Button className="w-full h-16 text-xl font-bold bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] hover:from-[#1E4A6D] hover:to-[#1E5090] rounded-2xl" size="lg">
                   Contact Sales
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </Card>
+                  <ChevronRight className="ml-2 h-6 w-6" />
+                </Button>
+              </Link>
+            </div>
 
             {/* B2C Plan */}
-            <Card className="p-8">
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold mb-2">For Individuals & Families</h3>
-                <p className="text-muted-foreground">Peace of mind for you and your parents</p>
+            <div className="bg-white rounded-3xl shadow-xl p-10 border-4 border-gray-200">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-[#1E3A5F] mb-3 font-[Fraunces,serif]">
+                  For Individuals & Families
+                </h3>
+                <p className="text-lg text-[#5A6B7F]">Peace of mind for you and your parents</p>
               </div>
-              <div className="text-center mb-6">
-                <div className="text-5xl font-bold">$20</div>
-                <div className="text-muted-foreground">per month</div>
+              <div className="text-center mb-8">
+                <div className="text-6xl font-bold text-[#1E3A5F]">$20</div>
+                <div className="text-xl text-[#5A6B7F]">per month</div>
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Unlimited tech support sessions</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>24/7 availability</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Screen sharing & voice guidance</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Human volunteer backup</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span>Cancel anytime</span>
-                </li>
+              <ul className="space-y-4 mb-10">
+                {[
+                  'Unlimited tech support sessions',
+                  '24/7 availability',
+                  'Screen sharing & voice guidance',
+                  'Human volunteer backup',
+                  'Cancel anytime',
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-lg">
+                    <Check className="h-6 w-6 text-teal-600 flex-shrink-0" />
+                    <span className="text-[#1E3A5F]">{item}</span>
+                  </li>
+                ))}
               </ul>
-              <Button className="w-full" size="lg" variant="outline" asChild>
-                <Link href="/login?plan=individual">
+              <Link href="/login?plan=individual">
+                <Button className="w-full h-16 text-xl font-bold border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 rounded-2xl" variant="outline" size="lg">
                   Start Free Trial
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </Card>
+                  <ChevronRight className="ml-2 h-6 w-6" />
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Cost Comparison */}
           <div className="mt-16 text-center">
-            <p className="text-lg text-muted-foreground">
-              Compare to <strong className="text-red-600">$100-125/hour</strong> for
+            <p className="text-2xl text-[#5A6B7F]">
+              Compare to <strong className="text-red-500">$100-125/hour</strong> for
               traditional tech support services
             </p>
           </div>
@@ -504,13 +504,14 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-gray-50 dark:bg-gray-800">
+      <section id="faq" className="py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
               Frequently Asked Questions
             </h2>
           </div>
+
           <div className="space-y-6">
             {[
               {
@@ -538,32 +539,44 @@ export default function LandingPage() {
                 a: "With your permission, family members can see past sessions to understand what problems you've worked on.",
               },
             ].map((faq, i) => (
-              <Card key={i} className="p-6">
-                <h3 className="text-lg font-bold mb-2">{faq.q}</h3>
-                <p className="text-muted-foreground">{faq.a}</p>
-              </Card>
+              <div key={i} className="bg-[#FEF9F3] rounded-3xl p-8 border-4 border-gray-100">
+                <h3 className="text-xl font-bold text-[#1E3A5F] mb-3 font-[Fraunces,serif]">
+                  {faq.q}
+                </h3>
+                <p className="text-lg text-[#5A6B7F] leading-relaxed">
+                  {faq.a}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600 text-white">
+      <section className="py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-8 font-[Fraunces,serif]">
             Ready to Get Help?
           </h2>
-          <p className="text-xl opacity-90 mb-8">
+          <p className="text-2xl text-white/90 mb-10">
             Start your free trial today. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/login">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-6">
+              <Button
+                size="lg"
+                className="bg-white text-[#1E5A8D] hover:bg-gray-100 text-2xl px-12 py-8 rounded-2xl font-bold shadow-xl btn-press"
+              >
                 Get Started Now
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-3 h-7 w-7" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 text-lg px-8 py-6" asChild>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-3 border-white text-white hover:bg-white/10 text-2xl px-12 py-8 rounded-2xl font-bold"
+              asChild
+            >
               <a href="#pricing">View Pricing</a>
             </Button>
           </div>
@@ -571,49 +584,55 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
+      <footer className="bg-[#1E3A5F] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                  <Headphones className="h-5 w-5 text-white" />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#3B82F6] flex items-center justify-center shadow-lg">
+                  <Headphones className="h-7 w-7" />
                 </div>
-                <span className="text-xl font-bold text-white">LetsHelp</span>
+                <span className="text-2xl font-bold font-[Fraunces,serif]">LetsHelp</span>
               </div>
-              <p className="text-sm">
+              <p className="text-lg text-white/80 leading-relaxed">
                 Patient, on-demand tech support for seniors.
               </p>
             </div>
+
             <div>
-              <h4 className="font-semibold text-white mb-4">Product</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="/senior" className="hover:text-white transition-colors">Seniors</a></li>
-                <li><a href="/facility" className="hover:text-white transition-colors">Facilities</a></li>
+              <h4 className="font-bold text-xl mb-6 font-[Fraunces,serif]">Product</h4>
+              <ul className="space-y-3 text-lg">
+                <li><a href="#features" className="text-white/80 hover:text-white transition-colors">Features</a></li>
+                <li><a href="#pricing" className="text-white/80 hover:text-white transition-colors">Pricing</a></li>
+                <li><a href="/senior" className="text-white/80 hover:text-white transition-colors">Seniors</a></li>
+                <li><a href="/facility" className="text-white/80 hover:text-white transition-colors">Facilities</a></li>
               </ul>
             </div>
+
             <div>
-              <h4 className="font-semibold text-white mb-4">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/about" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
-                <li><a href="/careers" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="/blog" className="hover:text-white transition-colors">Blog</a></li>
+              <h4 className="font-bold text-xl mb-6 font-[Fraunces,serif]">Company</h4>
+              <ul className="space-y-3 text-lg">
+                <li><a href="/about" className="text-white/80 hover:text-white transition-colors">About</a></li>
+                <li><a href="/contact" className="text-white/80 hover:text-white transition-colors">Contact</a></li>
+                <li><a href="/careers" className="text-white/80 hover:text-white transition-colors">Careers</a></li>
+                <li><a href="/blog" className="text-white/80 hover:text-white transition-colors">Blog</a></li>
               </ul>
             </div>
+
             <div>
-              <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="/terms" className="hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="/accessibility" className="hover:text-white transition-colors">Accessibility</a></li>
+              <h4 className="font-bold text-xl mb-6 font-[Fraunces,serif]">Legal</h4>
+              <ul className="space-y-3 text-lg">
+                <li><a href="/privacy" className="text-white/80 hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-white/80 hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="/accessibility" className="text-white/80 hover:text-white transition-colors">Accessibility</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-sm text-center">
-            <p>&copy; 2025 LetsHelp. All rights reserved.</p>
+
+          <div className="border-t border-white/20 pt-8 text-center">
+            <p className="text-lg text-white/80">
+              &copy; 2025 LetsHelp. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>

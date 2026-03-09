@@ -3,13 +3,15 @@
  *
  * A large, accessible button for seniors to start an AI support session.
  * This is the primary entry point for LetsHelp.
+ *
+ * Design: Warm, distinctive with gradient teal color and heart icon
  */
 
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Phone, Video } from 'lucide-react';
+import { Loader2, Heart, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createSupportSession } from '@/lib/actions/support';
 
@@ -25,7 +27,7 @@ export function GetHelpButton({ className = '', variant = 'large' }: GetHelpButt
   const sizes = {
     default: 'h-16 text-xl px-8',
     large: 'h-20 text-2xl px-12',
-    'extra-large': 'h-24 text-3xl px-16',
+    'extra-large': 'h-28 text-4xl px-20',
   };
 
   const handleClick = async () => {
@@ -47,7 +49,16 @@ export function GetHelpButton({ className = '', variant = 'large' }: GetHelpButt
       onClick={handleClick}
       disabled={isLoading}
       size="lg"
-      className={`${sizes[variant]} rounded-2xl font-bold shadow-lg transition-all hover:scale-105 active:scale-95 ${className}`}
+      className={`
+        ${sizes[variant]}
+        rounded-3xl font-bold shadow-xl hover:shadow-2xl
+        bg-gradient-to-r from-teal-500 to-teal-600
+        hover:from-teal-600 hover:to-teal-700
+        text-white
+        transition-all duration-300
+        btn-press
+        ${className}
+      `}
       aria-label="Get help now from our AI assistant"
     >
       {isLoading ? (
@@ -57,9 +68,11 @@ export function GetHelpButton({ className = '', variant = 'large' }: GetHelpButt
         </>
       ) : (
         <>
-          <Phone className="mr-3 h-8 w-8" aria-hidden="true" />
-          <Video className="mr-3 h-8 w-8" aria-hidden="true" />
+          <span className="bg-white/30 p-3 rounded-2xl mr-4">
+            <Heart className="h-10 w-10" />
+          </span>
           Get Help Now
+          <ArrowRight className="h-10 w-10 group-hover:translate-x-2 transition-transform" />
         </>
       )}
     </Button>
@@ -91,14 +104,14 @@ export function GetHelpButtonCompact() {
       onClick={handleClick}
       disabled={isLoading}
       size="lg"
-      className="h-14 rounded-xl px-6 font-bold text-lg"
+      className="h-14 rounded-2xl px-8 font-bold text-xl bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg btn-press"
       aria-label="Get help now"
     >
       {isLoading ? (
         <Loader2 className="h-6 w-6 animate-spin" />
       ) : (
         <>
-          <Phone className="mr-2 h-5 w-5" />
+          <Heart className="mr-2 h-6 w-6" />
           Get Help
         </>
       )}
