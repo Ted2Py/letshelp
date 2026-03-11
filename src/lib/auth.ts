@@ -36,9 +36,6 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // Update session every 24 hours
-    cookieCache: {
-      maxAge: 60 * 60 * 24 * 7,
-    },
   },
   // Rate limiting
   rateLimit: {
@@ -51,6 +48,10 @@ export const auth = betterAuth({
     generateId: () => crypto.randomUUID(),
     crossSubDomainCookies: {
       enabled: false
-    }
+    },
+    // Use secure cookies in production
+    secureCookies: process.env.NODE_ENV === "production",
+    // Trust the origin for OAuth redirects
+    useSecureCookies: process.env.NODE_ENV === "production",
   }
 })
