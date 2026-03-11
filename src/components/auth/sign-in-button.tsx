@@ -42,8 +42,9 @@ export function SignInButton() {
         router.push("/dashboard")
         router.refresh()
       }
-    } catch {
-      setError("An unexpected error occurred")
+    } catch (err) {
+      console.error("Sign-in error:", err)
+      setError(err instanceof Error ? err.message : "An unexpected error occurred")
     } finally {
       setIsPending(false)
     }
@@ -56,7 +57,24 @@ export function SignInButton() {
         type="button"
         variant="outline"
         className="w-full"
-        onClick={() => signIn.social({ provider: "google", callbackURL: "/dashboard" })}
+        onClick={async () => {
+          setIsPending(true)
+          setError("")
+          try {
+            const result = await signIn.social({
+              provider: "google",
+              callbackURL: "/dashboard",
+            })
+            if (result.error) {
+              setError(result.error.message || "Google sign-in failed")
+            }
+          } catch (err) {
+            console.error("Google sign-in error:", err)
+            setError(err instanceof Error ? err.message : "An unexpected error occurred")
+          } finally {
+            setIsPending(false)
+          }
+        }}
         disabled={isPending}
       >
         <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">

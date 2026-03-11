@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { db } from "./db"
 
 export const auth = betterAuth({
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
@@ -35,6 +36,15 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // Update session every 24 hours
+    cookieCache: {
+      maxAge: 60 * 60 * 24 * 7,
+      cookie: {
+        attributes: {
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        },
+      },
+    },
   },
   // Rate limiting
   rateLimit: {
