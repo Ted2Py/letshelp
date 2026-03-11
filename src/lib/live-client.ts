@@ -13,6 +13,7 @@ export interface LiveClientConfig {
   apiKey: string;
   model: string;
   preferredLanguage?: string;
+  onLanguageDetected?: (language: string) => void;
 }
 
 export type SessionState = 'connecting' | 'connected' | 'listening' | 'speaking' | 'error';
@@ -25,6 +26,7 @@ export class GeminiLiveClient {
   private onStateChange: (state: SessionState) => void;
   private onTranscript: (text: string, isFinal: boolean) => void;
   private config: LiveClientConfig;
+  private currentLanguage: string = 'en'; // Track detected language
   private audioQueue: Float32Array[] = [];
   private isPlaying = false;
 
@@ -694,6 +696,11 @@ export class GeminiLiveClient {
     }
 
     console.log('💬 Sending text:', text);
+
+    // Detect language from user input
+    const detectedLanguage = this.detectLanguage(text);
+    this.updateLanguage(detectedLanguage);
+
     this.session.sendClientContent({
       turns: [
         {
@@ -726,5 +733,75 @@ export class GeminiLiveClient {
     this.stopScreenShare();
     this.audioQueue = [];
     this.isPlaying = false;
+  }
+
+  /**
+   * Detect language from text using character patterns
+   * Returns ISO 639-1 language code
+   */
+  private detectLanguage(text: string): string {
+    // Chinese detection (CJK characters)
+    if (/[\u4e00-\u9fff]/.test(text)) return 'zh';
+
+    // Japanese detection (Hiragana/Katakata)
+    if (/[\u3040-\u309f\u30a0-\u30ff]/.test(text)) return 'ja';
+
+    // Korean detection
+    if (/[\uac00-\ud7af]/.test(text)) return 'ko';
+
+    // Arabic detection
+    if (/[\u0600-\u06ff]/.test(text)) return 'ar';
+
+    // Hindi detection (Devanagari)
+    if (/[\u0900-\u097f]/.test(text)) return 'hi';
+
+    // Russian detection (Cyrillic)
+    if (/[\u0400-\u04ff]/.test(text)) return 'ru';
+
+    // Thai detection
+    if (/[\u0e00-\u0e7f]/.test(text)) return 'th';
+
+    // Spanish/Portuguese/French character patterns
+    // Common words and accents
+    const spanishPatterns = /\b(el|la|los|las|un|una|por|para|que|como|está|está|muy|bueno|gracias|hola)\b/i;
+    const portuguesePatterns = /\b(o|a|os|as|um|uma|por|para|que|como|está|muito|bom|obrigado|olá)\b/i;
+    const frenchPatterns = /\b(le|la|les|un|une|pour|que|comme|est|très|bon|merci|bonjour)\b/i;
+    const germanPatterns = /\b(der|die|das|ein|eine|für|dass|wie|ist|sehr|gut|danke|hallo)\b/i;
+
+    if (frenchPatterns.test(text)) return 'fr';
+    if (spanishPatterns.test(text)) return 'es';
+    if (portuguesePatterns.test(text)) return 'pt';
+    if (germanPatterns.test(text)) return 'de';
+
+    // Default to English
+    return 'en';
+  }
+
+  /**
+   * Update the current language and notify callback
+   */
+  private updateLanguage(detectedLanguage: string): void {
+    if (detectedLanguage !== this.currentLanguage) {
+      console.log(`🌐 Language detected: ${detectedLanguage} (was ${this.currentLanguage})`);
+      this.currentLanguage = detectedLanguage;
+
+      // Notify app of language change
+      if (this.config.onLanguageDetected) {
+        this.config.onLanguageDetected(detectedLanguage);
+      }
+
+      // Update localStorage for UI language
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('letshelp-language', detectedLanguage);
+        localStorage.setItem('letshelp-language-autodetected', 'true');
+      }
+    }
+  }
+
+  /**
+   * Get the current detected language
+   */
+  getCurrentLanguage(): string {
+    return this.currentLanguage;
   }
 }

@@ -55,7 +55,7 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center gap-3">
               <Link href="/login">
-                <Button variant="ghost" size="lg" className="text-lg">
+                <Button variant="outline" size="lg" className="text-lg border-2 border-[#1E5A8D] text-[#1E5A8D] hover:bg-[#1E5A8D] hover:text-white">
                   Sign In
                 </Button>
               </Link>
@@ -128,23 +128,33 @@ export default function LandingPage() {
             </div>
 
             <div className="relative animate-slide-up" style={{ animationDelay: '200ms' }}>
-              <div className="aspect-square rounded-3xl bg-gradient-to-br from-[#F59E0B] to-[#D97706] p-10 text-white flex flex-col justify-center items-center text-center shadow-2xl">
-                <Video className="h-28 w-28 mb-8 opacity-90" />
-                <p className="text-3xl font-bold mb-6 font-[Fraunces,serif]">
-                  "How do I video call my grandkids?"
-                </p>
-                <p className="text-xl opacity-90 leading-relaxed">
-                  LetsHelp sees your screen and guides you through every step.
-                </p>
-                <div className="mt-8 px-8 py-4 bg-white/20 rounded-full backdrop-blur-sm">
-                  <Clock className="inline h-6 w-6 mr-3" />
-                  <span className="text-lg font-semibold">Average resolution: 5 minutes</span>
+              {/* Feature Grid */}
+              <div className="grid grid-cols-2 gap-5">
+                {[
+                  { icon: Video, label: 'Screen Sharing', description: 'AI sees exactly what you see', color: 'from-white/25 to-white/15', iconColor: 'text-[#60A5FA]' },
+                  { icon: MessageSquare, label: 'Voice Guidance', description: 'Talk naturally, step-by-step', color: 'from-white/25 to-white/15', iconColor: 'text-[#34D399]' },
+                  { icon: Shield, label: 'Private & Secure', description: 'Encrypted, private sessions', color: 'from-white/25 to-white/15', iconColor: 'text-[#A78BFA]' },
+                  { icon: Clock, label: '24/7 Available', description: 'Help whenever you need it', color: 'from-white/25 to-white/15', iconColor: 'text-[#FCD34D]' },
+                ].map((feature, i) => (
+                  <div
+                    key={i}
+                    className="bg-gradient-to-br backdrop-blur-sm rounded-3xl p-7 border-2 border-white/40 hover:scale-[1.02] hover:bg-white/30 transition-all duration-300"
+                  >
+                    <div className="bg-white/20 rounded-2xl w-14 h-14 flex items-center justify-center mb-4">
+                      <feature.icon className={`h-7 w-7 ${feature.iconColor}`} />
+                    </div>
+                    <div className="text-xl font-bold font-[Fraunces,serif] mb-1">{feature.label}</div>
+                    <div className="text-sm text-white/80 leading-snug">{feature.description}</div>
+                  </div>
+                ))}
+              </div>
+              {/* Trust badge below */}
+              <div className="mt-8 text-center">
+                <div className="inline-flex items-center gap-3 bg-white/25 backdrop-blur-sm rounded-full px-8 py-4 border border-white/30">
+                  <Check className="h-6 w-6 text-[#34D399]" />
+                  <span className="text-white font-semibold text-lg">Trusted by 1,000+ seniors</span>
                 </div>
               </div>
-
-              {/* Decorative elements */}
-              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-[#34D399]/20 rounded-full blur-2xl"></div>
-              <div className="absolute -top-8 -right-8 w-40 h-40 bg-[#FCD34D]/20 rounded-full blur-2xl"></div>
             </div>
           </div>
         </div>
@@ -631,7 +641,7 @@ export default function LandingPage() {
 
           <div className="border-t border-white/20 pt-8 text-center">
             <p className="text-lg text-white/80">
-              &copy; 2025 LetsHelp. All rights reserved.
+              &copy; 2026 LetsHelp. All rights reserved.
             </p>
           </div>
         </div>

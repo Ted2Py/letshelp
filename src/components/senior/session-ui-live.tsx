@@ -19,6 +19,7 @@ import { Mic, MicOff, PhoneOff, Hand, Monitor, MonitorOff, ChevronRight } from '
 import { Button } from '@/components/ui/button';
 import { endSupportSession, requestVolunteerHandoff } from '@/lib/actions/support';
 import { GeminiLiveClient, type SessionState } from '@/lib/live-client';
+import { useLanguage } from '@/components/language-provider';
 
 interface SessionUiProps {
   sessionId: string;
@@ -42,6 +43,9 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   const liveClientRef = useRef<GeminiLiveClient | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
 
+  // Get language preference from context (falls back to prop for backward compatibility)
+  const { language } = useLanguage();
+
   const fontSize = initialSettings?.fontSize || 'large';
   const highContrast = initialSettings?.highContrast || false;
 
@@ -64,11 +68,23 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
     const initLiveApi = async () => {
       try {
+        // Get language name from code for the AI
+        const languageNames: Record<string, string> = {
+          en: 'English',
+          es: 'Spanish',
+          zh: 'Chinese (Mandarin)',
+          fr: 'French',
+          de: 'German',
+          pt: 'Portuguese',
+          ar: 'Arabic',
+          hi: 'Hindi',
+        };
+
         const response = await fetch('/api/support/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            preferredLanguage: initialSettings?.preferredLanguage,
+            preferredLanguage: languageNames[language] || initialSettings?.preferredLanguage,
             fontSize,
           }),
         });
@@ -85,7 +101,11 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
           {
             apiKey,
             model,
-            preferredLanguage: preferredLanguage || initialSettings?.preferredLanguage,
+            preferredLanguage: preferredLanguage || languageNames[language] || initialSettings?.preferredLanguage,
+            onLanguageDetected: (detectedLang) => {
+              console.log('Language detected:', detectedLang);
+              // Could update UI or settings here if needed
+            },
           },
           {
             onStateChange: (state) => {

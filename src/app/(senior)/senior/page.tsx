@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { getSessionHistory } from '@/lib/actions/support';
 import { auth } from '@/lib/auth';
 import { GetHelpButton } from '@/components/senior/get-help-button';
+import { LanguageSelector } from '@/components/language-selector';
 
 export default async function SeniorPage() {
   const session = await auth.api.getSession({
@@ -30,8 +31,8 @@ export default async function SeniorPage() {
     <div className="flex flex-col min-h-screen bg-[#FEF9F3]">
       {/* Warm, welcoming header */}
       <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white py-6 px-6 shadow-lg">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div>
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-3 font-[Fraunces,serif]">
               <span className="bg-white/20 p-3 rounded-2xl">
                 <Heart className="h-8 w-8" />
@@ -39,11 +40,14 @@ export default async function SeniorPage() {
               LetsHelp
             </h1>
           </div>
-          <div className="text-right">
-            <p className="text-xl md:text-2xl font-medium">
-              Hello, {session.user.name?.split(' ')[0]}!
-            </p>
-            <p className="text-sm opacity-90">How can I help you today?</p>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-xl md:text-2xl font-medium">
+                Hello, {session.user.name?.split(' ')[0]}!
+              </p>
+              <p className="text-sm opacity-90">How can I help you today?</p>
+            </div>
+            <LanguageSelector />
           </div>
         </div>
       </header>
