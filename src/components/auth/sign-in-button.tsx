@@ -66,7 +66,13 @@ export function SignInButton() {
               callbackURL: "/dashboard",
             })
             if (result.error) {
-              setError(result.error.message || "Google sign-in failed")
+              const msg = result.error.message || "Google sign-in failed"
+              // Provide helpful message for provider not found
+              if (msg.includes("provider") || msg.includes("not found")) {
+                setError("Google OAuth is not configured. Please contact support or use email sign-in.")
+              } else {
+                setError(msg)
+              }
             }
           } catch (err) {
             console.error("Google sign-in error:", err)
