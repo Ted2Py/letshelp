@@ -38,12 +38,6 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24, // Update session every 24 hours
     cookieCache: {
       maxAge: 60 * 60 * 24 * 7,
-      cookie: {
-        attributes: {
-          sameSite: "lax",
-          secure: process.env.NODE_ENV === "production",
-        },
-      },
     },
   },
   // Rate limiting
