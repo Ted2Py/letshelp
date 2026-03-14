@@ -48,10 +48,6 @@ export const auth = betterAuth({
     generateId: () => crypto.randomUUID(),
     crossSubDomainCookies: {
       enabled: false
-    },
-    // Use secure cookies in production
-    secureCookies: process.env.NODE_ENV === "production",
-    // Trust the origin for OAuth redirects
-    useSecureCookies: process.env.NODE_ENV === "production",
+    }
   }
 })
