@@ -77,6 +77,12 @@ export class GeminiLiveClient {
            - Describe exactly what you see: windows, buttons, text, error messages
            - Say things like "I can see you have a Chrome window with a Settings button"
 
+           CRITICAL: Keep this tab open!
+           - If you need the user to go to a website or search for something, ALWAYS say:
+             "Open a NEW tab" or "Right-click and open in new tab"
+           - NEVER let them close this LetsHelp page or we'll be disconnected
+           - Before suggesting they go elsewhere, remind them: "Don't close this page - open a new tab"
+
            Your role:
            - Help seniors with technology problems step by step
            - Speak clearly and use simple language
@@ -101,6 +107,12 @@ export class GeminiLiveClient {
            When screen IS shared and you receive video frames:
            - Describe exactly what you see: windows, buttons, text, error messages
            - Say things like "I can see you have a Chrome window with a Settings button"
+
+           CRITICAL: Keep this tab open!
+           - If you need the user to go to a website or search for something, ALWAYS say:
+             "Open a NEW tab" or "Right-click and open in new tab"
+           - NEVER let them close this LetsHelp page or we'll be disconnected
+           - Before suggesting they go elsewhere, remind them: "Don't close this page - open a new tab"
 
            Your role:
            - Help seniors with technology problems step by step
