@@ -125,7 +125,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
         await client.connect();
 
         setSessionState('connected');
-        setAiResponse("I'm ready to help! Tap the green button below to start talking.");
+        setAiResponse("I'm connected! Tap Start below to begin.");
       } catch (error: any) {
         console.error('Failed to initialize Live API:', error);
         setSessionState('error');
@@ -220,7 +220,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
     try {
       await liveClientRef.current.startAudioCapture();
       setNeedsStart(false);
-      setAiResponse("Hi there! I'm here to help you with any tech questions. What would you like help with today?");
+      setAiResponse("I'm listening... Go ahead and tell me what you need help with!");
     } catch (error: any) {
       console.error('Failed to start audio capture:', error);
 
