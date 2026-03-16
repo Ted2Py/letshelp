@@ -524,6 +524,13 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
             {isMuted && "Tap the microphone button so I can hear you."}
             {isSpeaking && "I'm speaking... Tap the microphone when you want to say something."}
           </p>
+
+          {/* Warning: Stay on this page */}
+          <div className="mt-4 p-3 bg-amber-50 border-2 border-amber-200 rounded-xl">
+            <p className="text-center text-amber-800 text-sm font-medium">
+              ⚠️ Stay on this page while we're talking! Don't open other links or tabs.
+            </p>
+          </div>
         </div>
       </footer>
 
