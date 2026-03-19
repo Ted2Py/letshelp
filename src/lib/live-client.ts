@@ -14,6 +14,7 @@ export interface LiveClientConfig {
   model: string;
   preferredLanguage?: string;
   onLanguageDetected?: (language: string) => void;
+  onMessage?: (role: 'user' | 'assistant', content: string) => void;
 }
 
 export type SessionState = 'connecting' | 'connected' | 'listening' | 'speaking' | 'error';
@@ -36,6 +37,12 @@ export class GeminiLiveClient {
   private canvasContext: CanvasRenderingContext2D | null = null;
   private videoFrameInterval: number | null = null;
   private isScreenSharing = false;
+
+  // Message transcript for session recording
+  private messages: Array<{ role: 'user' | 'assistant'; content: string; timestamp: number }> = [];
+
+  // Playback speed control (uses client-side playbackRate)
+  private playbackRate: number = 1.0;
 
   constructor(
     config: LiveClientConfig,
@@ -138,6 +145,8 @@ export class GeminiLiveClient {
               prebuiltVoiceConfig: { voiceName: 'Kore' }
             }
           },
+          // Enable audio transcription for both input and output
+          inputAudioTranscription: {},
         },
         callbacks: {
           onopen: () => {
@@ -170,7 +179,7 @@ export class GeminiLiveClient {
   private handleMessage(message: any): void {
     console.log('📨 Received message type:', message?.serverContent?.modelTurn ? 'content' : 'setup');
 
-    // Check for text content
+    // Check for text content (AI responses)
     if (message.serverContent?.modelTurn?.parts) {
       this.onStateChange('speaking');
 
@@ -197,6 +206,29 @@ export class GeminiLiveClient {
           if (!isInternalMessage && text.length > 0) {
             console.log('💬 Displaying to user:', text.slice(0, 50));
             this.onTranscript(text, true);
+
+            // Capture for session transcript
+            if (this.config.onMessage) {
+              this.config.onMessage('assistant', text);
+              this.messages.push({
+                role: 'assistant',
+                content: text,
+                timestamp: Date.now(),
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // Check for input audio transcription (user speech)
+    if (message.serverContent?.modelTurn?.parts) {
+      for (const part of message.serverContent.modelTurn.parts) {
+        if (part.inlineData?.mimeType === 'audio/transcript' || part.transcript) {
+          const transcript = part.transcript || part.inlineData?.data;
+          if (transcript && typeof transcript === 'string' && transcript.trim().length > 0) {
+            console.log('🎤 User transcript:', transcript.slice(0, 50));
+            this.addUserMessage(transcript.trim());
           }
         }
       }
@@ -285,6 +317,7 @@ export class GeminiLiveClient {
       buffer.getChannelData(0).set(audioData);
 
       source.buffer = buffer;
+      source.playbackRate.value = this.playbackRate;
       source.connect(this.audioContext.destination);
       source.onended = playNextChunk;
       source.start();
@@ -823,5 +856,80 @@ export class GeminiLiveClient {
    */
   getCurrentLanguage(): string {
     return this.currentLanguage;
+  }
+
+  /**
+   * Set the speech playback speed (affects pitch slightly)
+   * @param rate - Playback rate (0.85 = slower, 1.0 = normal, 1.15 = faster)
+   *              Valid range: 0.5 to 2.0
+   */
+  setPlaybackRate(rate: number): void {
+    // Clamp the rate between 0.5 and 2.0 for safety
+    this.playbackRate = Math.max(0.5, Math.min(2.0, rate));
+    console.log(`🎚️ Playback rate set to ${this.playbackRate}x`);
+  }
+
+  /**
+   * Get the current playback speed
+   */
+  getPlaybackRate(): number {
+    return this.playbackRate;
+  }
+
+  /**
+   * Add a user message to the transcript
+   * Call this when user speech is transcribed
+   */
+  addUserMessage(content: string): void {
+    const message = {
+      role: 'user' as const,
+      content,
+      timestamp: Date.now(),
+    };
+    this.messages.push(message);
+
+    // Notify callback if provided
+    if (this.config.onMessage) {
+      this.config.onMessage('user', content);
+    }
+  }
+
+  /**
+   * Get the message transcript for this session
+   * Returns all messages captured during the session
+   */
+  getMessages(): Array<{ role: 'user' | 'assistant'; content: string; timestamp: number }> {
+    return [...this.messages];
+  }
+
+  /**
+   * Get formatted transcript as a string
+   * Useful for saving to database or sending via email
+   */
+  getFormattedTranscript(): string {
+    return this.messages
+      .map((msg) => {
+        const time = new Date(msg.timestamp).toLocaleTimeString();
+        const prefix = msg.role === 'user' ? 'You' : 'AI Assistant';
+        return `[${time}] ${prefix}: ${msg.content}`;
+      })
+      .join('\n\n');
+  }
+
+  /**
+   * Get a brief summary of the session
+   * This can be used for email subjects or quick overviews
+   */
+  getSessionSummary(): string {
+    if (this.messages.length === 0) {
+      return 'Empty session';
+    }
+
+    const userMessages = this.messages.filter((m) => m.role === 'user');
+    const firstUserMessage = userMessages[0]?.content || '';
+
+    // Get the first 100 characters of the first user message as a preview
+    const preview = firstUserMessage.slice(0, 100);
+    return preview + (firstUserMessage.length > 100 ? '...' : '');
   }
 }

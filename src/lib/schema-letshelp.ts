@@ -1,7 +1,7 @@
 // LetsHelp Database Schema
 // This extends the base Better Auth schema with LetsHelp-specific tables
 
-import { pgTable, text, timestamp, integer, json, index, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, json, index, pgEnum, boolean } from "drizzle-orm/pg-core";
 import { user } from "./schema";
 
 // Enums
@@ -81,6 +81,8 @@ export const residents = pgTable(
       phone: string;
       email?: string;
     }>(),
+    familyEmail: text("family_email"), // For sending session summaries to family members
+    emailSummaries: boolean("email_summaries").default(false), // Opt-in for email summaries
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -112,7 +114,10 @@ export const supportSessions = pgTable(
     issueCategory: text("issue_category"), // 'password', 'app', 'hardware', 'communication', etc.
     issueDescription: text("issue_description"),
     resolution: text("resolution"), // AI summary of resolution
-    transcript: text("transcript"), // Full session transcript
+    transcript: text("transcript"), // Full session transcript (formatted)
+    summary: text("summary"), // AI-generated summary of the session
+    summaryEmailSent: boolean("summary_email_sent").default(false), // Whether summary was emailed
+    summaryEmailTo: text("summary_email_to"), // Where the summary was sent
     recordingUrl: text("recording_url"), // Link to stored recording
     aiModel: text("ai_model").default("gemini-2.5-flash-native-audio-preview-12-2025"),
     handedOffTo: text("handed_off_to").references(() => user.id, { onDelete: "set null" }), // Volunteer who took over

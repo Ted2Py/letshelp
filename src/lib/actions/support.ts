@@ -15,6 +15,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { categorizeIssue } from '@/lib/gemini';
+import { sendSessionSummaryEmail } from '@/lib/email';
 import {
   supportSessions,
   sessionMessages,
@@ -211,6 +212,8 @@ export async function endSupportSession(params: {
   sessionId: string;
   resolution?: string;
   outcome: 'resolved' | 'escalated';
+  transcript?: string;
+  summary?: string;
 }) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -249,6 +252,19 @@ export async function endSupportSession(params: {
     return { success: false, error: 'Session not found' };
   }
 
+  // Get resident details for email sending
+  const residentDetails = await db
+    .select({
+      userId: residents.userId,
+      familyEmail: residents.familyEmail,
+      emailSummaries: residents.emailSummaries,
+    })
+    .from(residents)
+    .where(eq(residents.id, residentList[0]!.id))
+    .limit(1);
+
+  const resident = residentDetails[0];
+
   // Calculate duration
   const endTime = new Date();
   const duration = Math.floor((endTime.getTime() - new Date(supportSession.startTime).getTime()) / 1000);
@@ -261,6 +277,8 @@ export async function endSupportSession(params: {
       duration,
       status: params.outcome === 'escalated' ? 'handed_off' : 'completed',
       resolution: params.resolution,
+      transcript: params.transcript,
+      summary: params.summary,
     })
     .where(eq(supportSessions.id, params.sessionId));
 
@@ -271,6 +289,49 @@ export async function endSupportSession(params: {
       .update(supportSessions)
       .set({ issueCategory: category })
       .where(eq(supportSessions.id, params.sessionId));
+  }
+
+  // Send summary email if opted in
+  if (resident?.familyEmail && resident?.emailSummaries) {
+    try {
+      // Get user name for email
+      const userDetails = await db
+        .select({ name: user.name })
+        .from(user)
+        .where(eq(user.id, resident.userId))
+        .limit(1);
+
+      const userName = userDetails[0]?.name || 'Senior';
+
+      // Get updated session with issue category
+      const updatedSession = await db
+        .select({ issueCategory: supportSessions.issueCategory })
+        .from(supportSessions)
+        .where(eq(supportSessions.id, params.sessionId))
+        .limit(1);
+
+      await sendSessionSummaryEmail({
+        recipientEmail: resident.familyEmail,
+        recipientName: userName,
+        sessionDate: new Date(supportSession.startTime),
+        duration,
+        summary: params.summary,
+        transcript: params.transcript,
+        issueCategory: updatedSession[0]?.issueCategory || undefined,
+      });
+
+      // Mark email as sent
+      await db
+        .update(supportSessions)
+        .set({
+          summaryEmailSent: true,
+          summaryEmailTo: resident.familyEmail,
+        })
+        .where(eq(supportSessions.id, params.sessionId));
+    } catch (error) {
+      console.error('Failed to send summary email:', error);
+      // Don't fail the session end if email fails
+    }
   }
 
   revalidatePath('/senior/session');

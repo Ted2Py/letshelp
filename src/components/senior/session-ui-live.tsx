@@ -15,7 +15,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, PhoneOff, Hand, Monitor, MonitorOff, ChevronRight } from 'lucide-react';
+import { Mic, MicOff, PhoneOff, Hand, Monitor, MonitorOff, ChevronRight, Gauge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { endSupportSession, requestVolunteerHandoff } from '@/lib/actions/support';
 import { GeminiLiveClient, type SessionState } from '@/lib/live-client';
@@ -32,6 +32,14 @@ interface SessionUiProps {
 
 type ViewState = 'connecting' | 'ready' | 'listening' | 'speaking' | 'error';
 
+type SpeechSpeed = 0.85 | 1.0 | 1.15;
+
+const SPEED_LABELS: Record<SpeechSpeed, string> = {
+  0.85: 'Slower',
+  1.0: 'Normal',
+  1.15: 'Faster',
+};
+
 export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   const [sessionState, setSessionState] = useState<SessionState>('connecting');
   const [isMuted, setIsMuted] = useState(false);
@@ -39,6 +47,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   const [showHandoffConfirm, setShowHandoffConfirm] = useState(false);
   const [aiResponse, setAiResponse] = useState('');
   const [needsStart, setNeedsStart] = useState(true);
+  const [speechSpeed, setSpeechSpeed] = useState<SpeechSpeed>(1.0);
 
   const liveClientRef = useRef<GeminiLiveClient | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
@@ -145,6 +154,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   }, [sessionId, initialSettings]);
 
   const handleEndCall = async () => {
+    // Get transcript from live client before disconnecting
+    const transcript = liveClientRef.current?.getFormattedTranscript() || '';
+    const summary = liveClientRef.current?.getSessionSummary() || '';
+
     if (liveClientRef.current) {
       liveClientRef.current.disconnect();
     }
@@ -153,6 +166,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
       sessionId,
       outcome: 'resolved',
       resolution: 'Session completed by user',
+      transcript,
+      summary,
     });
 
     window.location.href = '/senior';
@@ -211,11 +226,26 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
     }
   };
 
+  const toggleSpeechSpeed = () => {
+    const speeds: SpeechSpeed[] = [0.85, 1.0, 1.15];
+    const currentIndex = speeds.indexOf(speechSpeed);
+    const nextIndex = (currentIndex + 1) % speeds.length;
+    const nextSpeed = speeds[nextIndex]!;
+    setSpeechSpeed(nextSpeed);
+
+    if (liveClientRef.current) {
+      liveClientRef.current.setPlaybackRate(nextSpeed);
+    }
+  };
+
   const handleStartSession = async () => {
     if (!liveClientRef.current) {
       setAiResponse('Still connecting... Please wait a moment.');
       return;
     }
+
+    // Set initial speech speed
+    liveClientRef.current.setPlaybackRate(speechSpeed);
 
     try {
       await liveClientRef.current.startAudioCapture();
@@ -489,6 +519,18 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                       Share Screen
                     </>
                   )}
+                </Button>
+
+                {/* Speed Control */}
+                <Button
+                  onClick={toggleSpeechSpeed}
+                  size="lg"
+                  variant="outline"
+                  className="h-20 px-8 rounded-2xl text-xl font-bold border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press"
+                  aria-label={`Speech speed: ${SPEED_LABELS[speechSpeed]}`}
+                >
+                  <Gauge className="mr-2 h-7 w-7" />
+                  {SPEED_LABELS[speechSpeed]}
                 </Button>
 
                 {/* Request Human */}
