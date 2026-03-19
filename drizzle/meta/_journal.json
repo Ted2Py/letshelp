@@ -36,6 +36,13 @@
       "when": 1773628425137,
       "tag": "0004_reflective_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1773958435724,
+      "tag": "0005_pale_beast",
+      "breakpoints": true
     }
   ]
 }

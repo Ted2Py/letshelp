@@ -14,6 +14,7 @@ export default async function RegisterPage() {
   const session = await auth.api.getSession({ headers: await headers() })
 
   if (session) {
+    // Check if user needs onboarding
     redirect("/dashboard")
   }
 
@@ -22,7 +23,7 @@ export default async function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>Create an account</CardTitle>
-          <CardDescription>Get started with your new account</CardDescription>
+          <CardDescription>Choose your account type to get started</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center">
           <SignUpForm />

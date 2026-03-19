@@ -10,6 +10,10 @@ export const subscriptionPlanEnum = pgEnum("subscription_plan", ["monthly", "ann
 export const userRoleEnum = pgEnum("user_role", ["senior", "facility_admin", "super_admin", "volunteer"]);
 export const sessionStatusEnum = pgEnum("session_status", ["active", "completed", "abandoned", "handed_off"]);
 export const handoffStatusEnum = pgEnum("handoff_status", ["pending", "accepted", "declined", "canceled"]);
+export const notificationTypeEnum = pgEnum("notification_type", ["session_completed", "session_summary", "handoff_request", "resident_alert", "weekly_report", "daily_report"]);
+export const notificationFrequencyEnum = pgEnum("notification_frequency", ["immediate", "daily", "weekly", "none"]);
+export const accessCodeStatusEnum = pgEnum("access_code_status", ["active", "used", "revoked", "expired"]);
+export const residentStatusEnum = pgEnum("resident_status", ["active", "inactive", "pending_setup"]);
 
 // Facilities (senior living communities)
 export const facilities = pgTable(
@@ -27,6 +31,12 @@ export const facilities = pgTable(
     subscriptionPlan: subscriptionPlanEnum("subscription_plan").default("monthly").notNull(),
     pricePerResident: integer("price_per_resident").default(1500).notNull(), // in cents ($15)
     maxResidents: integer("max_residents"),
+    settings: json("facility_settings").$type<{
+      allowStayLoggedIn?: boolean;
+      multiFacilityEnabled?: boolean;
+      requireManagerApproval?: boolean;
+      sessionTimeout?: number; // in minutes
+    }>(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -74,6 +84,11 @@ export const residents = pgTable(
       fontSize?: "normal" | "large" | "extra-large";
       highContrast?: boolean;
       voiceSpeed?: number;
+      darkMode?: boolean;
+      autoPlayVoice?: boolean;
+      showSubtitles?: boolean;
+      lineSpacing?: "normal" | "relaxed" | "loose";
+      voiceGender?: "male" | "female" | "neutral";
     }>(),
     dateOfBirth: timestamp("date_of_birth"),
     emergencyContact: json("emergency_contact").$type<{
@@ -83,6 +98,13 @@ export const residents = pgTable(
     }>(),
     familyEmail: text("family_email"), // For sending session summaries to family members
     emailSummaries: boolean("email_summaries").default(false), // Opt-in for email summaries
+    status: residentStatusEnum("status").default("pending_setup").notNull(), // Track if resident is active/inactive
+    lastLoginAt: timestamp("last_login_at"),
+    sessionCount30Days: integer("session_count_30_days").default(0).notNull(), // For billing active status
+    lastSessionAt: timestamp("last_session_at"),
+    needsHelpWith: json("needs_help_with").$type<string[]>(), // AI-tagged learning gaps
+    preferencesSetupCompleted: boolean("preferences_setup_completed").default(false), // AI preference setup done
+    phone: text("phone"), // For SMS notifications (future)
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -92,6 +114,7 @@ export const residents = pgTable(
   (table) => [
     index("residents_facility_idx").on(table.facilityId),
     index("residents_user_idx").on(table.userId),
+    index("residents_status_idx").on(table.status),
   ]
 );
 
@@ -276,5 +299,101 @@ export const aiSessionTokens = pgTable(
   (table) => [
     index("ai_session_tokens_session_idx").on(table.sessionId),
     index("ai_session_tokens_expires_idx").on(table.expiresAt),
+  ]
+);
+
+// Access codes for senior login (secure, one-time use)
+export const accessCodes = pgTable(
+  "access_codes",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    code: text("code").notNull().unique(), // 6-character uppercase code
+    residentId: text("resident_id")
+      .notNull()
+      .references(() => residents.id, { onDelete: "cascade" }),
+    facilityId: text("facility_id")
+      .notNull()
+      .references(() => facilities.id, { onDelete: "cascade" }),
+    status: accessCodeStatusEnum("status").default("active").notNull(),
+    expiresAt: timestamp("expires_at"), // Optional expiration
+    usedAt: timestamp("used_at"),
+    createdBy: text("created_by")
+      .references(() => user.id, { onDelete: "set null" }), // Manager who created it
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("access_codes_code_idx").on(table.code),
+    index("access_codes_resident_idx").on(table.residentId),
+    index("access_codes_facility_idx").on(table.facilityId),
+    index("access_codes_status_idx").on(table.status),
+  ]
+);
+
+// Manager notification preferences
+export const managerNotificationPrefs = pgTable(
+  "manager_notification_prefs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: "cascade" }),
+    facilityId: text("facility_id")
+      .notNull()
+      .references(() => facilities.id, { onDelete: "cascade" }),
+    sessionCompleted: notificationFrequencyEnum("session_completed").default("none").notNull(),
+    sessionSummary: notificationFrequencyEnum("session_summary").default("daily").notNull(),
+    handoffRequest: notificationFrequencyEnum("handoff_request").default("immediate").notNull(),
+    residentAlert: notificationFrequencyEnum("resident_alert").default("daily").notNull(),
+    weeklyReport: boolean("weekly_report").default(true).notNull(),
+    weeklyReportDay: integer("weekly_report_day").default(0), // 0 = Sunday
+    weeklyReportTime: text("weekly_report_time").default("09:00"), // HH:MM format
+    dailyReportTime: text("daily_report_time").default("18:00"), // HH:MM format
+    emailEnabled: boolean("email_enabled").default(true).notNull(),
+    smsEnabled: boolean("sms_enabled").default(false).notNull(), // Future: SMS notifications
+    phoneNumber: text("phone_number"), // For SMS
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("manager_notification_prefs_user_idx").on(table.userId),
+    index("manager_notification_prefs_facility_idx").on(table.facilityId),
+  ]
+);
+
+// In-app notifications for managers
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    facilityId: text("facility_id")
+      .references(() => facilities.id, { onDelete: "cascade" }),
+    type: notificationTypeEnum("type").notNull(),
+    title: text("title").notNull(),
+    message: text("message").notNull(),
+    link: text("link"), // Optional link to relevant page
+    residentId: text("resident_id").references(() => residents.id, { onDelete: "set null" }),
+    sessionId: text("session_id").references(() => supportSessions.id, { onDelete: "set null" }),
+    read: boolean("read").default(false).notNull(),
+    emailSent: boolean("email_sent").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("notifications_user_idx").on(table.userId),
+    index("notifications_facility_idx").on(table.facilityId),
+    index("notifications_read_idx").on(table.read),
+    index("notifications_created_idx").on(table.createdAt),
   ]
 );
