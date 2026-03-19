@@ -19,6 +19,7 @@ import {
   CheckCircle,
   AlertCircle,
   X,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -298,31 +299,46 @@ export default function FacilityResidentsPage() {
           <div className="grid gap-4">
             {filteredResidents.map((resident) => (
               <Card key={resident.id} className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">
-                      {resident.name || "Unknown"}
-                    </h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-lg">
+                        {resident.name || "Unknown"}
+                      </h3>
+                      {resident.preferencesSetupCompleted && (
+                        <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs dark:bg-green-900/20 dark:text-green-400">
+                          Setup complete
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground flex items-center gap-2">
                       <Mail className="h-4 w-4" />
                       {resident.email}
                     </p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Language: {resident.preferredLanguage || "en"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Joined: {resident.createdAt
-                        ? new Date(resident.createdAt).toLocaleDateString()
-                        : "—"}
-                    </p>
+                    <div className="mt-2 flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>Language: {resident.preferredLanguage || "en"}</span>
+                      <span>
+                        Joined: {resident.createdAt
+                          ? new Date(resident.createdAt).toLocaleDateString()
+                          : "—"}
+                      </span>
+                    </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteResident(resident.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Link href={`/facility/residents/${resident.id}/preferences`}>
+                      <Button variant="outline" size="sm">
+                        <Settings className="h-4 w-4 mr-1" />
+                        Preferences
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteResident(resident.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
