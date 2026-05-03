@@ -2,12 +2,7 @@
  * Email Utilities for LetsHelp
  *
  * This module provides email functionality for session summaries and notifications.
- * Currently logs to console - can be extended with Resend, SendGrid, or other providers.
- *
- * To enable email sending:
- * 1. Install an email package (e.g., `pnpm add resend`)
- * 2. Add API key to .env
- * 3. Update sendEmail() function
+ * Uses Resend for email delivery.
  */
 
 export interface SessionSummaryEmailParams {
@@ -18,6 +13,18 @@ export interface SessionSummaryEmailParams {
   summary: string | undefined;
   transcript: string | undefined;
   issueCategory: string | undefined;
+  residentName?: string;
+}
+
+export interface ManagerNotificationEmailParams {
+  recipientEmail: string;
+  recipientName: string;
+  facilityName: string;
+  type: 'session_completed' | 'session_summary' | 'handoff_request' | 'resident_alert' | 'weekly_report' | 'daily_report';
+  title: string;
+  message: string;
+  residentName?: string;
+  link?: string;
 }
 
 /**
@@ -105,50 +112,129 @@ export function generateSummaryEmailTemplate(params: SessionSummaryEmailParams):
 }
 
 /**
- * Send session summary email
- *
- * NOTE: Currently just logs to console. To enable actual email sending:
- * 1. Install Resend: `pnpm add resend`
- * 2. Add RESEND_API_KEY to .env
- * 3. Uncomment the Resend code below
+ * Send session summary email using Resend
  */
 export async function sendSessionSummaryEmail(params: SessionSummaryEmailParams): Promise<{ success: boolean; error?: string }> {
   const html = generateSummaryEmailTemplate(params);
 
-  // Log to console (for development)
-  // eslint-disable-next-line no-console
-  console.log(`
+  if (!process.env.RESEND_API_KEY) {
+    // Log to console if API key not configured
+    console.log(`
 ═══════════════════════════════════════════════════════════════
-📧 SESSION SUMMARY EMAIL
+📧 SESSION SUMMARY EMAIL (DEV MODE)
 ═══════════════════════════════════════════════════════════════
 To: ${params.recipientEmail}
 Subject: LetsHelp Session Summary - ${new Date(params.sessionDate).toLocaleDateString()}
-
 ${html}
 ═══════════════════════════════════════════════════════════════
-  `);
+    `);
+    return { success: true };
+  }
 
-  // TODO: Enable actual email sending with Resend or similar
-  //
-  // if (typeof process.env.RESEND_API_KEY === 'string') {
-  //   const { Resend } = await import('resend');
-  //   const resend = new Resend(process.env.RESEND_API_KEY);
-  //
-  //   try {
-  //     await resend.emails.send({
-  //       from: 'LetsHelp <noreply@letshelp.com>',
-  //       to: params.recipientEmail,
-  //       subject: `LetsHelp Session Summary - ${new Date(params.sessionDate).toLocaleDateString()}`,
-  //       html,
-  //     });
-  //     return { success: true };
-  //   } catch (error) {
-  //     console.error('Failed to send email:', error);
-  //     return { success: false, error: 'Failed to send email' };
-  //   }
-  // }
+  try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-  return { success: true };
+    await resend.emails.send({
+      from: 'LetsHelp <noreply@letshelp.com>',
+      to: params.recipientEmail,
+      subject: `Session Summary - ${params.residentName || 'Resident'}`,
+      html,
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    return { success: false, error: 'Failed to send email' };
+  }
+}
+
+/**
+ * Generate HTML email template for manager notifications
+ */
+export function generateManagerNotificationEmail(params: ManagerNotificationEmailParams): string {
+  const { recipientName, facilityName, type, title, message, residentName, link } = params;
+
+  const typeIcons = {
+    session_completed: '✅',
+    session_summary: '📊',
+    handoff_request: '🆘',
+    resident_alert: '⚠️',
+    weekly_report: '📅',
+    daily_report: '📋',
+  };
+
+  const icon = typeIcons[type] || '🔔';
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #1E5A8D 0%, #2563EB 100%); color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
+    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 12px 12px; }
+    .section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e5e7eb; }
+    .label { font-weight: 600; color: #5A6B7F; }
+    .btn { display: inline-block; padding: 12px 24px; background: #2563EB; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; }
+    .footer { text-align: center; padding: 20px; color: #5A6B7F; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>${icon} ${title}</h1>
+      <p style="margin: 10px 0 0 0; opacity: 0.9;">${facilityName}</p>
+    </div>
+    <div class="content">
+      <div class="section">
+        <p>Hi ${recipientName},</p>
+        <p>${message}</p>
+        ${residentName ? `<p><span class="label">Resident:</span> ${residentName}</p>` : ''}
+        ${link ? `<div style="margin-top: 20px;"><a href="${link}" class="btn">View Details</a></div>` : ''}
+      </div>
+      <div class="footer">
+        <p>This notification was sent from LetsHelp.</p>
+        <p>Questions? Contact us at support@letshelp.com</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+}
+
+/**
+ * Send manager notification email using Resend
+ */
+export async function sendManagerNotificationEmail(params: ManagerNotificationEmailParams): Promise<{ success: boolean; error?: string }> {
+  const html = generateManagerNotificationEmail(params);
+
+  if (!process.env.RESEND_API_KEY) {
+    console.log(`📧 MANAGER NOTIFICATION (DEV MODE): ${params.title} - ${params.message}`);
+    return { success: true };
+  }
+
+  try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    await resend.emails.send({
+      from: 'LetsHelp <noreply@letshelp.com>',
+      to: params.recipientEmail,
+      subject: params.title,
+      html,
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    return { success: false, error: 'Failed to send email' };
+  }
 }
 
 /**

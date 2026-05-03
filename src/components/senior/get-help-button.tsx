@@ -25,9 +25,9 @@ export function GetHelpButton({ className = '', variant = 'large' }: GetHelpButt
   const [isLoading, setIsLoading] = useState(false);
 
   const sizes = {
-    default: 'h-16 text-xl px-8',
-    large: 'h-20 text-2xl px-12',
-    'extra-large': 'h-28 text-4xl px-20',
+    default: 'h-14 sm:h-16 text-lg sm:text-xl px-6 sm:px-8',
+    large: 'h-16 sm:h-20 text-xl sm:text-2xl px-8 sm:px-12',
+    'extra-large': 'h-20 sm:h-28 text-2xl sm:text-4xl px-10 sm:px-20',
   };
 
   const handleClick = async () => {
@@ -68,11 +68,11 @@ export function GetHelpButton({ className = '', variant = 'large' }: GetHelpButt
         </>
       ) : (
         <>
-          <span className="bg-white/30 p-3 rounded-2xl mr-4">
-            <Heart className="h-10 w-10" />
+          <span className="bg-white/30 p-2 sm:p-3 rounded-xl sm:rounded-2xl mr-3 sm:mr-4">
+            <Heart className="h-7 w-7 sm:h-10 sm:w-10" />
           </span>
           Get Help Now
-          <ArrowRight className="h-10 w-10 group-hover:translate-x-2 transition-transform" />
+          <ArrowRight className="h-7 w-7 sm:h-10 sm:w-10 group-hover:translate-x-2 transition-transform ml-2 sm:ml-0" />
         </>
       )}
     </Button>

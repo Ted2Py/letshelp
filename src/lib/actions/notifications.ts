@@ -15,13 +15,13 @@ import { headers } from 'next/headers';
 import { eq, desc, and } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { user } from '@/lib/schema';
 import {
   notifications,
   facilityStaff,
   supportSessions,
   residents,
 } from '@/lib/schema-letshelp';
-import { user } from '@/lib/schema';
 
 /**
  * Get current facility admin's facility ID

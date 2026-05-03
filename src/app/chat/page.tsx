@@ -8,10 +8,10 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export default function ChatPage() {
   const router = useRouter();

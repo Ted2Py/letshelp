@@ -5,10 +5,10 @@
  * They need to set a password to complete their account setup.
  */
 
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SetPasswordForm } from '@/components/auth/set-password-form';
 import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
 
 export default async function SetPasswordPage({
   searchParams,

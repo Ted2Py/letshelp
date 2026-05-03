@@ -9,8 +9,8 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Users, MessageSquare, Clock, TrendingUp, Bell, Activity, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getFacilityAnalytics } from '@/lib/actions/facility';
 import {
   getActiveSessions,
@@ -19,6 +19,7 @@ import {
   getResidentsNeedingHelp,
 } from '@/lib/actions/notifications';
 import { auth } from '@/lib/auth';
+import { HeaderSignOut } from '@/components/auth/header-signout';
 
 export default async function FacilityDashboardPage() {
   const session = await auth.api.getSession({
@@ -81,6 +82,7 @@ export default async function FacilityDashboardPage() {
             >
               Settings
             </Link>
+            <HeaderSignOut variant="facility" />
           </div>
         </div>
       </header>

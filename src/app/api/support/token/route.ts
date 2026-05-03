@@ -7,8 +7,8 @@
  * POST /api/support/token
  */
 
-import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {

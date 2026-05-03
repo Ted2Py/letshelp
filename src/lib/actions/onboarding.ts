@@ -36,6 +36,10 @@ export async function needsOnboarding() {
     return false;
   }
 
+  // Check if user is currently on the onboarding page (client-side state)
+  // We track this via a cookie or session flag
+  // For now, check if they have completed onboarding by checking settings
+
   // Check if user has a role
   const roleList = await db
     .select()
@@ -48,17 +52,29 @@ export async function needsOnboarding() {
     return true;
   }
 
-  // Check if facility admin has a facility
+  // Check if facility admin has completed onboarding
+  // We track this via the facility settings having an onboardingCompleted flag
   if (roleList[0]!.role === 'facility_admin') {
     const facilityList = await db
-      .select()
+      .select({
+        settings: facilities.settings,
+      })
       .from(facilityStaff)
+      .innerJoin(facilities, eq(facilities.id, facilityStaff.facilityId))
       .where(eq(facilityStaff.userId, session.user.id))
       .limit(1);
 
     if (!facilityList.length) {
       return true;
     }
+
+    // Check if onboarding is marked complete
+    const settings = facilityList[0]!.settings as any;
+    if (settings && !settings.onboardingCompleted) {
+      return true;
+    }
+
+    return false;
   }
 
   return false;
@@ -98,7 +114,8 @@ export async function createFacility(params: {
           multiFacilityEnabled: false,
           requireManagerApproval: true,
           sessionTimeout: 60,
-        },
+          onboardingCompleted: false, // Track onboarding state
+        } as any,
       })
       .returning();
 
@@ -383,8 +400,38 @@ export async function completeOnboarding() {
     return { success: false, error: 'Not authenticated' };
   }
 
-  revalidatePath('/', 'layout');
-  return { success: true };
+  try {
+    // Get user's facility
+    const facilityList = await db
+      .select({
+        facilityId: facilityStaff.facilityId,
+        settings: facilities.settings,
+      })
+      .from(facilityStaff)
+      .innerJoin(facilities, eq(facilities.id, facilityStaff.facilityId))
+      .where(eq(facilityStaff.userId, session.user.id))
+      .limit(1);
+
+    if (facilityList.length) {
+      const { facilityId, settings } = facilityList[0]!;
+      // Update settings to mark onboarding as complete
+      await db
+        .update(facilities)
+        .set({
+          settings: {
+            ...(settings as any),
+            onboardingCompleted: true,
+          },
+        })
+        .where(eq(facilities.id, facilityId));
+    }
+
+    revalidatePath('/', 'layout');
+    return { success: true };
+  } catch (error) {
+    console.error('Error completing onboarding:', error);
+    return { success: false, error: 'Failed to complete onboarding' };
+  }
 }
 
 /**

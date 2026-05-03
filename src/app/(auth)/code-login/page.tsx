@@ -5,10 +5,10 @@
  * provided by their facility manager.
  */
 
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AccessCodeLoginForm } from '@/components/auth/access-code-login-form';
 import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
 
 export default async function AccessCodeLoginPage() {
   const session = await auth.api.getSession({

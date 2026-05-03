@@ -12,10 +12,11 @@
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { eq, and, desc } from 'drizzle-orm';
+import { notifySessionCompleted, notifyHandoffRequest } from '@/lib/actions/notify-managers';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { categorizeIssue } from '@/lib/gemini';
 import { sendSessionSummaryEmail } from '@/lib/email';
+import { categorizeIssue } from '@/lib/gemini';
 import {
   supportSessions,
   sessionMessages,
@@ -104,6 +105,15 @@ export async function createSupportSession(): Promise<CreateSessionResult> {
 
   // For B2C users, we allow sessions without a facility
   // For B2B users, subscription validation would happen here
+
+  // Update resident's last login time (activity tracking)
+  await db
+    .update(residents)
+    .set({
+      lastLoginAt: new Date(),
+      status: 'active',
+    })
+    .where(eq(residents.id, resident.id));
 
   // Create the support session
   const newSessions = await db
@@ -252,12 +262,14 @@ export async function endSupportSession(params: {
     return { success: false, error: 'Session not found' };
   }
 
-  // Get resident details for email sending
+  // Get resident details for email sending and activity tracking
   const residentDetails = await db
     .select({
       userId: residents.userId,
       familyEmail: residents.familyEmail,
       emailSummaries: residents.emailSummaries,
+      facilityId: residents.facilityId,
+      sessionCount30Days: residents.sessionCount30Days,
     })
     .from(residents)
     .where(eq(residents.id, residentList[0]!.id))
@@ -265,9 +277,31 @@ export async function endSupportSession(params: {
 
   const resident = residentDetails[0];
 
+  if (!resident) {
+    return { success: false, error: 'Resident not found' };
+  }
+
   // Calculate duration
   const endTime = new Date();
   const duration = Math.floor((endTime.getTime() - new Date(supportSession.startTime).getTime()) / 1000);
+
+  // Update resident activity tracking
+  await db
+    .update(residents)
+    .set({
+      lastSessionAt: endTime,
+      sessionCount30Days: resident.sessionCount30Days + 1,
+    })
+    .where(eq(residents.id, residentList[0]!.id));
+
+  // Get resident name for manager notifications
+  const userName = await db
+    .select({ name: user.name })
+    .from(user)
+    .where(eq(user.id, resident.userId))
+    .limit(1);
+
+  const residentName = userName[0]?.name || 'Senior';
 
   // Update session
   await db
@@ -289,6 +323,31 @@ export async function endSupportSession(params: {
       .update(supportSessions)
       .set({ issueCategory: category })
       .where(eq(supportSessions.id, params.sessionId));
+  }
+
+  // Notify facility managers of session completion
+  if (resident?.facilityId && params.outcome === 'resolved') {
+    try {
+      // Get updated session with issue category
+      const updatedSession = await db
+        .select({ issueCategory: supportSessions.issueCategory })
+        .from(supportSessions)
+        .where(eq(supportSessions.id, params.sessionId))
+        .limit(1);
+
+      await notifySessionCompleted({
+        facilityId: resident.facilityId,
+        residentId: residentList[0]!.id,
+        sessionId: params.sessionId,
+        residentName,
+        duration,
+        ...(updatedSession[0]?.issueCategory && { issueCategory: updatedSession[0]!.issueCategory }),
+        ...(params.summary && { summary: params.summary }),
+      });
+    } catch (error) {
+      console.error('Failed to notify managers:', error);
+      // Don't fail the session end if notification fails
+    }
   }
 
   // Send summary email if opted in
@@ -385,6 +444,7 @@ export async function requestVolunteerHandoff(params: {
   const residentList = await db
     .select({
       id: residents.id,
+      facilityId: residents.facilityId,
     })
     .from(residents)
     .where(eq(residents.userId, session.user.id))
@@ -394,12 +454,14 @@ export async function requestVolunteerHandoff(params: {
     return { success: false, error: 'Resident profile not found' };
   }
 
+  const resident = residentList[0]!;
+
   // Create handoff request
   const handoffs = await db
     .insert(handoffRequests)
     .values({
       sessionId: params.sessionId,
-      residentId: residentList[0]!.id,
+      residentId: resident.id,
       status: 'pending',
       reason: params.reason,
     })
@@ -410,6 +472,31 @@ export async function requestVolunteerHandoff(params: {
     .update(supportSessions)
     .set({ status: 'handed_off' })
     .where(eq(supportSessions.id, params.sessionId));
+
+  // Notify facility managers of handoff request
+  if (resident.facilityId) {
+    try {
+      // Get resident name
+      const userName = await db
+        .select({ name: user.name })
+        .from(user)
+        .where(eq(user.id, session.user.id))
+        .limit(1);
+
+      const residentName = userName[0]?.name || 'Senior';
+
+      await notifyHandoffRequest({
+        facilityId: resident.facilityId,
+        residentId: resident.id,
+        sessionId: params.sessionId,
+        residentName,
+        ...(params.reason && { reason: params.reason }),
+      });
+    } catch (error) {
+      console.error('Failed to notify managers of handoff:', error);
+      // Don't fail the handoff if notification fails
+    }
+  }
 
   revalidatePath('/senior/session');
 

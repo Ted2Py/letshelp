@@ -16,10 +16,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, PhoneOff, Hand, Monitor, MonitorOff, ChevronRight, Gauge } from 'lucide-react';
+import { useLanguage } from '@/components/language-provider';
 import { Button } from '@/components/ui/button';
 import { endSupportSession, requestVolunteerHandoff } from '@/lib/actions/support';
 import { GeminiLiveClient, type SessionState } from '@/lib/live-client';
-import { useLanguage } from '@/components/language-provider';
 
 interface SessionUiProps {
   sessionId: string;
@@ -48,6 +48,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   const [aiResponse, setAiResponse] = useState('');
   const [needsStart, setNeedsStart] = useState(true);
   const [speechSpeed, setSpeechSpeed] = useState<SpeechSpeed>(1.0);
+  const [screenShareSupported] = useState(() => {
+    if (typeof navigator === 'undefined') return false;
+    return !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
+  });
 
   const liveClientRef = useRef<GeminiLiveClient | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
@@ -196,6 +200,11 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   };
 
   const toggleScreenShare = async () => {
+    if (!screenShareSupported) {
+      setAiResponse("Screen sharing isn't available on this device. For the best experience, try using a computer or laptop instead of a phone or tablet.");
+      return;
+    }
+
     try {
       if (!isScreenShared) {
         if (!liveClientRef.current) {
@@ -220,9 +229,13 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
         setIsScreenShared(false);
         screenStreamRef.current = null;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to toggle screen share:', err);
-      setAiResponse("I couldn't see your screen. Please make sure to allow screen sharing and try again.");
+      if (err?.name === 'NotSupportedError' || err?.name === 'NotAllowedError') {
+        setAiResponse("Screen sharing isn't supported on this device or browser. Try using Chrome or Edge on a computer for screen sharing.");
+      } else {
+        setAiResponse("I couldn't see your screen. Please make sure to allow screen sharing when prompted and try again.");
+      }
     }
   };
 
@@ -303,39 +316,39 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
       ${fontSizes[fontSize]} ${highContrast ? 'high-contrast' : ''}
     `}>
       {/* Warm, friendly header */}
-      <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white py-6 px-6 shadow-lg">
+      <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white py-3 px-4 sm:py-6 sm:px-6 shadow-lg">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <h1 className={`${headingSizes[fontSize]} font-bold flex items-center gap-3`}>
-            <span className="bg-white/20 p-3 rounded-2xl">
-              <Hand className="h-8 w-8" />
+          <h1 className="text-xl sm:text-3xl font-bold flex items-center gap-2 sm:gap-3">
+            <span className="bg-white/20 p-2 sm:p-3 rounded-xl sm:rounded-2xl">
+              <Hand className="h-5 w-5 sm:h-8 sm:w-8" />
             </span>
             LetsHelp
           </h1>
-          <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full">
-            <div className={`w-3 h-3 rounded-full ${
+          <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
+            <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${
               viewState === 'connecting' ? 'bg-yellow-300 animate-pulse' :
               viewState === 'error' ? 'bg-red-400' :
               'bg-green-400'
             }`} />
-            <span className="font-semibold">{viewState === 'connecting' ? 'Connecting...' : 'Connected'}</span>
+            <span className="text-sm sm:text-base font-semibold">{viewState === 'connecting' ? 'Connecting...' : 'Connected'}</span>
           </div>
         </div>
       </header>
 
       {/* Main content area */}
-      <main className="flex-1 flex items-center justify-center p-6">
+      <main className="flex-1 flex items-center justify-center p-3 sm:p-6">
         <div className="max-w-3xl w-full">
           {/* Connection/loading state */}
           {viewState === 'connecting' && (
-            <div className="text-center py-16 animate-fade-in">
-              <div className="relative w-32 h-32 mx-auto mb-8">
+            <div className="text-center py-8 sm:py-16 animate-fade-in">
+              <div className="relative w-20 h-20 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8">
                 <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
                 <div className="absolute inset-0 rounded-full border-4 border-t-blue-600 animate-spin"></div>
               </div>
               <h2 className={`${headingSizes[fontSize]} font-bold text-[#1E3A5F] mb-4`}>
                 Connecting to your helper...
               </h2>
-              <p className="text-xl text-[#5A6B7F]">
+              <p className="text-lg sm:text-xl text-[#5A6B7F]">
                 Just a moment, we're getting things ready for you.
               </p>
             </div>
@@ -366,10 +379,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
           {/* Active session states */}
           {(viewState === 'ready' || viewState === 'listening' || viewState === 'speaking') && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* AI Response Card */}
               <div className={`
-                bg-white rounded-3xl shadow-xl p-8 min-h-48 flex flex-col justify-center
+                relative bg-white rounded-3xl shadow-xl p-5 sm:p-8 min-h-32 sm:min-h-48 flex flex-col justify-center
                 border-4 ${isSpeaking ? 'border-blue-200' : 'border-transparent'}
                 transition-all duration-300
               `}>
@@ -386,23 +399,23 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 )}
 
                 {/* Avatar + Message */}
-                <div className="flex items-start gap-6">
+                <div className="flex items-start gap-4 sm:gap-6">
                   <div className={`
-                    flex-shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300
+                    flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center transition-all duration-300
                     ${isSpeaking ? 'bg-blue-100 scale-110' : 'bg-blue-50'}
                   `}>
-                    <Hand className={`h-10 w-10 text-[#1E5A8D] ${isSpeaking ? 'animate-gentle-pulse' : ''}`} />
+                    <Hand className={`h-7 w-7 sm:h-10 sm:w-10 text-[#1E5A8D] ${isSpeaking ? 'animate-gentle-pulse' : ''}`} />
                   </div>
 
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className={`${headingSizes[fontSize]} font-medium text-[#1E3A5F] leading-relaxed`}>
                       {aiResponse || getStatusText()}
                     </p>
 
                     {/* Screen share indicator */}
                     {isScreenShared && (
-                      <div className="mt-4 inline-flex items-center gap-2 bg-teal-50 text-teal-800 px-4 py-2 rounded-full font-semibold">
-                        <Monitor className="h-5 w-5" />
+                      <div className="mt-3 inline-flex items-center gap-2 bg-teal-50 text-teal-800 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-semibold text-sm sm:text-base">
+                        <Monitor className="h-4 w-4 sm:h-5 sm:w-5" />
                         I can see your screen
                       </div>
                     )}
@@ -410,14 +423,13 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 </div>
               </div>
 
-              {/* Visual state indicator */}
+              {/* Visual state indicator - smaller on mobile */}
               <div className="flex justify-center">
                 <div className={`
-                  relative w-40 h-40 rounded-full flex items-center justify-center
+                  relative w-28 h-28 sm:w-40 sm:h-40 rounded-full flex items-center justify-center
                   ${viewState === 'listening' && !isMuted ? 'bg-gradient-to-br from-blue-100 to-blue-50' : 'bg-gray-100'}
                   transition-all duration-300
                 `}>
-                  {/* Ripple effect for listening state */}
                   {viewState === 'listening' && !isMuted && (
                     <>
                       <div className="absolute inset-0 rounded-full bg-blue-200 animate-ripple opacity-50"></div>
@@ -425,25 +437,24 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                     </>
                   )}
 
-                  {/* Center icon */}
                   <div className="relative z-10">
                     {isSpeaking ? (
-                      <div className="flex gap-1 items-end h-16">
+                      <div className="flex gap-1 items-end h-12 sm:h-16">
                         {[1, 2, 3, 4, 5].map((i) => (
                           <div
                             key={i}
-                            className="w-3 bg-[#1E5A8D] rounded-full speaking-bar"
-                            style={{ height: `${16 + Math.sin(Date.now() / 100 + i) * 12}px` }}
+                            className="w-2 sm:w-3 bg-[#1E5A8D] rounded-full speaking-bar"
+                            style={{ height: `${12 + Math.sin(Date.now() / 100 + i) * 8}px` }}
                           />
                         ))}
                       </div>
                     ) : viewState === 'listening' && !isMuted ? (
-                      <div className="w-16 h-16 rounded-full bg-[#1E5A8D] flex items-center justify-center animate-gentle-pulse">
-                        <Mic className="h-8 w-8 text-white" />
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#1E5A8D] flex items-center justify-center animate-gentle-pulse">
+                        <Mic className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-full bg-gray-400 flex items-center justify-center">
-                        <MicOff className="h-8 w-8 text-white" />
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-400 flex items-center justify-center">
+                        <MicOff className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                       </div>
                     )}
                   </div>
@@ -452,7 +463,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
               {/* Status message */}
               <div className="text-center">
-                <p className={`text-lg ${isMuted ? 'text-orange-600 font-semibold' : 'text-[#5A6B7F]'}`}>
+                <p className={`text-base sm:text-lg ${isMuted ? 'text-orange-600 font-semibold' : 'text-[#5A6B7F]'}`}>
                   {getStatusText()}
                 </p>
               </div>
@@ -462,108 +473,123 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
       </main>
 
       {/* Control bar - large touch targets for seniors */}
-      <footer className="bg-white border-t-4 border-[#1E5A8D] p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+      <footer className="bg-white border-t-4 border-[#1E5A8D] p-4 sm:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            {/* Start Button */}
-            {needsStart && viewState !== 'connecting' && (
+
+          {/* Start Button - centered, full-width on mobile */}
+          {needsStart && viewState !== 'connecting' && (
+            <div className="flex justify-center mb-3 sm:mb-0">
               <Button
                 onClick={handleStartSession}
                 size="lg"
-                className="h-20 px-12 rounded-2xl text-2xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg btn-press animate-slide-up"
+                className="w-full sm:w-auto h-16 sm:h-20 px-10 sm:px-12 rounded-2xl text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg btn-press animate-slide-up"
                 aria-label="Start session"
               >
-                <div className="w-4 h-4 rounded-full bg-white animate-pulse mr-3" />
-                Start
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white animate-pulse mr-3" />
+                Start Talking
               </Button>
-            )}
+            </div>
+          )}
 
-            {/* Active session controls */}
-            {!needsStart && viewState !== 'connecting' && (
-              <>
-                {/* Microphone Toggle */}
-                <Button
-                  onClick={toggleMute}
-                  size="lg"
-                  variant={isMuted ? 'destructive' : 'default'}
-                  className={`
-                    h-20 w-20 rounded-full text-2xl btn-press
-                    ${!isMuted ? 'bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'}
-                  `}
-                  aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
-                >
-                  {isMuted ? <MicOff className="h-10 w-10" /> : <Mic className="h-10 w-10" />}
-                </Button>
+          {/* Active session controls - 2-col grid on mobile, row on desktop */}
+          {!needsStart && viewState !== 'connecting' && (
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-3 sm:gap-4">
+              {/* Microphone Toggle */}
+              <Button
+                onClick={toggleMute}
+                size="lg"
+                variant={isMuted ? 'destructive' : 'default'}
+                className={`
+                  h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold btn-press flex items-center justify-center gap-2
+                  ${!isMuted ? 'bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'}
+                `}
+                aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+              >
+                {isMuted ? <MicOff className="h-6 w-6 sm:h-8 sm:w-8" /> : <Mic className="h-6 w-6 sm:h-8 sm:w-8" />}
+                <span>{isMuted ? 'Unmute' : 'Mute'}</span>
+              </Button>
 
-                {/* Screen Share Toggle */}
-                <Button
-                  onClick={toggleScreenShare}
-                  size="lg"
-                  variant={isScreenShared ? 'default' : 'outline'}
-                  className={`
-                    h-20 px-8 rounded-2xl text-xl font-bold btn-press
-                    ${isScreenShared
+              {/* Screen Share Toggle */}
+              <Button
+                onClick={toggleScreenShare}
+                size="lg"
+                variant={isScreenShared ? 'default' : 'outline'}
+                className={`
+                  h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold btn-press flex items-center justify-center gap-2
+                  ${!screenShareSupported
+                    ? 'opacity-50 cursor-not-allowed border-2 border-gray-300 text-gray-400'
+                    : isScreenShared
                       ? 'bg-teal-500 hover:bg-teal-600 text-white border-none'
-                      : 'border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50'}
-                  `}
-                  aria-label={isScreenShared ? 'Stop screen sharing' : 'Share screen'}
-                >
-                  {isScreenShared ? (
-                    <>
-                      <MonitorOff className="mr-2 h-7 w-7" />
-                      Stop Sharing
-                    </>
-                  ) : (
-                    <>
-                      <Monitor className="mr-2 h-7 w-7" />
-                      Share Screen
-                    </>
-                  )}
-                </Button>
+                      : 'border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50'}
+                `}
+                aria-label={isScreenShared ? 'Stop screen sharing' : 'Share screen'}
+                title={!screenShareSupported ? 'Not available on this device' : undefined}
+              >
+                {isScreenShared ? (
+                  <><MonitorOff className="h-5 w-5 sm:h-7 sm:w-7" /><span>Stop Share</span></>
+                ) : (
+                  <><Monitor className="h-5 w-5 sm:h-7 sm:w-7" /><span>Share Screen</span></>
+                )}
+              </Button>
 
-                {/* Speed Control */}
-                <Button
-                  onClick={toggleSpeechSpeed}
-                  size="lg"
-                  variant="outline"
-                  className="h-20 px-8 rounded-2xl text-xl font-bold border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press"
-                  aria-label={`Speech speed: ${SPEED_LABELS[speechSpeed]}`}
-                >
-                  <Gauge className="mr-2 h-7 w-7" />
-                  {SPEED_LABELS[speechSpeed]}
-                </Button>
+              {/* Speed Control */}
+              <Button
+                onClick={toggleSpeechSpeed}
+                size="lg"
+                variant="outline"
+                className="h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-2"
+                aria-label={`Speech speed: ${SPEED_LABELS[speechSpeed]}`}
+              >
+                <Gauge className="h-5 w-5 sm:h-7 sm:w-7" />
+                <span>{SPEED_LABELS[speechSpeed]}</span>
+              </Button>
 
-                {/* Request Human */}
-                <Button
-                  onClick={() => setShowHandoffConfirm(true)}
-                  size="lg"
-                  variant="outline"
-                  className="h-20 px-8 rounded-2xl text-xl font-bold border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press"
-                  aria-label="Request human volunteer"
-                >
-                  <Hand className="mr-2 h-7 w-7" />
-                  Get a Human
-                </Button>
-              </>
-            )}
+              {/* Request Human */}
+              <Button
+                onClick={() => setShowHandoffConfirm(true)}
+                size="lg"
+                variant="outline"
+                className="h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-2"
+                aria-label="Request human volunteer"
+              >
+                <Hand className="h-5 w-5 sm:h-7 sm:w-7" />
+                <span>Get a Human</span>
+              </Button>
 
-            {/* End Call - Always visible */}
-            <Button
-              onClick={handleEndCall}
-              size="lg"
-              variant="destructive"
-              className="h-20 px-8 rounded-2xl text-xl font-bold bg-red-500 hover:bg-red-600 text-white btn-press"
-              aria-label="End call"
-            >
-              <PhoneOff className="mr-2 h-7 w-7" />
-              End
-            </Button>
-          </div>
+              {/* End Call - spans full width on mobile in 2-col grid */}
+              <Button
+                onClick={handleEndCall}
+                size="lg"
+                variant="destructive"
+                className="col-span-2 sm:col-span-1 h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white btn-press flex items-center justify-center gap-2"
+                aria-label="End call"
+              >
+                <PhoneOff className="h-5 w-5 sm:h-7 sm:w-7" />
+                <span>End Call</span>
+              </Button>
+            </div>
+          )}
+
+          {/* End Call alone when on start/connecting state */}
+          {(needsStart || viewState === 'connecting') && viewState !== 'connecting' && (
+            <div className="flex justify-center mt-3">
+              <Button
+                onClick={handleEndCall}
+                size="lg"
+                variant="destructive"
+                className="h-12 sm:h-16 px-8 rounded-2xl text-base sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white btn-press"
+                aria-label="End call"
+              >
+                <PhoneOff className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
+                Cancel
+              </Button>
+            </div>
+          )}
 
           {/* Helpful hint text */}
-          <p className="text-center text-[#5A6B7F] mt-4 text-base">
+          <p className="text-center text-[#5A6B7F] mt-3 text-sm sm:text-base">
             {viewState === 'listening' && !isMuted && "I'm listening... Speak naturally and I'll help you out."}
-            {isMuted && "Tap the microphone button so I can hear you."}
+            {isMuted && "Tap Unmute so I can hear you."}
             {isSpeaking && "I'm speaking..."}
           </p>
         </div>
@@ -571,23 +597,23 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
       {/* Handoff Confirmation Modal */}
       {showHandoffConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-10 animate-slide-up">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-10 animate-slide-up max-h-[90vh] overflow-y-auto">
             <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
-                <Hand className="h-10 w-10 text-[#1E5A8D]" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-blue-100 rounded-full flex items-center justify-center">
+                <Hand className="h-8 w-8 sm:h-10 sm:w-10 text-[#1E5A8D]" />
               </div>
-              <h2 className={`${headingSizes[fontSize]} font-bold text-[#1E3A5F] mb-4`}>
+              <h2 className={`${headingSizes[fontSize]} font-bold text-[#1E3A5F] mb-3 sm:mb-4`}>
                 Would you like to speak with a person?
               </h2>
-              <p className="text-xl text-[#5A6B7F] mb-8">
+              <p className="text-lg sm:text-xl text-[#5A6B7F] mb-6 sm:mb-8">
                 A friendly volunteer can join to help you. This usually takes just a few minutes.
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button
                   onClick={handleRequestHuman}
                   size="lg"
-                  className="flex-1 h-16 text-xl font-bold bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white rounded-2xl btn-press"
+                  className="flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white rounded-2xl btn-press"
                 >
                   Yes, Please
                 </Button>
@@ -595,7 +621,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                   onClick={() => setShowHandoffConfirm(false)}
                   size="lg"
                   variant="outline"
-                  className="flex-1 h-16 text-xl font-bold border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 rounded-2xl btn-press"
+                  className="flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold border-2 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 rounded-2xl btn-press"
                 >
                   No Thanks
                 </Button>

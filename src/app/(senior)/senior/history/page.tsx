@@ -6,8 +6,8 @@
  */
 
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   Clock,
   CheckCircle,
@@ -15,11 +15,12 @@ import {
   Users,
   Calendar,
   MessageSquare,
+  ArrowLeft,
 } from "lucide-react";
+import { GetHelpButton } from "@/components/senior/get-help-button";
 import { Card } from "@/components/ui/card";
 import { getSessionHistory } from "@/lib/actions/support";
 import { auth } from "@/lib/auth";
-import { GetHelpButton } from "@/components/senior/get-help-button";
 
 export default async function SeniorHistoryPage() {
   const session = await auth.api.getSession({
@@ -35,20 +36,20 @@ export default async function SeniorHistoryPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white shadow-lg">
+        <div className="max-w-4xl mx-auto px-4 py-4 sm:py-5 flex items-center gap-3">
           <Link
             href="/senior"
-            className="text-xl font-bold text-blue-600 dark:text-blue-400"
+            className="p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-colors shrink-0"
+            aria-label="Back to home"
           >
-            ← Back
+            <ArrowLeft className="h-6 w-6" />
           </Link>
-          <h1 className="text-2xl font-bold">My Sessions</h1>
-          <div className="w-16" />
+          <h1 className="text-2xl sm:text-3xl font-bold">My Sessions</h1>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
         {history.length === 0 ? (
           // Empty State
           <div className="text-center py-16">
@@ -79,75 +80,62 @@ export default async function SeniorHistoryPage() {
             </div>
 
             {history.map((sessionItem) => (
-              <Card key={sessionItem.id} className="p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    {/* Status Badge */}
-                    <div className="flex items-center gap-2 mb-3">
-                      {sessionItem.status === "completed" && (
-                        <>
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                          <span className="text-lg font-semibold text-green-600 dark:text-green-400">
-                            Resolved
-                          </span>
-                        </>
-                      )}
-                      {sessionItem.status === "abandoned" && (
-                        <>
-                          <XCircle className="h-5 w-5 text-gray-400" />
-                          <span className="text-lg font-semibold text-gray-500">
-                            Ended
-                          </span>
-                        </>
-                      )}
-                      {sessionItem.status === "handed_off" && (
-                        <>
-                          <Users className="h-5 w-5 text-blue-500" />
-                          <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                            Human Help
-                          </span>
-                        </>
+              <Card key={sessionItem.id} className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-0 shadow-md">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  {/* Status icon */}
+                  <div className={`
+                    flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl flex items-center justify-center
+                    ${sessionItem.status === "completed" ? "bg-teal-100" :
+                      sessionItem.status === "handed_off" ? "bg-blue-100" :
+                      "bg-gray-100"}
+                  `}>
+                    {sessionItem.status === "completed" && <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-teal-600" />}
+                    {sessionItem.status === "abandoned" && <XCircle className="h-6 w-6 sm:h-7 sm:w-7 text-gray-400" />}
+                    {sessionItem.status === "handed_off" && <Users className="h-6 w-6 sm:h-7 sm:w-7 text-blue-500" />}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    {/* Status label + duration on same row */}
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className={`text-base sm:text-lg font-semibold ${
+                        sessionItem.status === "completed" ? "text-teal-600" :
+                        sessionItem.status === "handed_off" ? "text-blue-600" :
+                        "text-gray-500"
+                      }`}>
+                        {sessionItem.status === "completed" && "Resolved"}
+                        {sessionItem.status === "abandoned" && "Ended"}
+                        {sessionItem.status === "handed_off" && "Human Help"}
+                      </span>
+                      {sessionItem.duration && (
+                        <span className="text-sm sm:text-base text-muted-foreground flex items-center gap-1 shrink-0">
+                          <Clock className="h-4 w-4" />
+                          {Math.floor(sessionItem.duration / 60)}m
+                        </span>
                       )}
                     </div>
 
                     {/* Issue Category */}
-                    <h3 className="text-2xl font-semibold mb-2">
+                    <h3 className="text-lg sm:text-2xl font-semibold mb-1 sm:mb-2">
                       {sessionItem.issueCategory || "Tech Support"}
                     </h3>
 
                     {/* Resolution Summary */}
                     {sessionItem.resolution && (
-                      <p className="text-lg text-muted-foreground mb-4">
+                      <p className="text-sm sm:text-lg text-muted-foreground mb-2 sm:mb-3 line-clamp-2">
                         {sessionItem.resolution}
                       </p>
                     )}
 
-                    {/* Session Details */}
-                    <div className="flex flex-wrap gap-6 text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5" />
-                        <span>
-                          {new Date(sessionItem.startTime).toLocaleDateString(
-                            "en-US",
-                            {
-                              weekday: "long",
-                              month: "long",
-                              day: "numeric",
-                            }
-                          )}
-                        </span>
-                      </div>
-                      {sessionItem.duration && (
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-5 w-5" />
-                          <span>
-                            {Math.floor(sessionItem.duration / 60)} minute
-                            {Math.floor(sessionItem.duration / 60) !== 1
-                              ? "s"
-                              : ""}
-                          </span>
-                        </div>
-                      )}
+                    {/* Date */}
+                    <div className="flex items-center gap-1.5 text-sm sm:text-base text-muted-foreground">
+                      <Calendar className="h-4 w-4 shrink-0" />
+                      <span>
+                        {new Date(sessionItem.startTime).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
                     </div>
                   </div>
                 </div>

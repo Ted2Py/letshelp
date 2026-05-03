@@ -6,10 +6,10 @@
  * DELETE /api/facility/residents?id={id} - Remove a resident
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { getFacilityResidents, addResident, removeResident } from "@/lib/actions/facility";
+import { auth } from "@/lib/auth";
 
 export async function GET() {
   const session = await auth.api.getSession({

@@ -1,7 +1,7 @@
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/components/language-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 

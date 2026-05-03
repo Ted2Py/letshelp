@@ -10,8 +10,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ArrowLeft, Bell, CheckCircle2, AlertCircle, Info, MessageSquare, Users, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
-import { auth } from '@/lib/auth';
 import { getNotifications } from '@/lib/actions/notifications';
+import { auth } from '@/lib/auth';
 import { formatDistanceToNow } from '@/lib/utils';
 
 export default async function NotificationsPage() {

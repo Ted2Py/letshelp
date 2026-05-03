@@ -10,9 +10,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Monitor, Ear, Type, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type SetupStep = 'intro' | 'display' | 'voice' | 'language' | 'complete';
 

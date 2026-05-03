@@ -9,11 +9,11 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { auth } from '@/lib/auth';
-import { getResidentPreferences } from '@/lib/actions/preferences';
 import { PreferencesForm } from '@/components/facility/preferences-form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { getResidentPreferences } from '@/lib/actions/preferences';
+import { auth } from '@/lib/auth';
 
 export default async function ResidentPreferencesPage({
   params,
