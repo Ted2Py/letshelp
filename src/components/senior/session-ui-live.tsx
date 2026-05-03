@@ -335,9 +335,6 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
         </div>
       </header>
 
-      {/* On mobile: controls appear above content (flex-col-reverse). On sm+: content above controls. */}
-      <div className="flex flex-col-reverse sm:flex-col flex-1 min-h-0">
-
       {/* Main content area */}
       <main className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center p-3 sm:p-6">
         <div className="max-w-3xl w-full">
@@ -385,7 +382,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
             <div className="space-y-4 sm:space-y-6">
               {/* AI Response Card */}
               <div className={`
-                relative bg-white rounded-3xl shadow-xl p-5 sm:p-8 min-h-32 sm:min-h-48 flex flex-col justify-center
+                relative bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-8 sm:min-h-48 flex flex-col justify-center
                 border-4 ${isSpeaking ? 'border-blue-200' : 'border-transparent'}
                 transition-all duration-300
               `}>
@@ -426,8 +423,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 </div>
               </div>
 
-              {/* Visual state indicator - smaller on mobile */}
-              <div className="flex justify-center">
+              {/* Visual state indicator - hidden on mobile to save space */}
+              <div className="hidden sm:flex justify-center">
                 <div className={`
                   relative w-28 h-28 sm:w-40 sm:h-40 rounded-full flex items-center justify-center
                   ${viewState === 'listening' && !isMuted ? 'bg-gradient-to-br from-blue-100 to-blue-50' : 'bg-gray-100'}
@@ -464,8 +461,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 </div>
               </div>
 
-              {/* Status message */}
-              <div className="text-center">
+              {/* Status message - only shown on desktop (mobile shows it in the hint text in footer) */}
+              <div className="hidden sm:block text-center">
                 <p className={`text-base sm:text-lg ${isMuted ? 'text-orange-600 font-semibold' : 'text-[#5A6B7F]'}`}>
                   {getStatusText()}
                 </p>
@@ -475,8 +472,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
         </div>
       </main>
 
-      {/* Control bar — sits at top on mobile, bottom on sm+ */}
-      <footer className="bg-white border-b-4 sm:border-b-0 sm:border-t-4 border-[#1E5A8D] p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] sm:shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+      {/* Control bar */}
+      <footer className="bg-white border-t-4 border-[#1E5A8D] p-4 sm:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="max-w-4xl mx-auto">
 
           {/* Start Button - centered, full-width on mobile */}
@@ -597,8 +594,6 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
           </p>
         </div>
       </footer>
-
-      </div>{/* end flex-col-reverse wrapper */}
 
       {/* Handoff Confirmation Modal */}
       {showHandoffConfirm && (
