@@ -17,7 +17,7 @@ export function HeaderSignOut({ variant = 'senior' }: HeaderSignOutProps) {
     router.refresh();
   };
 
-  const seniorStyles = "p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-colors";
+  const seniorStyles = "p-2 sm:p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-colors";
   const facilityStyles = "p-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-700";
 
   return (
@@ -27,7 +27,10 @@ export function HeaderSignOut({ variant = 'senior' }: HeaderSignOutProps) {
       title="Sign out"
       type="button"
     >
-      <LogOut className={`h-${variant === 'senior' ? '7' : '5'} w-${variant === 'senior' ? '7' : '5'}`} />
+      {variant === 'senior'
+        ? <LogOut className="h-5 w-5 sm:h-7 sm:w-7" />
+        : <LogOut className="h-5 w-5" />
+      }
     </button>
   );
 }

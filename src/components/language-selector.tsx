@@ -24,12 +24,12 @@ export function LanguageSelector() {
     <div className="relative">
       <Button
         variant="outline"
-        size="lg"
+        size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 border-2 border-white/60 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm"
+        className="flex items-center gap-1.5 border-2 border-white/60 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm px-2 sm:px-3 h-9 sm:h-10"
       >
-        <Globe className="h-5 w-5" />
-        <span className="hidden sm:inline">{LANGUAGE_FLAGS[language]}</span>
+        <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
+        <span className="hidden sm:inline text-base">{LANGUAGE_FLAGS[language]}</span>
         <span className="hidden md:inline">{languages[language]}</span>
       </Button>
 

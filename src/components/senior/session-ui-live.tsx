@@ -312,7 +312,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
   return (
     <div className={`
-      flex flex-col min-h-screen bg-[#FEF9F3] text-[#1E3A5F]
+      flex flex-col h-dvh overflow-hidden bg-[#FEF9F3] text-[#1E3A5F]
       ${fontSizes[fontSize]} ${highContrast ? 'high-contrast' : ''}
     `}>
       {/* Warm, friendly header */}
@@ -335,8 +335,11 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
         </div>
       </header>
 
+      {/* On mobile: controls appear above content (flex-col-reverse). On sm+: content above controls. */}
+      <div className="flex flex-col-reverse sm:flex-col flex-1 min-h-0">
+
       {/* Main content area */}
-      <main className="flex-1 flex items-center justify-center p-3 sm:p-6">
+      <main className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center p-3 sm:p-6">
         <div className="max-w-3xl w-full">
           {/* Connection/loading state */}
           {viewState === 'connecting' && (
@@ -472,8 +475,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
         </div>
       </main>
 
-      {/* Control bar - large touch targets for seniors */}
-      <footer className="bg-white border-t-4 border-[#1E5A8D] p-4 sm:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+      {/* Control bar — sits at top on mobile, bottom on sm+ */}
+      <footer className="bg-white border-b-4 sm:border-b-0 sm:border-t-4 border-[#1E5A8D] p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] sm:shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="max-w-4xl mx-auto">
 
           {/* Start Button - centered, full-width on mobile */}
@@ -594,6 +597,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
           </p>
         </div>
       </footer>
+
+      </div>{/* end flex-col-reverse wrapper */}
 
       {/* Handoff Confirmation Modal */}
       {showHandoffConfirm && (

@@ -44,10 +44,7 @@ export default async function SeniorPage() {
               Hello, {session.user.name?.split(' ')[0]}!
             </p>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <p className="sm:hidden text-base font-medium">
-              Hi, {session.user.name?.split(' ')[0]}!
-            </p>
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <Link
               href="/senior/settings"
               className="p-2 sm:p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-colors"
