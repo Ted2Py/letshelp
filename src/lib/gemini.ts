@@ -129,6 +129,71 @@ export function validateGeminiEnv(): { valid: boolean; missing: string[] } {
 }
 
 /**
+ * Generate a structured AI summary of a completed support session.
+ * Runs server-side using Gemini text generation (not the Live API).
+ */
+export async function generateSessionSummary(params: {
+  transcript: string;
+  duration: number; // seconds
+  status: string;   // 'completed' | 'handed_off' | 'abandoned'
+}): Promise<{
+  summary: string;
+  issueCategory: string;
+  wasResolved: boolean;
+} | null> {
+  if (!params.transcript || params.transcript.trim().length < 20) {
+    return null;
+  }
+
+  try {
+    const client = getGeminiClient();
+    const minutes = Math.floor(params.duration / 60);
+    const seconds = params.duration % 60;
+    const durationLabel = minutes > 0
+      ? `${minutes} minute${minutes !== 1 ? 's' : ''}${seconds > 0 ? ` ${seconds}s` : ''}`
+      : `${seconds} seconds`;
+
+    const prompt = `You are summarizing a tech support session between an AI assistant and a senior.
+
+Session duration: ${durationLabel}
+Session status: ${params.status}
+
+Transcript:
+${params.transcript.slice(0, 8000)}
+
+Respond with a JSON object only (no markdown, no code block) with exactly these fields:
+{
+  "summary": "2-3 friendly sentences describing: what the problem was, what was tried or explained, and what the outcome was. Write as if the senior themselves will read this.",
+  "issueCategory": "one of: password, app, hardware, communication, internet, entertainment, settings, other",
+  "wasResolved": true or false
+}`;
+
+    const response = await client.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+    });
+
+    const text = response.text?.trim() ?? '';
+    // Strip any accidental markdown fences
+    const cleaned = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
+    const parsed = JSON.parse(cleaned) as {
+      summary: string;
+      issueCategory: string;
+      wasResolved: boolean;
+    };
+
+    return {
+      summary: String(parsed.summary ?? ''),
+      issueCategory: String(parsed.issueCategory ?? 'other'),
+      wasResolved: Boolean(parsed.wasResolved),
+    };
+  } catch (err) {
+    console.error('Failed to generate session summary:', err);
+    return null;
+  }
+}
+
+/**
  * Extract issue category from AI transcript/description
  * Used for analytics and categorization
  */

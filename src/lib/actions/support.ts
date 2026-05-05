@@ -16,7 +16,7 @@ import { notifySessionCompleted, notifyHandoffRequest } from '@/lib/actions/noti
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { sendSessionSummaryEmail } from '@/lib/email';
-import { categorizeIssue } from '@/lib/gemini';
+import { categorizeIssue, generateSessionSummary } from '@/lib/gemini';
 import {
   supportSessions,
   sessionMessages,
@@ -303,27 +303,42 @@ export async function endSupportSession(params: {
 
   const residentName = userName[0]?.name || 'Senior';
 
+  const sessionStatus = params.outcome === 'escalated' ? 'handed_off' : 'completed';
+
+  // Generate AI summary from transcript if available
+  let aiSummary = params.summary;
+  let aiIssueCategory: string | null = null;
+  if (params.transcript && params.transcript.trim().length > 20) {
+    const generated = await generateSessionSummary({
+      transcript: params.transcript,
+      duration,
+      status: sessionStatus,
+    });
+    if (generated) {
+      aiSummary = generated.summary;
+      aiIssueCategory = generated.issueCategory;
+    }
+  }
+
+  // Fallback: categorize from resolution text if AI didn't return a category
+  if (!aiIssueCategory && params.resolution) {
+    aiIssueCategory = categorizeIssue(params.resolution);
+  }
+
   // Update session
   await db
     .update(supportSessions)
     .set({
       endTime,
       duration,
-      status: params.outcome === 'escalated' ? 'handed_off' : 'completed',
+      status: sessionStatus,
       resolution: params.resolution,
       transcript: params.transcript,
-      summary: params.summary,
+      summary: aiSummary,
+      ...(aiIssueCategory ? { issueCategory: aiIssueCategory } : {}),
     })
     .where(eq(supportSessions.id, params.sessionId));
 
-  // Categorize issue if resolution provided
-  if (params.resolution) {
-    const category = categorizeIssue(params.resolution);
-    await db
-      .update(supportSessions)
-      .set({ issueCategory: category })
-      .where(eq(supportSessions.id, params.sessionId));
-  }
 
   // Notify facility managers of session completion
   if (resident?.facilityId && params.outcome === 'resolved') {

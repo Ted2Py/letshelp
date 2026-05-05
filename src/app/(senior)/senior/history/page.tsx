@@ -79,68 +79,88 @@ export default async function SeniorHistoryPage() {
               </p>
             </div>
 
-            {history.map((sessionItem) => (
-              <Card key={sessionItem.id} className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-0 shadow-md">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  {/* Status icon */}
-                  <div className={`
-                    flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl flex items-center justify-center
-                    ${sessionItem.status === "completed" ? "bg-teal-100" :
-                      sessionItem.status === "handed_off" ? "bg-blue-100" :
-                      "bg-gray-100"}
-                  `}>
-                    {sessionItem.status === "completed" && <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-teal-600" />}
-                    {sessionItem.status === "abandoned" && <XCircle className="h-6 w-6 sm:h-7 sm:w-7 text-gray-400" />}
-                    {sessionItem.status === "handed_off" && <Users className="h-6 w-6 sm:h-7 sm:w-7 text-blue-500" />}
-                  </div>
+            {history.map((sessionItem) => {
+              const mins = sessionItem.duration ? Math.floor(sessionItem.duration / 60) : null;
+              const secs = sessionItem.duration ? sessionItem.duration % 60 : null;
+              const durationLabel = mins !== null
+                ? mins > 0 ? `${mins} min${secs && secs > 0 ? ` ${secs}s` : ''}` : `${secs}s`
+                : null;
 
-                  <div className="flex-1 min-w-0">
-                    {/* Status label + duration on same row */}
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className={`text-base sm:text-lg font-semibold ${
-                        sessionItem.status === "completed" ? "text-teal-600" :
-                        sessionItem.status === "handed_off" ? "text-blue-600" :
-                        "text-gray-500"
-                      }`}>
-                        {sessionItem.status === "completed" && "Resolved"}
-                        {sessionItem.status === "abandoned" && "Ended"}
-                        {sessionItem.status === "handed_off" && "Human Help"}
-                      </span>
-                      {sessionItem.duration && (
-                        <span className="text-sm sm:text-base text-muted-foreground flex items-center gap-1 shrink-0">
-                          <Clock className="h-4 w-4" />
-                          {Math.floor(sessionItem.duration / 60)}m
+              const categoryLabel = sessionItem.issueCategory
+                ? sessionItem.issueCategory.charAt(0).toUpperCase() + sessionItem.issueCategory.slice(1)
+                : "Tech Support";
+
+              return (
+                <Card key={sessionItem.id} className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl border-0 shadow-md bg-white">
+                  {/* Top row: status + date + duration */}
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      {sessionItem.status === "completed" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-sm sm:text-base font-semibold">
+                          <CheckCircle className="h-4 w-4" /> Resolved
                         </span>
                       )}
+                      {sessionItem.status === "abandoned" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-sm sm:text-base font-semibold">
+                          <XCircle className="h-4 w-4" /> Ended
+                        </span>
+                      )}
+                      {sessionItem.status === "handed_off" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm sm:text-base font-semibold">
+                          <Users className="h-4 w-4" /> Human Help
+                        </span>
+                      )}
+                      {/* Category pill */}
+                      <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full bg-[#EEF4FB] text-[#1E5A8D] text-sm font-medium">
+                        {categoryLabel}
+                      </span>
                     </div>
 
-                    {/* Issue Category */}
-                    <h3 className="text-lg sm:text-2xl font-semibold mb-1 sm:mb-2">
-                      {sessionItem.issueCategory || "Tech Support"}
-                    </h3>
-
-                    {/* Resolution Summary */}
-                    {sessionItem.resolution && (
-                      <p className="text-sm sm:text-lg text-muted-foreground mb-2 sm:mb-3 line-clamp-2">
-                        {sessionItem.resolution}
-                      </p>
-                    )}
-
-                    {/* Date */}
-                    <div className="flex items-center gap-1.5 text-sm sm:text-base text-muted-foreground">
-                      <Calendar className="h-4 w-4 shrink-0" />
-                      <span>
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground shrink-0">
+                      {durationLabel && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3.5 w-3.5" />
+                          {durationLabel}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5" />
                         {new Date(sessionItem.startTime).toLocaleDateString("en-US", {
-                          weekday: "short",
                           month: "short",
                           day: "numeric",
                         })}
                       </span>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+
+                  {/* Category pill for mobile */}
+                  <div className="sm:hidden mb-3">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#EEF4FB] text-[#1E5A8D] text-sm font-medium">
+                      {categoryLabel}
+                    </span>
+                  </div>
+
+                  {/* AI-generated summary — main content */}
+                  {sessionItem.summary ? (
+                    <p className="text-base sm:text-lg text-[#1E3A5F] leading-relaxed">
+                      {sessionItem.summary}
+                    </p>
+                  ) : sessionItem.resolution ? (
+                    <p className="text-base sm:text-lg text-[#5A6B7F] leading-relaxed">
+                      {sessionItem.resolution}
+                    </p>
+                  ) : (
+                    <p className="text-base sm:text-lg text-[#5A6B7F] italic">
+                      {sessionItem.status === "completed"
+                        ? "Session completed successfully."
+                        : sessionItem.status === "handed_off"
+                        ? "Session was handed off to a human volunteer."
+                        : "Session ended."}
+                    </p>
+                  )}
+                </Card>
+              );
+            })}
           </div>
         )}
 
