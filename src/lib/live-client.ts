@@ -519,11 +519,12 @@ export class GeminiLiveClient {
   async startScreenShare(): Promise<MediaStream> {
     try {
       console.log('🖥️ Starting screen share...');
+      // Request modest constraints — we only capture at 2 FPS and scale to 1280×720,
+      // so there's no benefit in asking for 1080p/30fps (and it can cause failures on Android).
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-          frameRate: { ideal: 30 }
+          width: { ideal: 1280, max: 1920 },
+          height: { ideal: 720, max: 1080 },
         },
       });
 
