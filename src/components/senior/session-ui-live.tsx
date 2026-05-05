@@ -15,7 +15,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, PhoneOff, Hand, Monitor, MonitorOff, ChevronRight, Gauge } from 'lucide-react';
+import { Mic, MicOff, PhoneOff, Hand, Monitor, MonitorOff, ChevronRight, Gauge, Camera, CameraOff, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/components/language-provider';
 import { Button } from '@/components/ui/button';
 import { endSupportSession, requestVolunteerHandoff } from '@/lib/actions/support';
@@ -52,9 +52,12 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
     if (typeof navigator === 'undefined') return false;
     return !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
   });
+  const [isCameraShared, setIsCameraShared] = useState(false);
+  const [cameraFacingMode, setCameraFacingMode] = useState<'environment' | 'user'>('environment');
 
   const liveClientRef = useRef<GeminiLiveClient | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
 
   // Get language preference from context (falls back to prop for backward compatibility)
   const { language } = useLanguage();
@@ -239,6 +242,69 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
     }
   };
 
+  const toggleCameraShare = async () => {
+    try {
+      if (!isCameraShared) {
+        if (!liveClientRef.current) throw new Error('Live client not initialized');
+
+        const stream = await liveClientRef.current.startCameraShare(cameraFacingMode);
+        cameraStreamRef.current = stream;
+        setIsCameraShared(true);
+
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+          videoTrack.onended = () => {
+            setIsCameraShared(false);
+            cameraStreamRef.current = null;
+          };
+        }
+      } else {
+        if (liveClientRef.current) {
+          liveClientRef.current.stopCameraShare();
+        }
+        setIsCameraShared(false);
+        cameraStreamRef.current = null;
+      }
+    } catch (err: any) {
+      console.error('Failed to toggle camera:', err);
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+        setAiResponse("I need permission to use your camera. Please tap 'Allow' when your phone asks about camera access, then try again.");
+      } else if (err?.name === 'NotFoundError') {
+        setAiResponse("I couldn't find a camera on this device. Please make sure your camera isn't being used by another app.");
+      } else {
+        setAiResponse("I couldn't access your camera. Please try again.");
+      }
+    }
+  };
+
+  const flipCamera = async () => {
+    const newFacingMode = cameraFacingMode === 'environment' ? 'user' : 'environment';
+    setCameraFacingMode(newFacingMode);
+
+    if (!isCameraShared || !liveClientRef.current) return;
+
+    // Stop current camera then restart with new facing mode
+    liveClientRef.current.stopCameraShare();
+    setIsCameraShared(false);
+
+    try {
+      const stream = await liveClientRef.current.startCameraShare(newFacingMode);
+      cameraStreamRef.current = stream;
+      setIsCameraShared(true);
+
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.onended = () => {
+          setIsCameraShared(false);
+          cameraStreamRef.current = null;
+        };
+      }
+    } catch (err) {
+      console.error('Failed to flip camera:', err);
+      setAiResponse("I couldn't switch the camera. Please try again.");
+    }
+  };
+
   const toggleSpeechSpeed = () => {
     const speeds: SpeechSpeed[] = [0.85, 1.0, 1.15];
     const currentIndex = speeds.indexOf(speechSpeed);
@@ -412,11 +478,13 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                       {aiResponse || getStatusText()}
                     </p>
 
-                    {/* Screen share indicator */}
-                    {isScreenShared && (
+                    {/* Screen / camera share indicator */}
+                    {(isScreenShared || isCameraShared) && (
                       <div className="mt-3 inline-flex items-center gap-2 bg-teal-50 text-teal-800 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-semibold text-sm sm:text-base">
-                        <Monitor className="h-4 w-4 sm:h-5 sm:w-5" />
-                        I can see your screen
+                        {isScreenShared
+                          ? <Monitor className="h-4 w-4 sm:h-5 sm:w-5" />
+                          : <Camera className="h-4 w-4 sm:h-5 sm:w-5" />}
+                        {isScreenShared ? 'I can see your screen' : 'I can see your camera'}
                       </div>
                     )}
                   </div>
@@ -509,28 +577,60 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 <span>{isMuted ? 'Unmute' : 'Mute'}</span>
               </Button>
 
-              {/* Screen Share Toggle */}
-              <Button
-                onClick={toggleScreenShare}
-                size="lg"
-                variant={isScreenShared ? 'default' : 'outline'}
-                className={`
-                  h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold btn-press flex items-center justify-center gap-2
-                  ${!screenShareSupported
-                    ? 'opacity-50 cursor-not-allowed border-2 border-gray-300 text-gray-400'
-                    : isScreenShared
+              {/* Screen Share (desktop) or Camera Share (mobile) */}
+              {screenShareSupported ? (
+                <Button
+                  onClick={toggleScreenShare}
+                  size="lg"
+                  variant={isScreenShared ? 'default' : 'outline'}
+                  className={`
+                    h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold btn-press flex items-center justify-center gap-2
+                    ${isScreenShared
                       ? 'bg-teal-500 hover:bg-teal-600 text-white border-none'
                       : 'border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50'}
-                `}
-                aria-label={isScreenShared ? 'Stop screen sharing' : 'Share screen'}
-                title={!screenShareSupported ? 'Not available on this device' : undefined}
-              >
-                {isScreenShared ? (
-                  <><MonitorOff className="h-5 w-5 sm:h-7 sm:w-7" /><span>Stop Share</span></>
-                ) : (
-                  <><Monitor className="h-5 w-5 sm:h-7 sm:w-7" /><span>Share Screen</span></>
-                )}
-              </Button>
+                  `}
+                  aria-label={isScreenShared ? 'Stop screen sharing' : 'Share screen'}
+                >
+                  {isScreenShared ? (
+                    <><MonitorOff className="h-5 w-5 sm:h-7 sm:w-7" /><span>Stop Share</span></>
+                  ) : (
+                    <><Monitor className="h-5 w-5 sm:h-7 sm:w-7" /><span>Share Screen</span></>
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  onClick={toggleCameraShare}
+                  size="lg"
+                  variant={isCameraShared ? 'default' : 'outline'}
+                  className={`
+                    h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold btn-press flex items-center justify-center gap-2
+                    ${isCameraShared
+                      ? 'bg-teal-500 hover:bg-teal-600 text-white border-none'
+                      : 'border-2 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50'}
+                  `}
+                  aria-label={isCameraShared ? 'Stop camera' : 'Show camera'}
+                >
+                  {isCameraShared ? (
+                    <><CameraOff className="h-5 w-5 sm:h-7 sm:w-7" /><span>Stop Camera</span></>
+                  ) : (
+                    <><Camera className="h-5 w-5 sm:h-7 sm:w-7" /><span>Show Camera</span></>
+                  )}
+                </Button>
+              )}
+
+              {/* Flip Camera button — only visible on mobile when camera is active */}
+              {!screenShareSupported && isCameraShared && (
+                <Button
+                  onClick={flipCamera}
+                  size="lg"
+                  variant="outline"
+                  className="h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold border-2 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-2"
+                  aria-label="Flip camera"
+                >
+                  <RefreshCw className="h-5 w-5 sm:h-7 sm:w-7" />
+                  <span>Flip</span>
+                </Button>
+              )}
 
               {/* Speed Control */}
               <Button

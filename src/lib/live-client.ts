@@ -38,6 +38,10 @@ export class GeminiLiveClient {
   private videoFrameInterval: number | null = null;
   private isScreenSharing = false;
 
+  // Camera sharing state (mobile alternative to screen share)
+  private cameraStream: MediaStream | null = null;
+  private isCameraSharing = false;
+
   // Message transcript for session recording
   private messages: Array<{ role: 'user' | 'assistant'; content: string; timestamp: number }> = [];
 
@@ -712,6 +716,145 @@ export class GeminiLiveClient {
     this.canvasContext = null;
 
     console.log('✅ Screen share stopped');
+  }
+
+  /**
+   * Start camera sharing using device camera (mobile-friendly alternative to screen share)
+   * Works on iOS, Android, and all mobile browsers that support getUserMedia
+   */
+  async startCameraShare(facingMode: 'environment' | 'user' = 'environment'): Promise<MediaStream> {
+    try {
+      console.log('📷 Starting camera share, facing:', facingMode);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode,
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      });
+
+      this.cameraStream = stream;
+      this.isCameraSharing = true;
+
+      // Create hidden video element to receive the camera stream
+      this.videoElement = document.createElement('video');
+      this.videoElement.srcObject = stream;
+      this.videoElement.autoplay = true;
+      this.videoElement.playsInline = true;
+      this.videoElement.muted = true;
+      this.videoElement.style.display = 'none';
+      document.body.appendChild(this.videoElement);
+
+      // Wait for video to be ready
+      await new Promise<void>((resolve, reject) => {
+        const video = this.videoElement!;
+        video.onloadedmetadata = () => {
+          video.play().then(() => {
+            console.log('✅ Camera video started playing');
+            resolve();
+          }).catch(reject);
+        };
+        video.onerror = (err) => reject(err);
+        setTimeout(() => {
+          if (video.readyState < 2) reject(new Error('Camera video failed to load'));
+        }, 5000);
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Create canvas for frame capture at same resolution as screen share
+      this.canvasElement = document.createElement('canvas');
+      this.canvasElement.width = 1280;
+      this.canvasElement.height = 720;
+      this.canvasContext = this.canvasElement.getContext('2d', { alpha: false });
+      if (!this.canvasContext) throw new Error('Failed to get canvas context');
+
+      let frameCount = 0;
+      const FRAME_INTERVAL = 500; // 2 FPS - same as screen share
+
+      const captureFrame = () => {
+        if (!this.isCameraSharing || !this.videoElement || !this.canvasElement || !this.canvasContext || !this.session) {
+          return;
+        }
+        if (this.videoElement.readyState < 2 || this.videoElement.videoWidth === 0) return;
+
+        try {
+          this.canvasContext.drawImage(this.videoElement, 0, 0, this.canvasElement.width, this.canvasElement.height);
+          this.canvasElement.toBlob((blob) => {
+            if (blob && this.session && this.isCameraSharing) {
+              const reader = new FileReader();
+              reader.onload = () => {
+                const base64Data = (reader.result as string).split(',')[1];
+                try {
+                  this.session.sendRealtimeInput({
+                    video: { data: base64Data, mimeType: 'image/jpeg' }
+                  });
+                  frameCount++;
+                  if (frameCount % 10 === 0) {
+                    console.log('📷 Sent', frameCount, 'camera frames');
+                  }
+                } catch (error) {
+                  console.error('❌ Error sending camera frame:', error);
+                }
+              };
+              reader.readAsDataURL(blob);
+            }
+          }, 'image/jpeg', 0.7);
+        } catch (error) {
+          console.error('❌ Error capturing camera frame:', error);
+        }
+      };
+
+      this.videoFrameInterval = window.setInterval(captureFrame, FRAME_INTERVAL);
+
+      // Handle user revoking camera permission or track ending
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.onended = () => {
+          console.log('📷 Camera track ended');
+          this.stopCameraShare();
+        };
+      }
+
+      const cameraLabel = facingMode === 'environment' ? 'rear camera' : 'front camera';
+      this.sendText(`I'm sharing my ${cameraLabel} with you now. You'll see video frames from my device's camera.`);
+
+      console.log('✅ Camera share started');
+      return stream;
+    } catch (error) {
+      console.error('❌ Failed to start camera share:', error);
+      this.isCameraSharing = false;
+      this.cameraStream = null;
+      throw error;
+    }
+  }
+
+  /**
+   * Stop camera sharing and clean up resources
+   */
+  stopCameraShare(): void {
+    console.log('🛑 Stopping camera share...');
+    this.isCameraSharing = false;
+
+    if (this.videoFrameInterval) {
+      clearInterval(this.videoFrameInterval);
+      this.videoFrameInterval = null;
+    }
+
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(track => track.stop());
+      this.cameraStream = null;
+    }
+
+    if (this.videoElement && this.videoElement.parentNode) {
+      this.videoElement.parentNode.removeChild(this.videoElement);
+      this.videoElement = null;
+    }
+
+    this.canvasElement = null;
+    this.canvasContext = null;
+
+    console.log('✅ Camera share stopped');
   }
 
   /**

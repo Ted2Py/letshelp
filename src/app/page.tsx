@@ -53,14 +53,14 @@ export default function LandingPage() {
                 FAQ
               </a>
             </div>
-            <div className="flex items-center gap-3">
-              <Link href="/login">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link href="/login" className="hidden sm:block">
                 <Button variant="outline" size="lg" className="text-lg border-2 border-[#1E5A8D] text-[#1E5A8D] hover:bg-[#1E5A8D] hover:text-white">
                   Sign In
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="lg" className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] hover:from-[#1E4A6D] hover:to-[#1E5090] text-lg px-6 h-14">
+                <Button size="lg" className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] hover:from-[#1E4A6D] hover:to-[#1E5090] text-base sm:text-lg px-4 sm:px-6 h-11 sm:h-14">
                   Get Started
                 </Button>
               </Link>
@@ -70,7 +70,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#1E5A8D] via-[#2563EB] to-[#3B82F6] text-white py-20 md:py-32">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#1E5A8D] via-[#2563EB] to-[#3B82F6] text-white py-12 md:py-20 lg:py-32">
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
@@ -85,12 +85,12 @@ export default function LandingPage() {
                 Trusted by senior living communities
               </div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight font-[Fraunces,serif]">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight font-[Fraunces,serif]">
                 Patient Tech Support,{" "}
                 <span className="text-[#FCD34D]">On Demand</span>
               </h1>
 
-              <p className="text-2xl text-white/90 max-w-xl leading-relaxed">
+              <p className="text-lg sm:text-2xl text-white/90 max-w-xl leading-relaxed">
                 An AI assistant that sees your screen, hears your voice, and guides you
                 step-by-step. Available 24/7. Never frustrated.
               </p>
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 <Link href="/register">
                   <Button
                     size="lg"
-                    className="bg-white text-[#1E5A8D] hover:bg-gray-100 text-xl px-10 py-7 rounded-2xl font-bold shadow-xl btn-press"
+                    className="bg-white text-[#1E5A8D] hover:bg-gray-100 text-lg sm:text-xl px-8 sm:px-10 py-5 sm:py-7 rounded-2xl font-bold shadow-xl btn-press"
                   >
                     Start Free Trial
                     <ArrowRight className="ml-3 h-6 w-6" />
@@ -115,13 +115,13 @@ export default function LandingPage() {
                 </Button>
               </div>
 
-              <div className="flex items-center gap-8 text-lg text-white/90">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-8 text-base sm:text-lg text-white/90">
                 <div className="flex items-center gap-2">
-                  <Check className="h-6 w-6 text-[#34D399]" />
+                  <Check className="h-5 w-5 sm:h-6 sm:w-6 text-[#34D399]" />
                   No credit card required
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-6 w-6 text-[#34D399]" />
+                  <Check className="h-5 w-5 sm:h-6 sm:w-6 text-[#34D399]" />
                   Cancel anytime
                 </div>
               </div>
@@ -138,13 +138,13 @@ export default function LandingPage() {
                 ].map((feature, i) => (
                   <div
                     key={i}
-                    className="bg-gradient-to-br backdrop-blur-sm rounded-3xl p-7 border-2 border-white/40 hover:scale-[1.02] hover:bg-white/30 transition-all duration-300"
+                    className="bg-gradient-to-br backdrop-blur-sm rounded-3xl p-4 sm:p-7 border-2 border-white/40 hover:scale-[1.02] hover:bg-white/30 transition-all duration-300"
                   >
-                    <div className="bg-white/20 rounded-2xl w-14 h-14 flex items-center justify-center mb-4">
-                      <feature.icon className={`h-7 w-7 ${feature.iconColor}`} />
+                    <div className="bg-white/20 rounded-2xl w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-3 sm:mb-4">
+                      <feature.icon className={`h-5 w-5 sm:h-7 sm:w-7 ${feature.iconColor}`} />
                     </div>
-                    <div className="text-xl font-bold font-[Fraunces,serif] mb-1">{feature.label}</div>
-                    <div className="text-sm text-white/80 leading-snug">{feature.description}</div>
+                    <div className="text-base sm:text-xl font-bold font-[Fraunces,serif] mb-1">{feature.label}</div>
+                    <div className="text-xs sm:text-sm text-white/80 leading-snug">{feature.description}</div>
                   </div>
                 ))}
               </div>
@@ -161,10 +161,10 @@ export default function LandingPage() {
       </section>
 
       {/* Problem Section */}
-      <section className="py-24 bg-white">
+      <section className="py-12 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1E3A5F] mb-4 md:mb-6 font-[Fraunces,serif]">
               The Tech Support Problem for Seniors
             </h2>
             <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
@@ -198,7 +198,7 @@ export default function LandingPage() {
             ].map((problem, i) => (
               <div
                 key={i}
-                className="bg-[#FEF9F3] rounded-3xl shadow-lg p-10 border-4 border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="bg-[#FEF9F3] rounded-3xl shadow-lg p-6 sm:p-10 border-4 border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
                 <div className={`h-16 w-16 rounded-2xl ${problem.color} flex items-center justify-center mb-6`}>
                   <problem.icon className={`h-8 w-8 ${problem.iconColor}`} />
@@ -216,10 +216,10 @@ export default function LandingPage() {
       </section>
 
       {/* Solution Section */}
-      <section className="py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
+      <section className="py-12 md:py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-[Fraunces,serif]">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 font-[Fraunces,serif]">
               Enter LetsHelp: Your Patient Tech Friend
             </h2>
             <p className="text-2xl text-white/90 max-w-2xl mx-auto">
@@ -282,13 +282,13 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 bg-[#FEF9F3]">
+      <section id="how-it-works" className="py-12 md:py-24 bg-[#FEF9F3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1E3A5F] mb-4 md:mb-6 font-[Fraunces,serif]">
               How It Works
             </h2>
-            <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
               Getting help is as easy as pressing a button
             </p>
           </div>
@@ -335,13 +335,13 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-white">
+      <section id="features" className="py-12 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1E3A5F] mb-4 md:mb-6 font-[Fraunces,serif]">
               Everything Seniors Need
             </h2>
-            <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
               Designed specifically for older adults who didn't grow up with technology
             </p>
           </div>
@@ -373,10 +373,10 @@ export default function LandingPage() {
       </section>
 
       {/* Social Proof / Testimonials */}
-      <section className="py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
+      <section className="py-12 md:py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-[Fraunces,serif]">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 font-[Fraunces,serif]">
               Trusted by Seniors and Facilities
             </h2>
             <p className="text-2xl text-white/90 max-w-2xl mx-auto">
@@ -419,20 +419,20 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-[#FEF9F3]">
+      <section id="pricing" className="py-12 md:py-24 bg-[#FEF9F3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1E3A5F] mb-4 md:mb-6 font-[Fraunces,serif]">
               Simple, Affordable Pricing
             </h2>
-            <p className="text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
               Choose the plan that works for you
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* B2B Plan */}
-            <div className="bg-white rounded-3xl shadow-xl p-10 border-4 border-[#1E5A8D] relative overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-xl p-6 sm:p-10 border-4 border-[#1E5A8D] relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-[#1E5A8D] text-white px-4 py-2 rounded-bl-2xl font-bold text-sm">
                 POPULAR
               </div>
@@ -469,7 +469,7 @@ export default function LandingPage() {
             </div>
 
             {/* B2C Plan */}
-            <div className="bg-white rounded-3xl shadow-xl p-10 border-4 border-gray-200">
+            <div className="bg-white rounded-3xl shadow-xl p-6 sm:p-10 border-4 border-gray-200">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-[#1E3A5F] mb-3 font-[Fraunces,serif]">
                   For Individuals & Families
@@ -514,10 +514,10 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 bg-white">
+      <section id="faq" className="py-12 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1E3A5F] mb-4 md:mb-6 font-[Fraunces,serif]">
               Frequently Asked Questions
             </h2>
           </div>
@@ -563,28 +563,28 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
+      <section className="py-12 md:py-24 bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8 font-[Fraunces,serif]">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 md:mb-8 font-[Fraunces,serif]">
             Ready to Get Help?
           </h2>
-          <p className="text-2xl text-white/90 mb-10">
+          <p className="text-xl md:text-2xl text-white/90 mb-8 md:mb-10">
             Start your free trial today. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
               <Button
                 size="lg"
-                className="bg-white text-[#1E5A8D] hover:bg-gray-100 text-2xl px-12 py-8 rounded-2xl font-bold shadow-xl btn-press"
+                className="w-full sm:w-auto bg-white text-[#1E5A8D] hover:bg-gray-100 text-xl sm:text-2xl px-8 sm:px-12 py-5 sm:py-8 rounded-2xl font-bold shadow-xl btn-press"
               >
                 Get Started Now
-                <ArrowRight className="ml-3 h-7 w-7" />
+                <ArrowRight className="ml-3 h-6 w-6 sm:h-7 sm:w-7" />
               </Button>
             </Link>
             <Button
               size="lg"
               variant="outline"
-              className="border-3 border-white text-white hover:bg-white/10 text-2xl px-12 py-8 rounded-2xl font-bold"
+              className="w-full sm:w-auto border-3 border-white text-white hover:bg-white/10 text-xl sm:text-2xl px-8 sm:px-12 py-5 sm:py-8 rounded-2xl font-bold"
               asChild
             >
               <a href="#pricing">View Pricing</a>
@@ -594,7 +594,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1E3A5F] text-white py-16">
+      <footer className="bg-[#1E3A5F] text-white py-10 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
