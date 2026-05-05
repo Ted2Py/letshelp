@@ -59,7 +59,7 @@ export default function LandingPage() {
                   Sign In
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href="/register">
                 <Button size="lg" className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] hover:from-[#1E4A6D] hover:to-[#1E5090] text-lg px-6 h-14">
                   Get Started
                 </Button>
@@ -96,7 +96,7 @@ export default function LandingPage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/login">
+                <Link href="/register">
                   <Button
                     size="lg"
                     className="bg-white text-[#1E5A8D] hover:bg-gray-100 text-xl px-10 py-7 rounded-2xl font-bold shadow-xl btn-press"
@@ -460,7 +460,7 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/login?plan=facility">
+              <Link href="/register?plan=facility">
                 <Button className="w-full h-16 text-xl font-bold bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] hover:from-[#1E4A6D] hover:to-[#1E5090] rounded-2xl" size="lg">
                   Contact Sales
                   <ChevronRight className="ml-2 h-6 w-6" />
@@ -494,7 +494,7 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/login?plan=individual">
+              <Link href="/register?plan=individual">
                 <Button className="w-full h-16 text-xl font-bold border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 rounded-2xl" variant="outline" size="lg">
                   Start Free Trial
                   <ChevronRight className="ml-2 h-6 w-6" />
@@ -572,7 +572,7 @@ export default function LandingPage() {
             Start your free trial today. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/login">
+            <Link href="/register">
               <Button
                 size="lg"
                 className="bg-white text-[#1E5A8D] hover:bg-gray-100 text-2xl px-12 py-8 rounded-2xl font-bold shadow-xl btn-press"
