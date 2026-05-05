@@ -15,9 +15,10 @@ export interface LiveClientConfig {
   preferredLanguage?: string;
   onLanguageDetected?: (language: string) => void;
   onMessage?: (role: 'user' | 'assistant', content: string) => void;
+  onReconnect?: () => void;
 }
 
-export type SessionState = 'connecting' | 'connected' | 'listening' | 'speaking' | 'error';
+export type SessionState = 'connecting' | 'connected' | 'listening' | 'speaking' | 'error' | 'reconnecting';
 
 export class GeminiLiveClient {
   private session: any = null;
@@ -48,6 +49,16 @@ export class GeminiLiveClient {
   // Playback speed control (uses client-side playbackRate)
   private playbackRate: number = 1.0;
 
+  // Session resumption state
+  private resumptionToken: string | null = null;
+  private intentionalDisconnect = false;
+  private isReconnecting = false;
+  private reconnectAttempts = 0;
+  private readonly MAX_RECONNECT_ATTEMPTS = 3;
+  private reconnectTimeoutId: number | null = null;
+  private aiClient: GoogleGenAI | null = null;
+  private savedSessionConfig: Record<string, unknown> | null = null;
+
   constructor(
     config: LiveClientConfig,
     handlers: {
@@ -61,21 +72,27 @@ export class GeminiLiveClient {
   }
 
   /**
-   * Connect to the Gemini Live API
+   * Connect to the Gemini Live API.
+   * On first call, builds the full config and stores it for reconnects.
+   * On reconnect calls, reuses the stored config with the latest resumption token.
    */
   async connect(): Promise<void> {
     if (this.session) {
       throw new Error('Already connected');
     }
 
-    this.onStateChange('connecting');
+    this.onStateChange(this.isReconnecting ? 'reconnecting' : 'connecting');
 
     try {
-      // Initialize client with API key
-      const ai = new GoogleGenAI({ apiKey: this.config.apiKey });
+      // Reuse stored client on reconnects, create fresh on first connect
+      if (!this.aiClient) {
+        this.aiClient = new GoogleGenAI({ apiKey: this.config.apiKey });
+      }
 
-      const defaultLanguage = this.config.preferredLanguage || 'English';
-      const systemInstruction = `You are a patient, friendly tech support assistant for seniors.
+      // Build session config once, reuse on reconnects
+      if (!this.savedSessionConfig) {
+        const defaultLanguage = this.config.preferredLanguage || 'English';
+        const systemInstruction = `You are a patient, friendly tech support assistant for seniors.
 
            LANGUAGE:
            - Start by responding in ${defaultLanguage}.
@@ -113,33 +130,64 @@ export class GeminiLiveClient {
            - Go slowly and confirm each step before moving on
            - Keep responses brief and conversational`;
 
-      this.session = await ai.live.connect({
-        model: this.config.model,
-        config: {
+        this.savedSessionConfig = {
           responseModalities: [Modality.AUDIO],
           systemInstruction,
-          // Add speech configuration for better voice quality
           speechConfig: {
             voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: 'Kore' }
-            }
+              prebuiltVoiceConfig: { voiceName: 'Kore' },
+            },
           },
-          // Enable audio transcription for both input and output
           inputAudioTranscription: {},
-        },
+          // Sliding-window compression lets sessions run indefinitely
+          contextWindowCompression: { slidingWindow: {} },
+          // Enable session resumption — server will send us a token to use on reconnect
+          sessionResumption: this.resumptionToken
+            ? { handle: this.resumptionToken }
+            : {},
+        };
+      } else {
+        // Update the resumption handle before reconnecting
+        (this.savedSessionConfig as any).sessionResumption = this.resumptionToken
+          ? { handle: this.resumptionToken }
+          : {};
+      }
+
+      this.session = await this.aiClient.live.connect({
+        model: this.config.model,
+        config: this.savedSessionConfig,
         callbacks: {
           onopen: () => {
             console.log('✅ Live API connection opened');
-            this.onStateChange('connected');
+            if (this.isReconnecting) {
+              console.log('🔄 Session resumed successfully');
+              this.isReconnecting = false;
+              this.reconnectAttempts = 0;
+              this.onStateChange('listening');
+              if (this.config.onReconnect) this.config.onReconnect();
+            } else {
+              this.onStateChange('connected');
+            }
           },
           onmessage: (message) => this.handleMessage(message),
           onerror: (error) => {
             console.error('❌ Live API error:', error);
-            this.onStateChange('error');
+            if (!this.intentionalDisconnect) {
+              this.scheduleReconnect();
+            } else {
+              this.onStateChange('error');
+            }
           },
           onclose: (event) => {
             console.log('🔌 Live API connection closed:', event);
-            this.cleanup();
+            if (this.intentionalDisconnect) {
+              // User ended the session — full teardown
+              this.cleanup();
+            } else if (!this.isReconnecting) {
+              // Unexpected close (WebSocket ~10 min timeout or network drop) — reconnect
+              console.warn('⚠️ Unexpected disconnect, attempting to resume session...');
+              this.scheduleReconnect();
+            }
           },
         },
       });
@@ -147,15 +195,63 @@ export class GeminiLiveClient {
       console.log('✅ Connected to Gemini Live API');
     } catch (error) {
       console.error('❌ Failed to connect to Live API:', error);
-      this.onStateChange('error');
-      throw error;
+      if (this.isReconnecting) {
+        this.scheduleReconnect(); // retry again if we haven't hit the limit
+      } else {
+        this.onStateChange('error');
+        throw error;
+      }
     }
+  }
+
+  /**
+   * Schedule a reconnect attempt with exponential backoff.
+   * Preserves audio capture and screen sharing state across reconnects.
+   */
+  private scheduleReconnect(): void {
+    if (this.intentionalDisconnect) return;
+    if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
+      console.error('❌ Max reconnect attempts reached, giving up');
+      this.cleanup();
+      this.onStateChange('error');
+      return;
+    }
+
+    this.session = null;
+    this.isReconnecting = true;
+    this.reconnectAttempts++;
+    this.onStateChange('reconnecting');
+
+    // Exponential backoff: 1s, 2s, 4s
+    const delay = Math.pow(2, this.reconnectAttempts - 1) * 1000;
+    console.log(`🔄 Reconnect attempt ${this.reconnectAttempts}/${this.MAX_RECONNECT_ATTEMPTS} in ${delay}ms`);
+
+    this.reconnectTimeoutId = window.setTimeout(async () => {
+      try {
+        await this.connect();
+      } catch {
+        // connect() already calls scheduleReconnect() on failure
+      }
+    }, delay);
   }
 
   /**
    * Handle incoming messages from the Live API
    */
   private handleMessage(message: any): void {
+    // Store resumption token whenever server sends one — used to resume after disconnect
+    if (message.sessionResumptionUpdate?.newHandle) {
+      this.resumptionToken = message.sessionResumptionUpdate.newHandle;
+      console.log('🔑 Resumption token updated');
+    }
+
+    // GoAway = server is about to close the WebSocket (sent a few seconds before disconnect)
+    if (message.goAway) {
+      const secondsLeft = message.goAway?.timeLeft?.seconds ?? '?';
+      console.warn(`⚠️ GoAway received — server closing in ~${secondsLeft}s, will auto-resume`);
+      // No action needed — onclose will trigger scheduleReconnect()
+    }
+
     console.log('📨 Received message type:', message?.serverContent?.modelTurn ? 'content' : 'setup');
 
     // Check for text content (AI responses)
@@ -884,10 +980,19 @@ export class GeminiLiveClient {
   }
 
   /**
-   * Disconnect from the Live API
+   * Disconnect from the Live API (intentional — no reconnect will be attempted)
    */
   disconnect(): void {
     console.log('🔌 Disconnecting from Live API...');
+
+    // Mark as intentional so onclose doesn't trigger reconnect
+    this.intentionalDisconnect = true;
+
+    // Cancel any pending reconnect
+    if (this.reconnectTimeoutId !== null) {
+      clearTimeout(this.reconnectTimeoutId);
+      this.reconnectTimeoutId = null;
+    }
 
     if (this.session) {
       this.session.close();

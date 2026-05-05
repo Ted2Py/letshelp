@@ -30,7 +30,7 @@ interface SessionUiProps {
   };
 }
 
-type ViewState = 'connecting' | 'ready' | 'listening' | 'speaking' | 'error';
+type ViewState = 'connecting' | 'reconnecting' | 'ready' | 'listening' | 'speaking' | 'error';
 
 type SpeechSpeed = 0.85 | 1.0 | 1.15;
 
@@ -117,7 +117,11 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
             preferredLanguage: preferredLanguage || languageNames[language] || initialSettings?.preferredLanguage,
             onLanguageDetected: (detectedLang) => {
               console.log('Language detected:', detectedLang);
-              // Could update UI or settings here if needed
+            },
+            onReconnect: () => {
+              if (mounted) {
+                setAiResponse("I'm back! Sorry for the brief pause — let's continue where we left off.");
+              }
             },
           },
           {
@@ -287,6 +291,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
   const getViewState = (): ViewState => {
     if (sessionState === 'connecting') return 'connecting';
+    if (sessionState === 'reconnecting') return 'reconnecting';
     if (sessionState === 'error') return 'error';
     if (needsStart) return 'ready';
     if (sessionState === 'speaking') return 'speaking';
@@ -299,6 +304,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
     switch (viewState) {
       case 'connecting':
         return 'Connecting to your helper...';
+      case 'reconnecting':
+        return 'One moment — refreshing our connection...';
       case 'ready':
         return "Ready to help! Tap Start when you're ready.";
       case 'listening':
@@ -331,10 +338,15 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
           <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
             <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${
               viewState === 'connecting' ? 'bg-yellow-300 animate-pulse' :
+              viewState === 'reconnecting' ? 'bg-yellow-300 animate-pulse' :
               viewState === 'error' ? 'bg-red-400' :
               'bg-green-400'
             }`} />
-            <span className="text-sm sm:text-base font-semibold">{viewState === 'connecting' ? 'Connecting...' : 'Connected'}</span>
+            <span className="text-sm sm:text-base font-semibold">
+              {viewState === 'connecting' ? 'Connecting...' :
+               viewState === 'reconnecting' ? 'Reconnecting...' :
+               'Connected'}
+            </span>
           </div>
         </div>
       </header>
@@ -381,8 +393,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
             </div>
           )}
 
-          {/* Active session states */}
-          {(viewState === 'ready' || viewState === 'listening' || viewState === 'speaking') && (
+          {/* Active session states (including reconnecting — keep UI visible) */}
+          {(viewState === 'ready' || viewState === 'listening' || viewState === 'speaking' || viewState === 'reconnecting') && (
             <div className="space-y-4 sm:space-y-6">
               {/* AI Response Card */}
               <div className={`
@@ -496,7 +508,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
           )}
 
           {/* Active session controls - 2-col grid on mobile, row on desktop */}
-          {!needsStart && viewState !== 'connecting' && (
+          {!needsStart && viewState !== 'connecting' && viewState !== 'reconnecting' && (
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-3 sm:gap-4">
               {/* Microphone Toggle */}
               <Button
