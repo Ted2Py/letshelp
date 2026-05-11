@@ -402,18 +402,6 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 border-4 ${isSpeaking ? 'border-blue-200' : 'border-transparent'}
                 transition-all duration-300
               `}>
-                {isSpeaking && (
-                  <div className="absolute top-4 right-4 flex gap-1 items-end h-6">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div
-                        key={i}
-                        className="w-1.5 bg-blue-500 rounded-full speaking-bar"
-                        style={{ height: `${8 + Math.random() * 16}px` }}
-                      />
-                    ))}
-                  </div>
-                )}
-
                 {/* Avatar + Message */}
                 <div className="flex items-start gap-3 sm:gap-6">
                   <div className={`
