@@ -42,9 +42,12 @@ export default async function SeniorSettingsPage() {
   }
 
   const settings = (resident.accessibilitySettings as Record<string, unknown>) || {};
+  const fontSize = (settings.fontSize as string) || 'large';
+  const highContrast = (settings.highContrast as boolean) || false;
+  const fontSizeClass = fontSize === 'extra-large' ? 'text-[22px]' : fontSize === 'large' ? 'text-[19px]' : 'text-[17px]';
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FEF9F3]">
+    <div className={`flex flex-col min-h-screen bg-[#FEF9F3] ${fontSizeClass} ${highContrast ? 'high-contrast' : ''}`}>
       {/* Header */}
       <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white py-6 px-6 shadow-lg">
         <div className="max-w-4xl mx-auto flex items-center gap-4">

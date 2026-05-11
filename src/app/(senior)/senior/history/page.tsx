@@ -8,6 +8,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import {
   Clock,
   CheckCircle,
@@ -21,6 +22,8 @@ import { GetHelpButton } from "@/components/senior/get-help-button";
 import { Card } from "@/components/ui/card";
 import { getSessionHistory } from "@/lib/actions/support";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { residents } from "@/lib/schema-letshelp";
 
 export default async function SeniorHistoryPage() {
   const session = await auth.api.getSession({
@@ -31,10 +34,21 @@ export default async function SeniorHistoryPage() {
     redirect("/login");
   }
 
-  const history = await getSessionHistory(20);
+  const [history, residentList] = await Promise.all([
+    getSessionHistory(20),
+    db.select({ accessibilitySettings: residents.accessibilitySettings })
+      .from(residents)
+      .where(eq(residents.userId, session.user.id))
+      .limit(1),
+  ]);
+
+  const settings = (residentList[0]?.accessibilitySettings as Record<string, unknown>) || {};
+  const fontSize = (settings.fontSize as string) || 'large';
+  const highContrast = (settings.highContrast as boolean) || false;
+  const fontSizeClass = fontSize === 'extra-large' ? 'text-[22px]' : fontSize === 'large' ? 'text-[19px]' : 'text-[17px]';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className={`min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 ${fontSizeClass} ${highContrast ? 'high-contrast' : ''}`}>
       {/* Header */}
       <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white shadow-lg">
         <div className="max-w-4xl mx-auto px-4 py-4 sm:py-5 flex items-center gap-3">
@@ -86,9 +100,10 @@ export default async function SeniorHistoryPage() {
                 ? mins > 0 ? `${mins} min${secs && secs > 0 ? ` ${secs}s` : ''}` : `${secs}s`
                 : null;
 
-              const categoryLabel = sessionItem.issueCategory
-                ? sessionItem.issueCategory.charAt(0).toUpperCase() + sessionItem.issueCategory.slice(1)
-                : "Tech Support";
+              const rawCategory = sessionItem.issueCategory && sessionItem.issueCategory !== 'other' ? sessionItem.issueCategory : null;
+              const categoryLabel = rawCategory
+                ? rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1)
+                : "General Help";
 
               return (
                 <Card key={sessionItem.id} className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl border-0 shadow-md bg-white">

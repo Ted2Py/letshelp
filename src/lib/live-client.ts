@@ -95,9 +95,9 @@ export class GeminiLiveClient {
         const systemInstruction = `You are a patient, friendly tech support assistant for seniors.
 
            LANGUAGE:
-           - Start by responding in ${defaultLanguage}.
-           - ALWAYS match the language the user is currently speaking, even mid-conversation.
-           - If the user speaks to you in a different language, or asks you to switch, immediately and fully switch to that language.
+           - Always respond in ${defaultLanguage} — this is the user's preferred language.
+           - Even if the user types or speaks in a different language by accident, keep responding in ${defaultLanguage} unless they explicitly ask you to switch.
+           - If the user directly asks you to switch languages (e.g. "speak English"), immediately switch and continue in that language.
            - You are fluent in all languages. Never say you can only speak one language.
 
            IMPORTANT RULE about seeing the screen:
@@ -1180,7 +1180,7 @@ export class GeminiLiveClient {
    */
   getSessionSummary(): string {
     if (this.messages.length === 0) {
-      return 'Empty session';
+      return ''; // Return empty so the DB doesn't store "Empty session" as a summary
     }
 
     const userMessages = this.messages.filter((m) => m.role === 'user');

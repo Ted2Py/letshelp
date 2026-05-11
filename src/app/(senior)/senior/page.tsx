@@ -10,11 +10,14 @@
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { eq } from 'drizzle-orm';
 import { Clock, Heart, Shield, ArrowRight, Settings } from 'lucide-react';
 import { LanguageSelector } from '@/components/language-selector';
 import { GetHelpButton } from '@/components/senior/get-help-button';
 import { getSessionHistory } from '@/lib/actions/support';
 import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { residents } from '@/lib/schema-letshelp';
 import { HeaderSignOut } from '@/components/auth/header-signout';
 
 export default async function SeniorPage() {
@@ -26,10 +29,22 @@ export default async function SeniorPage() {
     redirect('/login');
   }
 
-  const history = await getSessionHistory(5);
+  const [history, residentList] = await Promise.all([
+    getSessionHistory(5),
+    db.select({ accessibilitySettings: residents.accessibilitySettings })
+      .from(residents)
+      .where(eq(residents.userId, session.user.id))
+      .limit(1),
+  ]);
+
+  const settings = (residentList[0]?.accessibilitySettings as Record<string, unknown>) || {};
+  const fontSize = (settings.fontSize as string) || 'large';
+  const highContrast = (settings.highContrast as boolean) || false;
+
+  const fontSizeClass = fontSize === 'extra-large' ? 'text-[22px]' : fontSize === 'large' ? 'text-[19px]' : 'text-[17px]';
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FEF9F3]">
+    <div className={`flex flex-col min-h-screen bg-[#FEF9F3] ${fontSizeClass} ${highContrast ? 'high-contrast' : ''}`}>
       {/* Warm, welcoming header */}
       <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white py-4 px-4 sm:py-6 sm:px-6 shadow-lg">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
@@ -186,7 +201,9 @@ export default async function SeniorPage() {
 
                     <div className="min-w-0">
                       <p className="text-base sm:text-xl font-semibold text-[#1E3A5F] truncate">
-                        {s.issueCategory || 'Tech Support'}
+                        {s.issueCategory && s.issueCategory !== 'other'
+                          ? s.issueCategory.charAt(0).toUpperCase() + s.issueCategory.slice(1)
+                          : 'General Help'}
                       </p>
                       <p className="text-sm sm:text-lg text-[#5A6B7F]">
                         {new Date(s.startTime).toLocaleDateString('en-US', {

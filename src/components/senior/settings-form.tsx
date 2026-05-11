@@ -75,23 +75,25 @@ export function SeniorSettingsForm({ residentId, initialSettings }: SeniorSettin
           <label className="block text-xl font-semibold text-[#1E3A5F] mb-4">
             Text Size
           </label>
-          <div className="grid grid-cols-3 gap-4">
-            {(['normal', 'large', 'extra-large'] as const).map((size) => (
+          <div className="grid grid-cols-3 gap-3">
+            {([
+              { value: 'normal', label: 'Normal', previewSize: 'text-base' },
+              { value: 'large', label: 'Large', previewSize: 'text-xl' },
+              { value: 'extra-large', label: 'X-Large', previewSize: 'text-2xl' },
+            ] as const).map(({ value, label, previewSize }) => (
               <button
-                key={size}
+                key={value}
                 type="button"
-                onClick={() => updateSetting('fontSize', size)}
+                onClick={() => updateSetting('fontSize', value)}
                 className={`
-                  p-4 rounded-xl border-4 font-semibold transition-all
-                  ${settings.fontSize === size
+                  flex flex-col items-center justify-center py-3 px-2 rounded-xl border-4 font-semibold transition-all min-h-[80px]
+                  ${settings.fontSize === value
                     ? 'border-[#1E5A8D] bg-blue-50 text-[#1E5A8D]'
                     : 'border-gray-200 bg-white text-[#5A6B7F] hover:border-gray-300'}
                 `}
               >
-                <div className={`mb-2 ${size === 'normal' ? 'text-base' : size === 'large' ? 'text-xl' : 'text-2xl'}`}>
-                  Aa
-                </div>
-                <div className="text-lg capitalize">{size === 'extra-large' ? 'Extra Large' : size}</div>
+                <div className={`${previewSize} mb-1.5 leading-none font-bold`}>Aa</div>
+                <div className="text-sm leading-tight text-center">{label}</div>
               </button>
             ))}
           </div>
