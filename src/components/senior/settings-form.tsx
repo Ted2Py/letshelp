@@ -1,19 +1,14 @@
 /**
  * Senior Settings Form Component
  *
- * A simple, accessible form for managing senior preferences.
- * Large text, clear labels, immediate feedback.
- *
- * Only includes settings that are actually wired up:
- * - fontSize → passed to session UI for text sizing
- * - highContrast → passed to session UI for contrast mode
- * - preferredLanguage → passed to Gemini for response language
+ * Manages display preferences saved to the senior's profile.
+ * Changes apply to all senior pages and sessions after saving.
  */
 
 'use client';
 
 import { useState } from 'react';
-import { Check, Eye, MessageSquare, Save } from 'lucide-react';
+import { Check, Eye, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { updateResidentPreferences } from '@/lib/actions/preferences';
@@ -21,7 +16,6 @@ import { updateResidentPreferences } from '@/lib/actions/preferences';
 interface Settings {
   fontSize: 'normal' | 'large' | 'extra-large';
   highContrast: boolean;
-  preferredLanguage: string;
 }
 
 interface SeniorSettingsFormProps {
@@ -113,43 +107,6 @@ export function SeniorSettingsForm({ residentId, initialSettings }: SeniorSettin
               <div className="text-lg text-[#5A6B7F]">Makes colors easier to see</div>
             </div>
           </label>
-        </div>
-      </Card>
-
-      {/* Language Settings */}
-      <Card className="p-6 shadow-lg">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center">
-            <MessageSquare className="h-6 w-6 text-amber-600" />
-          </div>
-          <h3 className="text-2xl font-bold text-[#1E3A5F]">Language</h3>
-        </div>
-
-        <div>
-          <label className="block text-xl font-semibold text-[#1E3A5F] mb-4">
-            Preferred Language
-          </label>
-          <p className="text-lg text-[#5A6B7F] mb-4">
-            The AI will respond in your chosen language.
-          </p>
-          <select
-            value={settings.preferredLanguage}
-            onChange={(e) => updateSetting('preferredLanguage', e.target.value)}
-            className="w-full p-4 text-xl border-4 border-gray-200 rounded-xl focus:border-[#1E5A8D] focus:outline-none"
-          >
-            <option value="en">English</option>
-            <option value="es">Español (Spanish)</option>
-            <option value="fr">Français (French)</option>
-            <option value="de">Deutsch (German)</option>
-            <option value="it">Italiano (Italian)</option>
-            <option value="pt">Português (Portuguese)</option>
-            <option value="zh">中文 (Chinese)</option>
-            <option value="ja">日本語 (Japanese)</option>
-            <option value="ko">한국어 (Korean)</option>
-            <option value="vi">Tiếng Việt (Vietnamese)</option>
-            <option value="ar">العربية (Arabic)</option>
-            <option value="hi">हिन्दी (Hindi)</option>
-          </select>
         </div>
       </Card>
 

@@ -78,7 +78,6 @@ export default async function SeniorSettingsPage() {
           initialSettings={{
             fontSize: (settings.fontSize as 'normal' | 'large' | 'extra-large') || 'large',
             highContrast: (settings.highContrast as boolean) || false,
-            preferredLanguage: resident.preferredLanguage || 'en',
           }}
         />
       </main>

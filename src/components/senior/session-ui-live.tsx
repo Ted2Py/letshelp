@@ -352,7 +352,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
       </header>
 
       {/* Main content area */}
-      <main className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center p-3 sm:p-6">
+      <main className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center p-2 sm:p-6">
         <div className="max-w-3xl w-full">
           {/* Connection/loading state */}
           {viewState === 'connecting' && (
@@ -395,10 +395,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
           {/* Active session states (including reconnecting — keep UI visible) */}
           {(viewState === 'ready' || viewState === 'listening' || viewState === 'speaking' || viewState === 'reconnecting') && (
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-6">
               {/* AI Response Card */}
               <div className={`
-                relative bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-8 sm:min-h-48 flex flex-col justify-center
+                relative bg-white rounded-2xl sm:rounded-3xl shadow-xl p-3 sm:p-8 sm:min-h-48 flex flex-col justify-center
                 border-4 ${isSpeaking ? 'border-blue-200' : 'border-transparent'}
                 transition-all duration-300
               `}>
@@ -415,16 +415,16 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 )}
 
                 {/* Avatar + Message */}
-                <div className="flex items-start gap-4 sm:gap-6">
+                <div className="flex items-start gap-3 sm:gap-6">
                   <div className={`
-                    flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center transition-all duration-300
+                    flex-shrink-0 w-10 h-10 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300
                     ${isSpeaking ? 'bg-blue-100 scale-110' : 'bg-blue-50'}
                   `}>
-                    <Hand className={`h-7 w-7 sm:h-10 sm:w-10 text-[#1E5A8D] ${isSpeaking ? 'animate-gentle-pulse' : ''}`} />
+                    <Hand className={`h-5 w-5 sm:h-10 sm:w-10 text-[#1E5A8D] ${isSpeaking ? 'animate-gentle-pulse' : ''}`} />
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className={`${headingSizes[fontSize]} font-medium text-[#1E3A5F] leading-relaxed`}>
+                    <p className={`text-lg sm:${headingSizes[fontSize]} font-medium text-[#1E3A5F] leading-snug sm:leading-relaxed`}>
                       {aiResponse || getStatusText()}
                     </p>
 
@@ -489,16 +489,16 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
       </main>
 
       {/* Control bar */}
-      <footer className="bg-white border-t-4 border-[#1E5A8D] p-4 sm:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+      <footer className="bg-white border-t-4 border-[#1E5A8D] p-3 sm:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="max-w-4xl mx-auto">
 
           {/* Start Button - centered, full-width on mobile */}
           {needsStart && viewState !== 'connecting' && (
-            <div className="flex justify-center mb-3 sm:mb-0">
+            <div className="flex justify-center mb-2 sm:mb-0">
               <Button
                 onClick={handleStartSession}
                 size="lg"
-                className="w-full sm:w-auto h-16 sm:h-20 px-10 sm:px-12 rounded-2xl text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg btn-press animate-slide-up"
+                className="w-full sm:w-auto h-12 sm:h-20 px-10 sm:px-12 rounded-2xl text-lg sm:text-2xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg btn-press animate-slide-up"
                 aria-label="Start session"
               >
                 <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white animate-pulse mr-3" />
@@ -509,19 +509,19 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
           {/* Active session controls - 2-col grid on mobile, row on desktop */}
           {!needsStart && viewState !== 'connecting' && viewState !== 'reconnecting' && (
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 sm:gap-4">
               {/* Microphone Toggle */}
               <Button
                 onClick={toggleMute}
                 size="lg"
                 variant={isMuted ? 'destructive' : 'default'}
                 className={`
-                  h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold btn-press flex items-center justify-center gap-2
+                  h-11 sm:h-20 rounded-2xl text-sm sm:text-xl font-bold btn-press flex items-center justify-center gap-1.5 sm:gap-2
                   ${!isMuted ? 'bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'}
                 `}
                 aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
               >
-                {isMuted ? <MicOff className="h-6 w-6 sm:h-8 sm:w-8" /> : <Mic className="h-6 w-6 sm:h-8 sm:w-8" />}
+                {isMuted ? <MicOff className="h-5 w-5 sm:h-8 sm:w-8" /> : <Mic className="h-5 w-5 sm:h-8 sm:w-8" />}
                 <span>{isMuted ? 'Unmute' : 'Mute'}</span>
               </Button>
 
@@ -531,7 +531,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 size="lg"
                 variant={isScreenShared ? 'default' : 'outline'}
                 className={`
-                  h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold btn-press flex items-center justify-center gap-2
+                  h-11 sm:h-20 rounded-2xl text-sm sm:text-xl font-bold btn-press flex items-center justify-center gap-1.5 sm:gap-2
                   ${isScreenShared
                     ? 'bg-teal-500 hover:bg-teal-600 text-white border-none'
                     : 'border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50'}
@@ -539,9 +539,9 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 aria-label={isScreenShared ? 'Stop screen sharing' : 'Share screen'}
               >
                 {isScreenShared ? (
-                  <><MonitorOff className="h-5 w-5 sm:h-7 sm:w-7" /><span>Stop Share</span></>
+                  <><MonitorOff className="h-4 w-4 sm:h-7 sm:w-7" /><span>Stop Share</span></>
                 ) : (
-                  <><Monitor className="h-5 w-5 sm:h-7 sm:w-7" /><span>Share Screen</span></>
+                  <><Monitor className="h-4 w-4 sm:h-7 sm:w-7" /><span>Share Screen</span></>
                 )}
               </Button>
 
@@ -550,10 +550,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 onClick={toggleSpeechSpeed}
                 size="lg"
                 variant="outline"
-                className="h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-2"
+                className="h-11 sm:h-20 rounded-2xl text-sm sm:text-xl font-bold border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-1.5 sm:gap-2"
                 aria-label={`Speech speed: ${SPEED_LABELS[speechSpeed]}`}
               >
-                <Gauge className="h-5 w-5 sm:h-7 sm:w-7" />
+                <Gauge className="h-4 w-4 sm:h-7 sm:w-7" />
                 <span>{SPEED_LABELS[speechSpeed]}</span>
               </Button>
 
@@ -562,10 +562,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 onClick={() => setShowHandoffConfirm(true)}
                 size="lg"
                 variant="outline"
-                className="h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-2"
+                className="h-11 sm:h-20 rounded-2xl text-sm sm:text-xl font-bold border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-1.5 sm:gap-2"
                 aria-label="Request human volunteer"
               >
-                <Hand className="h-5 w-5 sm:h-7 sm:w-7" />
+                <Hand className="h-4 w-4 sm:h-7 sm:w-7" />
                 <span>Get a Human</span>
               </Button>
 
@@ -574,10 +574,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 onClick={handleEndCall}
                 size="lg"
                 variant="destructive"
-                className="col-span-2 sm:col-span-1 h-14 sm:h-20 rounded-2xl text-base sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white btn-press flex items-center justify-center gap-2"
+                className="col-span-2 sm:col-span-1 h-11 sm:h-20 rounded-2xl text-sm sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white btn-press flex items-center justify-center gap-1.5 sm:gap-2"
                 aria-label="End call"
               >
-                <PhoneOff className="h-5 w-5 sm:h-7 sm:w-7" />
+                <PhoneOff className="h-4 w-4 sm:h-7 sm:w-7" />
                 <span>End Call</span>
               </Button>
             </div>
@@ -585,22 +585,22 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
           {/* End Call alone when on start/connecting state */}
           {(needsStart || viewState === 'connecting') && viewState !== 'connecting' && (
-            <div className="flex justify-center mt-3">
+            <div className="flex justify-center mt-2">
               <Button
                 onClick={handleEndCall}
                 size="lg"
                 variant="destructive"
-                className="h-12 sm:h-16 px-8 rounded-2xl text-base sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white btn-press"
+                className="h-10 sm:h-16 px-8 rounded-2xl text-sm sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white btn-press"
                 aria-label="End call"
               >
-                <PhoneOff className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
+                <PhoneOff className="mr-2 h-4 w-4 sm:h-6 sm:w-6" />
                 Cancel
               </Button>
             </div>
           )}
 
-          {/* Helpful hint text */}
-          <p className="text-center text-[#5A6B7F] mt-3 text-sm sm:text-base">
+          {/* Helpful hint text - hidden on mobile to save space */}
+          <p className="hidden sm:block text-center text-[#5A6B7F] mt-3 text-base">
             {viewState === 'listening' && !isMuted && "I'm listening... Speak naturally and I'll help you out."}
             {isMuted && "Tap Unmute so I can hear you."}
             {isSpeaking && "I'm speaking..."}
