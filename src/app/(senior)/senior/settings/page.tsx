@@ -65,7 +65,7 @@ export default async function SeniorSettingsPage() {
             Make LetsHelp work for you
           </h2>
           <p className="text-xl text-[#5A6B7F] leading-relaxed">
-            Adjust how things look and sound. Changes happen right away!
+            Adjust how things look and what language to use. Changes take effect on your next session.
           </p>
         </div>
 
@@ -75,12 +75,6 @@ export default async function SeniorSettingsPage() {
           initialSettings={{
             fontSize: (settings.fontSize as 'normal' | 'large' | 'extra-large') || 'large',
             highContrast: (settings.highContrast as boolean) || false,
-            darkMode: (settings.darkMode as boolean) || false,
-            voiceSpeed: (settings.voiceSpeed as number) || 1.0,
-            voiceGender: (settings.voiceGender as 'male' | 'female' | 'neutral') || 'neutral',
-            autoPlayVoice: (settings.autoPlayVoice as boolean) || true,
-            showSubtitles: (settings.showSubtitles as boolean) || true,
-            lineSpacing: (settings.lineSpacing as 'normal' | 'relaxed' | 'loose') || 'relaxed',
             preferredLanguage: resident.preferredLanguage || 'en',
           }}
         />

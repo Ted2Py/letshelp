@@ -362,6 +362,36 @@ export class GeminiLiveClient {
   }
 
   /**
+   * Resample audio data to change playback speed without using AudioBufferSourceNode.playbackRate.
+   * Using playbackRate on the source node causes glitches on mobile and some desktop browsers
+   * because it interacts poorly with the AudioContext's native sample rate resampling.
+   * Instead, we pre-process the buffer data so we always play at rate 1.0.
+   *
+   * speed > 1  → fewer output samples  → plays faster
+   * speed < 1  → more output samples   → plays slower
+   * Pitch shifts proportionally (same behavior as a tape deck speed control).
+   */
+  private resampleAudioData(input: Float32Array, speed: number): Float32Array {
+    if (speed === 1.0) return input;
+
+    const outputLength = Math.max(1, Math.round(input.length / speed));
+    const output = new Float32Array(outputLength);
+
+    for (let i = 0; i < outputLength; i++) {
+      const srcPos = i * speed;
+      const srcIndex = Math.floor(srcPos);
+      const fraction = srcPos - srcIndex;
+
+      const s0 = srcIndex < input.length ? input[srcIndex]! : 0;
+      const s1 = (srcIndex + 1) < input.length ? input[srcIndex + 1]! : 0;
+
+      output[i] = s0 + fraction * (s1 - s0);
+    }
+
+    return output;
+  }
+
+  /**
    * Play queued audio
    */
   private playAudioQueue(): void {
@@ -382,7 +412,11 @@ export class GeminiLiveClient {
         return;
       }
 
-      const audioData = this.audioQueue.shift()!;
+      const rawData = this.audioQueue.shift()!;
+      // Resample the data to the target speed instead of using source.playbackRate
+      // (playbackRate on AudioBufferSourceNode causes glitches on mobile/some desktops)
+      const audioData = this.resampleAudioData(rawData, this.playbackRate);
+
       const source = this.audioContext.createBufferSource();
       const buffer = this.audioContext.createBuffer(
         1,
@@ -392,7 +426,7 @@ export class GeminiLiveClient {
       buffer.getChannelData(0).set(audioData);
 
       source.buffer = buffer;
-      source.playbackRate.value = this.playbackRate;
+      // Always play at 1.0 — speed is baked into the resampled buffer
       source.connect(this.audioContext.destination);
       source.onended = playNextChunk;
       source.start();

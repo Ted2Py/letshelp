@@ -67,33 +67,33 @@ export function SignUpForm() {
           <button
             type="button"
             onClick={() => setAccountType("facility")}
-            className={`flex flex-col items-center rounded-lg border-2 p-4 transition-colors ${
+            className={`flex flex-col items-center rounded-lg border-2 p-3 transition-colors ${
               accountType === "facility"
                 ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                 : "border-gray-200 hover:border-gray-300 dark:border-gray-700"
             }`}
           >
-            <svg className="mb-2 h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="mb-1.5 h-6 w-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M3 21h18M5 21V7l8-4 8 4v14M8 21v-4h8v4"/>
             </svg>
-            <span className="font-semibold">Facility Manager</span>
-            <span className="text-xs text-gray-500">Manage residents & billing</span>
+            <span className="font-semibold text-sm leading-tight">Facility Manager</span>
+            <span className="text-[11px] text-gray-500 leading-tight mt-0.5">Manage residents</span>
           </button>
           <button
             type="button"
             onClick={() => setAccountType("senior")}
-            className={`flex flex-col items-center rounded-lg border-2 p-4 transition-colors ${
+            className={`flex flex-col items-center rounded-lg border-2 p-3 transition-colors ${
               accountType === "senior"
                 ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                 : "border-gray-200 hover:border-gray-300 dark:border-gray-700"
             }`}
           >
-            <svg className="mb-2 h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="mb-1.5 h-6 w-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="8" r="4"/>
               <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
             </svg>
-            <span className="font-semibold">Senior</span>
-            <span className="text-xs text-gray-500">Get tech support</span>
+            <span className="font-semibold text-sm leading-tight">Senior</span>
+            <span className="text-[11px] text-gray-500 leading-tight mt-0.5">Get tech support</span>
           </button>
         </div>
       </div>

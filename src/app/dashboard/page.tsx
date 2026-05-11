@@ -2,39 +2,34 @@
  * LetsHelp User Dashboard
  *
  * Redirects users to the appropriate page based on their role:
- * - Seniors → /senior (Get Help Now page)
- * - Facility Admins → /facility (Facility Dashboard)
+ * - Facility staff → /facility (Facility Dashboard)
+ * - Seniors / everyone else → /senior (Get Help Now page)
  */
 
-"use client";
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { eq } from 'drizzle-orm';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { facilityStaff } from '@/lib/schema-letshelp';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { useSession } from "@/lib/auth-client";
+export default async function DashboardPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const { data: session, isPending } = useSession();
+  if (!session) {
+    redirect('/login');
+  }
 
-  useEffect(() => {
-    if (!isPending && session) {
-      // TODO: Check user role from database and redirect accordingly
-      // For now, default to senior experience
-      // In production, check user.role and redirect to /facility for admins
-      router.push("/senior");
-    }
-    if (!isPending && !session) {
-      router.push("/login");
-    }
-  }, [session, isPending, router]);
+  // Check if the user is a facility manager/staff
+  const staffRecord = await db
+    .select({ id: facilityStaff.id })
+    .from(facilityStaff)
+    .where(eq(facilityStaff.userId, session.user.id))
+    .limit(1);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
-        <p className="text-muted-foreground">Loading your dashboard...</p>
-      </div>
-    </div>
-  );
+  if (staffRecord.length > 0) {
+    redirect('/facility');
+  }
+
+  redirect('/senior');
 }

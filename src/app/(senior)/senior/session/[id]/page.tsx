@@ -72,7 +72,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
           </p>
           <a
             href="/senior"
-            className="inline-block h-14 px-8 bg-blue-600 text-white rounded-xl text-xl font-bold hover:bg-blue-700"
+            className="inline-flex items-center justify-center h-14 px-8 bg-blue-600 text-white rounded-xl text-xl font-bold hover:bg-blue-700"
           >
             Go Back
           </a>

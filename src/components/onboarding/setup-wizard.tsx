@@ -660,6 +660,20 @@ export function SetupWizard() {
           </div>
         )}
 
+        {/* Go to Dashboard — shown only on the complete step */}
+        {currentStep === 'complete' && (
+          <div className="mt-8 flex justify-center border-t pt-6 dark:border-gray-700">
+            <Button
+              type="button"
+              onClick={handleNext}
+              className="h-12 px-10 text-base bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white"
+            >
+              Go to Your Dashboard
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
         {/* Navigation Buttons */}
         {currentStep !== 'complete' && (
           <div className="mt-8 flex items-center justify-between border-t pt-6 dark:border-gray-700">

@@ -20,7 +20,6 @@ import {
   MessageSquare,
   Headphones,
   DollarSign,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -80,11 +79,6 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-fade-in">
-              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/20 text-white font-medium backdrop-blur-sm">
-                <Sparkles className="h-5 w-5" />
-                Trusted by senior living communities
-              </div>
-
               <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight font-[Fraunces,serif]">
                 Patient Tech Support,{" "}
                 <span className="text-[#FCD34D]">On Demand</span>
@@ -107,8 +101,8 @@ export default function LandingPage() {
                 </Link>
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="border-3 border-white text-white hover:bg-white/10 text-xl px-10 py-7 rounded-2xl font-bold"
+                  variant="ghost"
+                  className="border-2 border-white text-white bg-transparent hover:bg-white/10 hover:text-white text-xl px-10 py-7 rounded-2xl font-bold"
                   asChild
                 >
                   <a href="#how-it-works">See How It Works</a>
@@ -147,13 +141,6 @@ export default function LandingPage() {
                     <div className="text-xs sm:text-sm text-white/80 leading-snug">{feature.description}</div>
                   </div>
                 ))}
-              </div>
-              {/* Trust badge below */}
-              <div className="mt-8 text-center">
-                <div className="inline-flex items-center gap-3 bg-white/25 backdrop-blur-sm rounded-full px-8 py-4 border border-white/30">
-                  <Check className="h-6 w-6 text-[#34D399]" />
-                  <span className="text-white font-semibold text-lg">Trusted by 1,000+ seniors</span>
-                </div>
               </div>
             </div>
           </div>
@@ -583,8 +570,8 @@ export default function LandingPage() {
             </Link>
             <Button
               size="lg"
-              variant="outline"
-              className="w-full sm:w-auto border-3 border-white text-white hover:bg-white/10 text-xl sm:text-2xl px-8 sm:px-12 py-5 sm:py-8 rounded-2xl font-bold"
+              variant="ghost"
+              className="w-full sm:w-auto border-2 border-white text-white bg-transparent hover:bg-white/10 hover:text-white text-xl sm:text-2xl px-8 sm:px-12 py-5 sm:py-8 rounded-2xl font-bold"
               asChild
             >
               <a href="#pricing">View Pricing</a>
