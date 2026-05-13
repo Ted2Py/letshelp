@@ -96,10 +96,10 @@ export default async function SeniorHistoryPage() {
           // Session List
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-2">
+              <h2 className="text-3xl font-bold mb-2 dark:text-white">
                 Your Past Sessions
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-muted-foreground dark:text-white/80">
                 {totalSessions} session{totalSessions !== 1 ? "s" : ""} total
               </p>
             </div>
