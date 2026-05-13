@@ -1,0 +1,17 @@
+[mcp_servers.next-devtools]
+args = [
+    "-y",
+    "next-devtools-mcp@latest",
+]
+command = "npx"
+
+[mcp_servers.playwright]
+args = ["@playwright/mcp@latest"]
+command = "npx"
+
+[mcp_servers.shadcn]
+args = [
+    "shadcn@latest",
+    "mcp",
+]
+command = "npx"

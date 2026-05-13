@@ -13,6 +13,7 @@ export interface LiveClientConfig {
   apiKey: string;
   model: string;
   preferredLanguage?: string;
+  deviceInfo?: string;
   onLanguageDetected?: (language: string) => void;
   onMessage?: (role: 'user' | 'assistant', content: string) => void;
   onReconnect?: () => void;
@@ -99,6 +100,9 @@ export class GeminiLiveClient {
            - Even if the user types or speaks in a different language by accident, keep responding in ${defaultLanguage} unless they explicitly ask you to switch.
            - If the user directly asks you to switch languages (e.g. "speak English"), immediately switch and continue in that language.
            - You are fluent in all languages. Never say you can only speak one language.
+
+           DEVICE CONTEXT:
+           ${this.config.deviceInfo ? this.config.deviceInfo : 'The user is on a desktop or laptop computer. Screen sharing is available.'}
 
            IMPORTANT RULE about seeing the screen:
            - You will ONLY see the user's screen when they SHARE it with you

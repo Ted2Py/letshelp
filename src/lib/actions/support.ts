@@ -133,6 +133,8 @@ export async function createSupportSession(): Promise<CreateSessionResult> {
   }
 
   revalidatePath('/senior/session');
+  revalidatePath('/senior');
+  revalidatePath('/senior/history');
   return { success: true, sessionId: newSession.id };
 }
 

@@ -102,11 +102,25 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
         if (!mounted) return;
 
+        // Detect device type for AI context
+        const ua = navigator.userAgent;
+        const isIOS = /iPhone|iPad|iPod/i.test(ua);
+        const isAndroid = /Android/i.test(ua);
+        let deviceInfo: string;
+        if (isIOS) {
+          deviceInfo = 'The user is on an iPhone or iPad (iOS). Screen sharing is NOT available on this device — do not suggest or ask them to share their screen. Guide them verbally instead.';
+        } else if (isAndroid) {
+          deviceInfo = 'The user is on an Android phone or tablet. Screen sharing is NOT available in mobile browsers — do not suggest or ask them to share their screen. Guide them verbally instead.';
+        } else {
+          deviceInfo = 'The user is on a desktop or laptop computer. Screen sharing is available — you can offer to see their screen if helpful.';
+        }
+
         const client = new GeminiLiveClient(
           {
             apiKey,
             model,
             preferredLanguage: preferredLanguage || languageNames[language] || initialSettings?.preferredLanguage,
+            deviceInfo,
             onLanguageDetected: (detectedLang) => {
               console.log('Language detected:', detectedLang);
             },

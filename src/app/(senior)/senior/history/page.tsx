@@ -112,7 +112,7 @@ export default async function SeniorHistoryPage() {
                     <div className="flex items-center gap-2">
                       {sessionItem.status === "completed" && (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-sm sm:text-base font-semibold">
-                          <CheckCircle className="h-4 w-4" /> Resolved
+                          <CheckCircle className="h-4 w-4" /> Completed
                         </span>
                       )}
                       {sessionItem.status === "abandoned" && (
@@ -131,7 +131,7 @@ export default async function SeniorHistoryPage() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground shrink-0">
+                    <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
                       {durationLabel && (
                         <span className="flex items-center gap-1">
                           <Clock className="h-3.5 w-3.5" />

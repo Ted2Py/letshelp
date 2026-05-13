@@ -209,7 +209,7 @@ export default async function SeniorPage() {
 
                   <div className="text-right shrink-0">
                     <p className="text-sm sm:text-xl font-semibold text-[#1E3A5F]">
-                      {s.status === 'completed' && 'Resolved'}
+                      {s.status === 'completed' && 'Completed'}
                       {s.status === 'abandoned' && 'Ended'}
                       {s.status === 'handed_off' && 'Human Help'}
                     </p>
