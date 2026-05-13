@@ -11,7 +11,7 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
-import { Clock, Heart, Shield, ArrowRight, Settings } from 'lucide-react';
+import { Clock, Heart, Shield, ArrowRight } from 'lucide-react';
 import { LanguageSelector } from '@/components/language-selector';
 import { GetHelpButton } from '@/components/senior/get-help-button';
 import { getSessionHistory } from '@/lib/actions/support';
@@ -60,13 +60,6 @@ export default async function SeniorPage() {
             </p>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            <Link
-              href="/senior/settings"
-              className="p-2 sm:p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-colors"
-              title="Settings"
-            >
-              <Settings className="h-5 w-5 sm:h-7 sm:w-7" />
-            </Link>
             <HeaderSignOut />
             <LanguageSelector />
           </div>
