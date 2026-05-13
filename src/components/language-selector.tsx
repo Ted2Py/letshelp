@@ -5,15 +5,15 @@ import { Check, Globe } from 'lucide-react';
 import { useLanguage, type Language } from '@/components/language-provider';
 import { Button } from '@/components/ui/button';
 
-const LANGUAGE_FLAGS: Record<Language, string> = {
-  en: '🇺🇸',
-  es: '🇪🇸',
-  zh: '🇨🇳',
-  fr: '🇫🇷',
-  de: '🇩🇪',
-  pt: '🇧🇷',
-  ar: '🇸🇦',
-  hi: '🇮🇳',
+const LANGUAGE_FLAG_CODES: Record<Language, string> = {
+  en: 'us',
+  es: 'es',
+  zh: 'cn',
+  fr: 'fr',
+  de: 'de',
+  pt: 'br',
+  ar: 'sa',
+  hi: 'in',
 };
 
 export function LanguageSelector() {
@@ -29,7 +29,7 @@ export function LanguageSelector() {
         className="flex items-center gap-1.5 border-2 border-white/60 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm px-2 sm:px-3 h-9 sm:h-10"
       >
         <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
-        <span className="hidden sm:inline text-base">{LANGUAGE_FLAGS[language]}</span>
+        <span className={`hidden sm:inline fi fi-${LANGUAGE_FLAG_CODES[language]} text-base rounded-sm`} />
         <span className="hidden md:inline">{languages[language]}</span>
       </Button>
 
@@ -53,9 +53,7 @@ export function LanguageSelector() {
                 className="w-full px-6 py-4 text-left hover:bg-gray-100 flex items-center justify-between transition-colors"
               >
                 <span className="flex items-center gap-4">
-                  <span className="text-4xl flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl w-16 h-16 shadow-md border-2 border-gray-400">
-                    {LANGUAGE_FLAGS[code as Language]}
-                  </span>
+                  <span className={`fi fi-${LANGUAGE_FLAG_CODES[code as Language]} rounded-lg shadow-md`} style={{ width: '4rem', height: '3rem', fontSize: '3rem', display: 'inline-block' }} />
                   <span className="text-2xl font-bold text-gray-900">{name}</span>
                 </span>
                 {language === code && (
