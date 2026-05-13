@@ -229,12 +229,7 @@ export default async function SeniorPage() {
       {/* Footer */}
       <footer className="bg-white border-t-4 border-[#1E5A8D] py-8 px-6">
         <div className="max-w-5xl mx-auto text-center">
-          <p className="text-lg text-[#5A6B7F]">
-            Questions? Need help?{' '}
-            <Link href="/senior/session/new" className="text-[#1E5A8D] font-semibold hover:underline">
-              Get Help Now
-            </Link>
-          </p>
+          <GetHelpButton variant="default" />
         </div>
       </footer>
     </div>
