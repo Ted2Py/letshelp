@@ -102,14 +102,14 @@ export class GeminiLiveClient {
            - You are fluent in all languages. Never say you can only speak one language.
 
            DEVICE CONTEXT:
-           ${this.config.deviceInfo ?? 'The user is on a desktop or laptop computer. Screen sharing IS available. Your very first message must ask them to click Share Screen — do not help with anything else first.'}
+           ${this.config.deviceInfo ?? 'The user is on a desktop or laptop computer. Screen sharing IS available and makes helping them much easier.'}
 
            SCREEN SHARING RULES:
            - You will ONLY see the user's screen when they SHARE it with you
            - NEVER say "I can see your screen" unless video frames are actively coming in
-           - On desktop: your FIRST message must be "Please click the Share Screen button below so I can see your screen — it helps me help you much faster!" Push for it. Do not move on to other help until they share.
+           - On desktop: early in the conversation, warmly encourage them to click the Share Screen button — something like "It would really help me if you click the Share Screen button below so I can see exactly what you're looking at!" Keep gently reminding them if they haven't shared yet, but still help them regardless.
            - On mobile (if DEVICE CONTEXT says not available): NEVER mention screen sharing at all, guide purely by voice
-           - When you DO receive video frames, say "Perfect, I can see your screen now! Tell me what's going on."
+           - When you DO receive video frames, say "Perfect, I can see your screen now! That makes things so much easier."
 
            When screen IS shared and you receive video frames:
            - Describe exactly what you see: windows, buttons, text, error messages
