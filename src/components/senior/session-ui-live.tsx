@@ -16,7 +16,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, PhoneOff, Hand, Monitor, MonitorOff, ChevronRight } from 'lucide-react';
-import { useLanguage } from '@/components/language-provider';
+import { useLanguage, LANGUAGE_NAMES_EN } from '@/components/language-provider';
 import { Button } from '@/components/ui/button';
 import { endSupportSession, requestVolunteerHandoff } from '@/lib/actions/support';
 import { GeminiLiveClient, type SessionState } from '@/lib/live-client';
@@ -74,23 +74,11 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
     const initLiveApi = async () => {
       try {
-        // Get language name from code for the AI
-        const languageNames: Record<string, string> = {
-          en: 'English',
-          es: 'Spanish',
-          zh: 'Chinese (Mandarin)',
-          fr: 'French',
-          de: 'German',
-          pt: 'Portuguese',
-          ar: 'Arabic',
-          hi: 'Hindi',
-        };
-
         const response = await fetch('/api/support/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            preferredLanguage: languageNames[language] || initialSettings?.preferredLanguage,
+            preferredLanguage: LANGUAGE_NAMES_EN[language] || initialSettings?.preferredLanguage,
             fontSize,
           }),
         });
@@ -120,7 +108,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
           {
             apiKey,
             model,
-            preferredLanguage: preferredLanguage || languageNames[language] || initialSettings?.preferredLanguage,
+            preferredLanguage: preferredLanguage || LANGUAGE_NAMES_EN[language] || initialSettings?.preferredLanguage,
             deviceInfo,
             onLanguageDetected: (detectedLang) => {
               console.log('Language detected:', detectedLang);
