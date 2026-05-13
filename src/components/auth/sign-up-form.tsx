@@ -17,7 +17,7 @@ export function SignUpForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [accountType, setAccountType] = useState<AccountType>("facility")
+  const [accountType, setAccountType] = useState<AccountType>("senior")
   const [error, setError] = useState("")
   const [isPending, setIsPending] = useState(false)
 
@@ -105,19 +105,12 @@ export function SignUpForm() {
       <div className="space-y-2">
         <Label>Account Type</Label>
         <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setAccountType("facility")}
-            className={`flex flex-col items-center justify-center rounded-lg border-2 p-3 gap-1.5 transition-colors min-h-[80px] ${
-              accountType === "facility"
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                : "border-gray-200 hover:border-gray-300 dark:border-gray-700"
-            }`}
-          >
-            <Building2 className="h-6 w-6 shrink-0" />
-            <span className="font-semibold text-sm leading-tight">Facility Manager</span>
-            <span className="text-[11px] text-gray-500 leading-tight">Manage residents</span>
-          </button>
+          {/* Facility Manager — coming soon */}
+          <div className="relative flex flex-col items-center justify-center rounded-lg border-2 border-gray-200 p-3 gap-1.5 min-h-[80px] opacity-50 cursor-not-allowed select-none bg-gray-50">
+            <Building2 className="h-6 w-6 shrink-0 text-gray-400" />
+            <span className="font-semibold text-sm leading-tight text-gray-400 line-through">Facility Manager</span>
+            <span className="text-[10px] font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full leading-tight">Coming soon</span>
+          </div>
           <button
             type="button"
             onClick={() => setAccountType("senior")}
@@ -186,7 +179,7 @@ export function SignUpForm() {
         <p className="text-sm text-destructive">{error}</p>
       )}
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Creating account..." : `Create ${accountType === "facility" ? "facility" : "senior"} account`}
+        {isPending ? "Creating account..." : "Create account"}
       </Button>
       <div className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
