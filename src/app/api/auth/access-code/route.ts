@@ -7,9 +7,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { user } from '@/lib/schema';
 import { accessCodes, residents } from '@/lib/schema-letshelp';
+
+const DEMO_CODE = '123456';
+const DEMO_EMAIL = 'demo@letshelp.app';
+const DEMO_PASSWORD = 'LetsHelpDemo2024!';
+const DEMO_NAME = 'Test Senior';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +30,37 @@ export async function POST(request: NextRequest) {
     if (cleanCode.length !== 6) {
       return NextResponse.json({ error: 'Invalid code format' }, { status: 400 });
     }
+
+    // ── Demo / test account ──────────────────────────────────────────────────
+    if (cleanCode === DEMO_CODE) {
+      // Create demo user if it doesn't exist yet
+      const existing = await db
+        .select({ id: user.id })
+        .from(user)
+        .where(eq(user.email, DEMO_EMAIL))
+        .limit(1);
+
+      if (!existing.length) {
+        await auth.api.signUpEmail({
+          body: { email: DEMO_EMAIL, password: DEMO_PASSWORD, name: DEMO_NAME },
+        });
+      }
+
+      // Sign in as demo user and forward the session cookie
+      const authRes = await auth.api.signInEmail({
+        body: { email: DEMO_EMAIL, password: DEMO_PASSWORD },
+        asResponse: true,
+      });
+
+      const nextRes = NextResponse.json({ needsPassword: false, redirect: '/senior' });
+      authRes.headers.forEach((value, key) => {
+        if (key.toLowerCase() === 'set-cookie') {
+          nextRes.headers.append('set-cookie', value);
+        }
+      });
+      return nextRes;
+    }
+    // ────────────────────────────────────────────────────────────────────────
 
     // Find the access code
     const codeList = await db

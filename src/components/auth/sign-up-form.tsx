@@ -182,7 +182,7 @@ export function SignUpForm() {
         {isPending ? "Creating account..." : "Create account"}
       </Button>
       <div className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+        Already have an account or a senior access code?{" "}
         <Link href="/login" className="text-primary hover:underline">
           Sign in
         </Link>
