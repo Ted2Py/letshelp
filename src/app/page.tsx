@@ -54,12 +54,12 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <Link href="/login" className="hidden sm:block">
-                <Button variant="outline" size="lg" className="text-lg border-2 border-[#1E5A8D] text-[#1E5A8D] hover:bg-[#1E5A8D] hover:text-white">
+                <Button variant="outline" size="lg" className="rounded-full text-base font-semibold border-2 border-[#1E5A8D] text-[#1E5A8D] bg-white hover:bg-[#EEF4FB] px-6 h-11">
                   Sign In
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="lg" className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] hover:from-[#1E4A6D] hover:to-[#1E5090] text-base sm:text-lg px-4 sm:px-6 h-11 sm:h-14">
+                <Button size="lg" className="rounded-full font-semibold bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white text-base px-6 h-11 shadow-md">
                   Get Started
                 </Button>
               </Link>

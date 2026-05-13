@@ -38,6 +38,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [isScreenShared, setIsScreenShared] = useState(false);
   const [showHandoffConfirm, setShowHandoffConfirm] = useState(false);
+  const [showHumanComingSoon, setShowHumanComingSoon] = useState(false);
   const [aiResponse, setAiResponse] = useState('');
   const [needsStart, setNeedsStart] = useState(true);
   const [screenShareSupported] = useState(() => {
@@ -526,7 +527,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
               {/* Request Human */}
               <Button
-                onClick={() => setShowHandoffConfirm(true)}
+                onClick={() => setShowHumanComingSoon(true)}
                 size="lg"
                 variant="outline"
                 className="h-11 sm:h-20 rounded-2xl text-sm sm:text-xl font-bold border-2 sm:border-3 border-[#1E5A8D] text-[#1E5A8D] hover:bg-blue-50 btn-press flex items-center justify-center gap-1.5 sm:gap-2"
@@ -607,6 +608,25 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Human volunteer coming soon modal */}
+      {showHumanComingSoon && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50 animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center animate-slide-up">
+            <div className="text-5xl mb-4">🙋</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1E3A5F] mb-3">Coming Soon!</h2>
+            <p className="text-lg sm:text-xl text-[#5A6B7F] leading-relaxed mb-8">
+              Human volunteer support is being set up and will be available very soon. For now, our AI assistant is here to help!
+            </p>
+            <button
+              onClick={() => setShowHumanComingSoon(false)}
+              className="w-full h-14 rounded-2xl bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white text-xl font-bold transition-colors"
+            >
+              Got it!
+            </button>
           </div>
         </div>
       )}

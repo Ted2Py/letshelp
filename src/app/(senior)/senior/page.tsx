@@ -20,6 +20,8 @@ import { db } from '@/lib/db';
 import { residents } from '@/lib/schema-letshelp';
 import { HeaderSignOut } from '@/components/auth/header-signout';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SeniorPage() {
   const session = await auth.api.getSession({
     headers: await headers(),

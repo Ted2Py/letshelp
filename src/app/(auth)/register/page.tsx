@@ -26,7 +26,7 @@ export default async function RegisterPage() {
           <CardDescription className="text-base">
             Free to start — no credit card required.{" "}
             <Link href="/login" className="font-semibold text-[#1E5A8D] hover:underline">
-              Already have an account? Sign in →
+              Already have an account or a senior access code? Sign in →
             </Link>
           </CardDescription>
         </CardHeader>

@@ -8,7 +8,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import {
   Clock,
   CheckCircle,
@@ -23,7 +23,9 @@ import { Card } from "@/components/ui/card";
 import { getSessionHistory } from "@/lib/actions/support";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { residents } from "@/lib/schema-letshelp";
+import { residents, supportSessions } from "@/lib/schema-letshelp";
+
+export const dynamic = 'force-dynamic';
 
 export default async function SeniorHistoryPage() {
   const session = await auth.api.getSession({
@@ -34,15 +36,24 @@ export default async function SeniorHistoryPage() {
     redirect("/login");
   }
 
-  const [history, residentList] = await Promise.all([
-    getSessionHistory(20),
-    db.select({ accessibilitySettings: residents.accessibilitySettings })
-      .from(residents)
-      .where(eq(residents.userId, session.user.id))
-      .limit(1),
+  const residentList = await db
+    .select({ id: residents.id, accessibilitySettings: residents.accessibilitySettings })
+    .from(residents)
+    .where(eq(residents.userId, session.user.id))
+    .limit(1);
+
+  const residentId = residentList[0]?.id;
+
+  const [history, totalResult] = await Promise.all([
+    getSessionHistory(50),
+    residentId
+      ? db.select({ value: count() }).from(supportSessions).where(eq(supportSessions.residentId, residentId))
+      : Promise.resolve([{ value: 0 }]),
   ]);
 
-  const settings = (residentList[0]?.accessibilitySettings as Record<string, unknown>) || {};
+  const totalSessions = totalResult[0]?.value ?? history.length;
+
+  const settings = (residentList[0]?.accessibilitySettings as Record<string, unknown> | undefined) ?? {};
   const fontSize = (settings.fontSize as string) || 'large';
   const highContrast = (settings.highContrast as boolean) || false;
   const fontSizeClass = fontSize === 'extra-large' ? 'text-[22px]' : fontSize === 'large' ? 'text-[19px]' : 'text-[17px]';
@@ -89,7 +100,7 @@ export default async function SeniorHistoryPage() {
                 Your Past Sessions
               </h2>
               <p className="text-lg text-muted-foreground">
-                {history.length} session{history.length !== 1 ? "s" : ""} total
+                {totalSessions} session{totalSessions !== 1 ? "s" : ""} total
               </p>
             </div>
 
