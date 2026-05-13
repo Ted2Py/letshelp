@@ -59,7 +59,7 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="lg" className="rounded-full font-semibold bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white text-base px-6 h-11 shadow-md">
+                <Button size="lg" className="rounded-full font-semibold bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white text-sm sm:text-base px-4 sm:px-6 h-9 sm:h-11 shadow-md">
                   Get Started
                 </Button>
               </Link>
