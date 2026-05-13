@@ -196,10 +196,10 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
   };
 
   const toggleScreenShare = async () => {
-    // iOS Safari/Chrome does not support getDisplayMedia — it requires a native app (like the Gemini app uses ReplayKit).
+    // iOS Safari/Chrome does not support getDisplayMedia — requires a native app.
     // Web browsers on iOS cannot access this system API regardless of browser choice.
     if (!screenShareSupported) {
-      setAiResponse("Screen sharing isn't available on iPhones or iPads in a web browser. To share your screen on iPhone or iPad, please use the Gemini app instead. On Android or a computer, it works right here!");
+      setAiResponse("Screen sharing isn't available in mobile browsers. Don't worry — just describe what you're seeing and I'll guide you through it! If you're on a computer, screen sharing works great there.");
       return;
     }
 
