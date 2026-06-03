@@ -12,7 +12,7 @@ import { db } from '@/lib/db';
 import { user } from '@/lib/schema';
 import { accessCodes, residents } from '@/lib/schema-letshelp';
 
-const DEMO_CODE = '123456';
+const DEMO_CODE = '654321';
 const DEMO_EMAIL = 'demo@letshelp.app';
 const DEMO_PASSWORD = 'LetsHelpDemo2024!';
 const DEMO_NAME = 'Test Senior';
