@@ -20,6 +20,8 @@ import {
   MessageSquare,
   Headphones,
   DollarSign,
+  ShieldAlert,
+  ShieldQuestion,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -44,6 +46,9 @@ export default function LandingPage() {
               </a>
               <a href="#features" className="text-lg font-medium text-[#5A6B7F] hover:text-[#1E5A8D] transition-colors">
                 Features
+              </a>
+              <a href="#scam-safety" className="text-lg font-medium text-[#5A6B7F] hover:text-[#1E5A8D] transition-colors">
+                Scam Safety
               </a>
               <a href="#pricing" className="text-lg font-medium text-[#5A6B7F] hover:text-[#1E5A8D] transition-colors">
                 Pricing
@@ -86,7 +91,8 @@ export default function LandingPage() {
 
               <p className="text-lg sm:text-2xl text-white/90 max-w-xl leading-relaxed">
                 An AI assistant that sees your screen, hears your voice, and guides you
-                step-by-step. Available 24/7. Never frustrated.
+                step-by-step. Available 24/7. Never frustrated. Plus instant scam
+                checks before you click, call, or pay.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -339,7 +345,7 @@ export default function LandingPage() {
               { icon: MessageSquare, title: 'Voice Conversation', desc: 'Talk naturally—the AI understands and speaks in a friendly, clear way' },
               { icon: Shield, title: 'Private & Secure', desc: 'Sessions are encrypted. Only you can see and hear the conversation' },
               { icon: Clock, title: '24/7 Availability', desc: 'Help is always available—day or night, weekends, holidays' },
-              { icon: Users, title: 'Human Backup', desc: 'Connect with a real volunteer if the AI can\'t solve your problem' },
+              { icon: ShieldAlert, title: 'Scam-Safety Check', desc: 'Unsure about a message, call, or pop-up? Check if it\'s a scam before you click, call, or pay' },
               { icon: Heart, title: 'Senior-Friendly Design', desc: 'Large text, clear buttons, simple navigation designed for older adults' },
             ].map((feature, i) => (
               <div
@@ -355,6 +361,68 @@ export default function LandingPage() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Scam-Safety Pillar */}
+      <section id="scam-safety" className="py-12 md:py-24 bg-[#FEF9F3]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-900 px-4 py-2 rounded-full font-bold mb-6">
+                <ShieldAlert className="h-5 w-5" />
+                Scam Protection
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold text-[#1E3A5F] mb-6 font-[Fraunces,serif]">
+                Pause &amp; Check before you click
+              </h2>
+              <p className="text-xl md:text-2xl text-[#5A6B7F] leading-relaxed mb-8">
+                Scammers target seniors with fake texts, pop-ups, and phone calls. With LetsHelp,
+                you can pause and check anything that feels off — and we&apos;ll help you decide
+                what&apos;s safe, in plain language, before you click, call, pay, or share a code.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  'Paste a suspicious text or email and get a clear answer',
+                  'Answer a few simple questions about a phone call',
+                  'Upload a screenshot or photo of a scary pop-up',
+                  'Always told how to double-check through official channels',
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-lg md:text-xl text-[#1E3A5F]">
+                    <Check className="h-6 w-6 text-teal-600 flex-shrink-0 mt-1" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex justify-center">
+              <div className="bg-white rounded-3xl shadow-2xl p-8 sm:p-10 max-w-md w-full border-4 border-amber-200">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-14 w-14 rounded-2xl bg-amber-100 flex items-center justify-center">
+                    <ShieldQuestion className="h-8 w-8 text-amber-700" />
+                  </div>
+                  <span className="text-2xl font-bold text-[#1E3A5F] font-[Fraunces,serif]">Is this safe?</span>
+                </div>
+                <div className="bg-[#FEF9F3] rounded-2xl p-5 mb-6">
+                  <p className="text-base text-[#5A6B7F] mb-2">You paste:</p>
+                  <p className="text-lg text-[#1E3A5F] italic">
+                    &ldquo;Your account is locked. Verify now and read us the code we just texted you.&rdquo;
+                  </p>
+                </div>
+                <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ShieldAlert className="h-6 w-6 text-amber-700" />
+                    <span className="font-bold text-amber-900 uppercase text-sm tracking-wide">Warning</span>
+                  </div>
+                  <p className="text-lg font-bold text-[#1E3A5F] mb-2">This looks like a scam</p>
+                  <p className="text-base text-[#5A6B7F]">
+                    Never share a verification code. Call your bank using the number on your card.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -472,7 +540,7 @@ export default function LandingPage() {
                   'Unlimited tech support sessions',
                   '24/7 availability',
                   'Screen sharing & voice guidance',
-                  'Human volunteer backup',
+                  'Scam-safety checks included',
                   'Cancel anytime',
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-lg">
@@ -520,12 +588,16 @@ export default function LandingPage() {
                 a: "Almost any tech problem: using apps, video calls, email, passwords, streaming music, photos, printing, and much more. If it involves technology, we can help.",
               },
               {
+                q: "Can LetsHelp help me avoid scams?",
+                a: "Yes. Our Scam-Safety Check lets you paste a suspicious message, answer a few questions about a phone call, or upload a screenshot, and we'll help you decide if it's safe — before you click, call, pay, or share any codes. We always show you how to verify through official channels, and we never tell you something is guaranteed safe.",
+              },
+              {
                 q: "Do I need to be good with technology?",
                 a: "Not at all! LetsHelp is designed for seniors who didn't grow up with technology. We explain everything clearly and patiently.",
               },
               {
                 q: "What if the AI can't solve my problem?",
-                a: "You can request a human volunteer at any time. They'll connect with you to help with more complex issues.",
+                a: "The AI handles most everyday tech questions and scam checks. For more complex issues, human helper support is coming soon — and in the meantime the AI will always point you to the right official resources.",
               },
               {
                 q: "Does this work on all devices?",
@@ -600,6 +672,7 @@ export default function LandingPage() {
               <h4 className="font-bold text-xl mb-6 font-[Fraunces,serif]">Product</h4>
               <ul className="space-y-3 text-lg">
                 <li><a href="#features" className="text-white/80 hover:text-white transition-colors">Features</a></li>
+                <li><a href="#scam-safety" className="text-white/80 hover:text-white transition-colors">Scam Safety</a></li>
                 <li><a href="#pricing" className="text-white/80 hover:text-white transition-colors">Pricing</a></li>
                 <li><a href="/senior" className="text-white/80 hover:text-white transition-colors">Seniors</a></li>
                 <li><a href="/facility" className="text-white/80 hover:text-white transition-colors">Facilities</a></li>

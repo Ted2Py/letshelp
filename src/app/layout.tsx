@@ -100,7 +100,7 @@ const jsonLd = {
     "Voice-guided instructions",
     "24/7 availability",
     "Patient, personalized assistance",
-    "Human volunteer backup",
+    "Scam-safety checks",
   ],
   provider: {
     "@type": "Organization",
