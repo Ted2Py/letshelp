@@ -14,6 +14,8 @@ export interface LiveClientConfig {
   model: string;
   preferredLanguage?: string;
   deviceInfo?: string;
+  /** Optional context about why the user started this session (e.g. from a scam check). */
+  initialContext?: string;
   onLanguageDetected?: (language: string) => void;
   onMessage?: (role: 'user' | 'assistant', content: string) => void;
   onReconnect?: () => void;
@@ -132,7 +134,19 @@ export class GeminiLiveClient {
            - The person you're helping may be nervous or frustrated
            - They may have hearing, vision, or motor difficulties
            - Go slowly and confirm each step before moving on
-           - Keep responses brief and conversational`;
+           - Keep responses brief and conversational${
+             this.config.initialContext
+               ? `
+
+           WHY THEY CAME TO YOU (very important — read this first):
+           ${this.config.initialContext}
+           - Open the conversation by warmly and specifically acknowledging this situation.
+           - Do NOT make them explain it again from scratch — you already know.
+           - If it looks like a possible scam, your first job is to keep them calm and safe:
+             gently tell them not to click, call, pay, or share any codes, and help them verify
+             through an official channel.`
+               : ''
+           }`;
 
         this.savedSessionConfig = {
           responseModalities: [Modality.AUDIO],

@@ -76,17 +76,22 @@ export interface AnalyzeScamInput {
  * never be "likely_safe". These are deliberately high-precision scam signals.
  */
 const RED_FLAG_RULES: Array<{ test: RegExp; reason: string; level: RiskLevel }> = [
-  { test: /\bgift\s?cards?\b|\bsteam\s?cards?\b|\bapple\s?cards?\b|\bgoogle\s?play\s?cards?\b/i, reason: 'Asks you to buy gift cards', level: 'high' },
-  { test: /\bbitcoin\b|\bcrypto(currency)?\b|\bwire\s?transfer\b|\bzelle\b|\bvenmo\b|\bcash\s?app\b/i, reason: 'Asks for crypto, a wire transfer, or an app payment', level: 'high' },
-  { test: /\b(verification|security|one[-\s]?time|2fa|otp)\s?codes?\b|\bcode\s+(we|i)\s+(just\s+)?sent\b|\bread\s+(me\s+)?the\s+code\b/i, reason: 'Asks you to share a verification code', level: 'high' },
-  { test: /\banydesk\b|\bteamviewer\b|\bremote(\s?ly)?\s?(access|control|connect)\b|\blet me (access|control) your (computer|screen)\b/i, reason: 'Wants remote access to your device', level: 'high' },
-  { test: /\bsocial\s?security\s?(number|#)?\b|\bssn\b|\bmedicare\s?(number|#|id)\b|\bbank\s?(login|password|account number)\b|\brouting\s?number\b/i, reason: 'Asks for sensitive personal or financial information', level: 'high' },
-  { test: /\b(your\s+)?(computer|device|pc)\s+(is\s+)?(infected|has a virus|compromised)\b|\bvirus\s+detected\b|\bcall\s+(this\s+number|us|support)\s+(now|immediately)\b/i, reason: 'Fake virus / tech-support warning', level: 'high' },
-  { test: /\bsuspend(ed|ing)?\b|\blocked\b|\bunusual\s+activity\b|\bverify\s+your\s+account\b/i, reason: 'Claims your account is locked or suspended', level: 'caution' },
-  { test: /\bact\s+now\b|\bimmediately\b|\burgent(ly)?\b|\bwithin\s+\d+\s+(hours?|minutes?)\b|\bfinal\s+(notice|warning)\b/i, reason: 'Pressures you to act fast', level: 'caution' },
-  { test: /\bdo\s?n['o]?t\s+tell\b|\bkeep\s+(this\s+)?(a\s+)?secret\b|\bconfidential\b|\bdon['o]?t\s+(call|talk to)\b/i, reason: 'Tells you to keep it secret', level: 'caution' },
-  { test: /\b(unpaid\s+)?toll\b|\be-?zpass\b|\busps\b|\bfedex\b|\bups\b|\bpackage\s+(could\s+not|failed|is\s+waiting)\b|\bdelivery\s+(problem|failed)\b/i, reason: 'Unexpected package or toll "problem" with a link', level: 'caution' },
-  { test: /https?:\/\/(?!(?:www\.)?(?:letshelp|google|microsoft|apple|medicare|irs|ssa)\.gov?)[^\s]+|\bbit\.ly\b|\btinyurl\b|\b[a-z0-9-]+\.(xyz|top|info|click|live|buzz)\b/i, reason: 'Contains a suspicious link to click', level: 'caution' },
+  // --- HIGH: near-certain scam signals ---
+  { test: /gift\s?cards?|steam\s?cards?|apple\s?cards?|google\s?play|itunes\s?cards?|prepaid\s?cards?/i, reason: 'Asks you to buy gift cards', level: 'high' },
+  { test: /\bbitcoin\b|\bcrypto|wire\s?transfer|\bzelle\b|\bvenmo\b|cash\s?app|moneygram|western\s?union/i, reason: 'Asks for crypto, a wire transfer, or an app payment', level: 'high' },
+  { test: /verification\s?code|security\s?code|one[-\s]?time\s?(code|password|pin)|\b2fa\b|\botp\b|read\s+(me|us|back)\b[^.]*\bcode|the\s+code\s+(we|i|they)\s+(just\s+)?(sent|texted)|share\s+(the\s+|your\s+)?code/i, reason: 'Wants a verification code or PIN', level: 'high' },
+  { test: /anydesk|teamviewer|remote\s?(access|control|desktop|connect)|access\s+your\s+(computer|device|screen)|control\s+your\s+(computer|device)|install[^.]*(software|app|program)/i, reason: 'Wants remote access to your device', level: 'high' },
+  { test: /social\s?security\s?(number|#|no\b)|\bssn\b|medicare\s?(number|#|id|card)|bank\s?(login|password|account\s?number|details)|routing\s?number|\bcvv\b|card\s?number/i, reason: 'Asks for sensitive personal or financial information', level: 'high' },
+  { test: /(your|the|this)\s+(computer|device|pc|mac|account)\s+(is|has been|may be|was)\s+(infected|hacked|compromised|at risk|locked)|virus\s+(detected|found)|malware\s+detected|(microsoft|apple|windows)\s+(support|security|defender)|call\s+(this\s+number|us|support|microsoft|apple)\s+(now|immediately|right away)/i, reason: 'Fake virus or tech-support warning', level: 'high' },
+  { test: /\bIRS\b|internal\s+revenue|social\s+security\s+administration|government\s+grant|arrest\s+warrant|legal\s+action[^.]*(against you|immediately)|you\s+(have\s+)?won|you'?re\s+a\s+winner|claim\s+your\s+(prize|reward|winnings)|lottery|sweepstakes|inheritance/i, reason: 'Classic scam hook (prize, IRS, threats)', level: 'high' },
+
+  // --- CAUTION: common but not always scams ---
+  { test: /account\s+(is\s+)?(locked|suspended|on hold|disabled|limited|closed)|unusual\s+(activity|login|sign-?in)|verify\s+your\s+(account|identity|information)|confirm\s+your\s+(account|identity|payment|details)|update\s+your\s+(payment|billing|information)/i, reason: 'Claims your account has a problem', level: 'caution' },
+  { test: /act\s+now|immediately|urgent(ly)?|right\s+away|within\s+\d+\s+(hours?|minutes?|days?)|final\s+(notice|warning|reminder)|expires?\s+(today|soon|in)|last\s+chance/i, reason: 'Pressures you to act fast', level: 'caution' },
+  { test: /do\s?n.?t\s+tell|keep\s+(this\s+)?(a\s+)?secret|don.?t\s+(call|talk|tell)\s+(anyone|your|the)|confidential|between\s+us/i, reason: 'Tells you to keep it secret', level: 'caution' },
+  { test: /unpaid\s+toll|e-?z\s?pass|\busps\b|\bfedex\b|\bups\b|\bdhl\b|package\s+(could\s+not|failed|is\s+waiting|on hold)|delivery\s+(problem|failed|attempt)|track\s+your\s+(package|parcel|shipment)/i, reason: 'Unexpected package or toll "problem"', level: 'caution' },
+  { test: /(norton|mcafee|geek\s?squad|paypal|amazon|netflix|apple)\s+[^.]{0,30}(subscription|membership|renewal|charged|invoice|order)|auto.?renew|your\s+(subscription|membership)[^.]{0,30}(renewed|charged)|refund\s+(of|for)\s+\$?\d/i, reason: 'Fake subscription or refund bait', level: 'caution' },
+  { test: /click\s+(here|the\s+link|below)|tap\s+(here|the\s+link)|https?:\/\/(bit\.ly|tinyurl|t\.co|goo\.gl|[a-z0-9-]+\.(xyz|top|info|click|live|buzz|cn|ru|tk))/i, reason: 'Asks you to click a suspicious link', level: 'caution' },
 ];
 
 /**
@@ -215,38 +220,27 @@ riskLevel meaning:
 - "likely_safe": nothing obviously dangerous — but still remind them to verify.`;
 
 /**
- * Build the user-facing content payload for the Gemini call, combining whatever
- * inputs were provided (text, image, call answers).
+ * Build the full text prompt (instructions + the thing to analyze). We fold the
+ * instructions into the prompt text — the exact shape that works in
+ * generateSessionSummary() — instead of using a separate systemInstruction field.
  */
-function buildContents(input: AnalyzeScamInput, ruleSummary: string): unknown {
-  const parts: unknown[] = [];
+function buildPrompt(input: AnalyzeScamInput, ruleSummary: string): string {
+  const pieces: string[] = [SYSTEM_PROMPT, 'Here is what to look at:'];
 
-  const textPieces: string[] = [];
   if (input.text && input.text.trim()) {
-    textPieces.push(`The senior received this message and wants to know if it is a scam:\n"""\n${input.text.trim().slice(0, 4000)}\n"""`);
+    pieces.push(`A message the senior received:\n"""\n${input.text.trim().slice(0, 4000)}\n"""`);
   }
   if (input.callAnswers) {
-    textPieces.push(ruleSummary);
+    pieces.push(ruleSummary);
   }
   if (input.imageBase64) {
-    textPieces.push('The senior uploaded the attached screenshot/photo and wants to know if it is a scam. Read any text in the image.');
+    pieces.push('The senior also attached a screenshot/photo (below). Read any text in the image and treat it as the thing to check.');
   }
-  if (textPieces.length === 0) {
-    textPieces.push('The senior asked whether something might be a scam but gave little detail. Give cautious, general guidance.');
-  }
-
-  parts.push({ text: textPieces.join('\n\n') });
-
-  if (input.imageBase64) {
-    parts.push({
-      inlineData: {
-        mimeType: input.imageMimeType || 'image/jpeg',
-        data: input.imageBase64,
-      },
-    });
+  if (pieces.length === 2) {
+    pieces.push('The senior asked whether something might be a scam but gave little detail. Give cautious, general guidance and choose "caution".');
   }
 
-  return [{ role: 'user', parts }];
+  return pieces.join('\n\n');
 }
 
 /**
@@ -275,14 +269,29 @@ export async function analyzeScamRisk(input: AnalyzeScamInput): Promise<ScamRisk
   let llm: ScamRiskResult | null = null;
   try {
     const client = getGeminiClient();
+
+    // Build contents the same proven way generateSessionSummary does: a plain
+    // string when there's no image, or [text, image] parts when there is one.
+    const promptText = buildPrompt(input, callSummary);
+    const contents: unknown = input.imageBase64
+      ? [
+          { text: promptText },
+          { inlineData: { mimeType: input.imageMimeType || 'image/jpeg', data: input.imageBase64 } },
+        ]
+      : promptText;
+
     const response = await client.models.generateContent({
       model: 'gemini-2.0-flash',
-      config: { systemInstruction: SYSTEM_PROMPT },
-      contents: buildContents(input, callSummary) as never,
+      contents: contents as never,
     });
 
     const raw = response.text?.trim() ?? '';
     const cleaned = raw.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
+
+    if (!cleaned) {
+      throw new Error('Empty response from model');
+    }
+
     const parsed = JSON.parse(cleaned) as Partial<ScamRiskResult>;
 
     const level: RiskLevel =
@@ -301,9 +310,12 @@ export async function analyzeScamRisk(input: AnalyzeScamInput): Promise<ScamRisk
     console.error('Scam analysis LLM call failed, using rule-based fallback:', err);
   }
 
-  // --- Merge: rule layer can only clamp UPWARD (toward more danger) ---
+  // --- If the LLM did not actually run, NEVER say "safe". Fall back to at least
+  // "caution" so a failed analysis can never reassure the senior by accident. ---
   if (!llm) {
-    return fallbackResult(floor, ruleReasons);
+    const safeFloor = mostDangerous(floor, 'caution');
+    const reasons = ruleReasons.length ? ruleReasons : ["I couldn't fully check this one"];
+    return fallbackResult(safeFloor, reasons);
   }
 
   const finalLevel = mostDangerous(llm.riskLevel, floor);

@@ -91,6 +91,17 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
         if (!mounted) return;
 
+        // Pick up any context handed off from the Scam-Safety check (one-time use),
+        // so the AI opens the conversation already knowing why they're here.
+        let initialContext: string | undefined;
+        if (typeof window !== 'undefined') {
+          const stored = sessionStorage.getItem('letshelp-helper-context');
+          if (stored) {
+            initialContext = stored;
+            sessionStorage.removeItem('letshelp-helper-context');
+          }
+        }
+
         // Detect device type for AI context
         const ua = navigator.userAgent;
         const isIOS = /iPhone|iPad|iPod/i.test(ua);
@@ -110,6 +121,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
             model,
             preferredLanguage: preferredLanguage || LANGUAGE_NAMES_EN[language] || initialSettings?.preferredLanguage,
             deviceInfo,
+            ...(initialContext ? { initialContext } : {}),
             onLanguageDetected: (detectedLang) => {
               console.log('Language detected:', detectedLang);
             },

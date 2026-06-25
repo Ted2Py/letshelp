@@ -113,8 +113,32 @@ export function ScamCheck() {
     }
   };
 
+  const buildHelperContext = (): string => {
+    const parts: string[] = [];
+    if (result) {
+      parts.push('The senior just used the LetsHelp Scam-Safety check and wants to talk it through with you.');
+      if (mode === 'text' && text.trim()) {
+        parts.push(`They were checking this message: "${text.trim().slice(0, 600)}".`);
+      } else if (mode === 'call') {
+        const flags = CALL_QUESTIONS.filter((q) => callAnswers[q.key]).map((q) => q.label.replace(/^Did they /, '').replace(/\?$/, ''));
+        parts.push(flags.length ? `It was about a phone call where: ${flags.join('; ')}.` : 'It was about a phone call they were unsure of.');
+      } else if (mode === 'image') {
+        parts.push('They uploaded a screenshot/photo of something they were unsure about.');
+      }
+      const verdict = result.riskLevel === 'high' ? 'looks like a scam' : result.riskLevel === 'caution' ? 'is worth being careful about' : 'showed no clear danger';
+      parts.push(`Our check said it ${verdict} ("${result.headline}").`);
+      if (result.redFlags.length) parts.push(`Warning signs noticed: ${result.redFlags.join('; ')}.`);
+    } else {
+      parts.push('The senior opened the "Is this safe?" scam-safety tool and chose to talk to a helper. They are unsure whether a message, call, or pop-up might be a scam and want to talk it through.');
+    }
+    return parts.join(' ');
+  };
+
   const talkToHelper = async () => {
     setStartingSession(true);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('letshelp-helper-context', buildHelperContext());
+    }
     const res = await createSupportSession();
     if (res.success && res.sessionId) {
       router.push(`/senior/session/${res.sessionId}`);
