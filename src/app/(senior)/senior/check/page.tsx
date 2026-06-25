@@ -54,7 +54,7 @@ export default async function CheckPage() {
             <span className="bg-white/20 p-2 sm:p-3 rounded-xl sm:rounded-2xl">
               <ShieldQuestion className="h-6 w-6 sm:h-8 sm:w-8" />
             </span>
-            Is this safe?
+            Pause &amp; Check
           </h1>
         </div>
       </header>

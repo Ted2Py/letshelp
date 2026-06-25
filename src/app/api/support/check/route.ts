@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
     const hasInput =
       (body.text && body.text.trim().length > 0) ||
       body.imageBase64 ||
-      (body.callAnswers && Object.keys(body.callAnswers).length > 0);
+      // A phone-call check is valid even with nothing ticked ("none of these happened").
+      (body.callAnswers !== undefined && typeof body.callAnswers === 'object');
 
     if (!hasInput) {
       return NextResponse.json(

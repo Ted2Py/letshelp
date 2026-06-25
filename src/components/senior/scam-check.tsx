@@ -129,7 +129,7 @@ export function ScamCheck() {
       parts.push(`Our check said it ${verdict} ("${result.headline}").`);
       if (result.redFlags.length) parts.push(`Warning signs noticed: ${result.redFlags.join('; ')}.`);
     } else {
-      parts.push('The senior opened the "Is this safe?" scam-safety tool and chose to talk to a helper. They are unsure whether a message, call, or pop-up might be a scam and want to talk it through.');
+      parts.push('The senior opened the LetsHelp "Pause & Check" scam-safety tool and chose to talk to a helper. They are unsure whether a message, call, or pop-up might be a scam and want to talk it through.');
     }
     return parts.join(' ');
   };
@@ -155,7 +155,8 @@ export function ScamCheck() {
 
   const canSubmit =
     (mode === 'text' && text.trim().length > 0) ||
-    (mode === 'call' && Object.values(callAnswers).some(Boolean)) ||
+    // On the phone-call screen you can always check — tapping items is optional.
+    mode === 'call' ||
     (mode === 'image' && !!imageData);
 
   // ---------- CHOOSE ----------
@@ -223,7 +224,8 @@ export function ScamCheck() {
             About the phone call
           </h2>
           <p className="text-lg text-[#5A6B7F]">
-            Tap any that happened. You do not need to tap any if none did.
+            Tap any that happened. If none of these did, that&apos;s okay — just tap
+            &ldquo;Check it for me&rdquo; below and I&apos;ll still help.
           </p>
           <div className="space-y-3">
             {CALL_QUESTIONS.map((q) => {

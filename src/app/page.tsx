@@ -403,7 +403,7 @@ export default function LandingPage() {
                   <div className="h-14 w-14 rounded-2xl bg-amber-100 flex items-center justify-center">
                     <ShieldQuestion className="h-8 w-8 text-amber-700" />
                   </div>
-                  <span className="text-2xl font-bold text-[#1E3A5F] font-[Fraunces,serif]">Is this safe?</span>
+                  <span className="text-2xl font-bold text-[#1E3A5F] font-[Fraunces,serif]">Pause &amp; Check</span>
                 </div>
                 <div className="bg-[#FEF9F3] rounded-2xl p-5 mb-6">
                   <p className="text-base text-[#5A6B7F] mb-2">You paste:</p>

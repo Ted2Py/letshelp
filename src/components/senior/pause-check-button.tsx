@@ -38,7 +38,7 @@ export function PauseCheckButton({ className = '', variant = 'large' }: PauseChe
       <span className="bg-white/30 p-2 sm:p-3 rounded-xl sm:rounded-2xl mr-3 sm:mr-4">
         <ShieldQuestion className="h-7 w-7 sm:h-10 sm:w-10" />
       </span>
-      Is this safe?
+      Pause &amp; Check
     </Link>
   );
 }

@@ -569,10 +569,20 @@ export class GeminiLiveClient {
 
       console.log('✅ Audio pipeline connected');
 
-      // Send initial text to wake up the AI
+      // Send initial text to wake up the AI. If we have context from the
+      // Scam-Safety checker, hand it to the AI now so it opens the conversation
+      // already knowing the situation instead of asking them to re-explain.
       if (this.session) {
         console.log('💬 Sending initial greeting to AI...');
-        this.sendText('Hello! I am ready. You can speak to me and I will respond with voice.');
+        if (this.config.initialContext) {
+          this.sendText(
+            `(System note — do not read this aloud verbatim. The user just came from the LetsHelp Scam-Safety checker. Context: ${this.config.initialContext} ` +
+            `Begin by warmly and specifically acknowledging this situation, reassure them, and ask how you can help. ` +
+            `If it looks risky, gently tell them not to click, call, pay, or share any codes, and help them verify through an official channel. Do NOT make them repeat what happened.)`
+          );
+        } else {
+          this.sendText('Hello! I am ready. You can speak to me and I will respond with voice.');
+        }
       }
 
       this.onStateChange('listening');
