@@ -87,7 +87,8 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
           throw new Error('Failed to get token');
         }
 
-        const { apiKey, model, preferredLanguage } = await response.json();
+        // The token route now returns a short-lived ephemeral token, not the raw key.
+        const { token, model, preferredLanguage } = await response.json();
 
         if (!mounted) return;
 
@@ -117,7 +118,7 @@ export function SessionUi({ sessionId, initialSettings }: SessionUiProps) {
 
         const client = new GeminiLiveClient(
           {
-            apiKey,
+            apiKey: token,
             model,
             preferredLanguage: preferredLanguage || LANGUAGE_NAMES_EN[language] || initialSettings?.preferredLanguage,
             deviceInfo,

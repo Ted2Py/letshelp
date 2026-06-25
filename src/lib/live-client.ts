@@ -87,9 +87,14 @@ export class GeminiLiveClient {
     this.onStateChange(this.isReconnecting ? 'reconnecting' : 'connecting');
 
     try {
-      // Reuse stored client on reconnects, create fresh on first connect
+      // Reuse stored client on reconnects, create fresh on first connect.
+      // config.apiKey now holds a short-lived EPHEMERAL TOKEN (not the raw API key),
+      // which requires the v1alpha API surface.
       if (!this.aiClient) {
-        this.aiClient = new GoogleGenAI({ apiKey: this.config.apiKey });
+        this.aiClient = new GoogleGenAI({
+          apiKey: this.config.apiKey,
+          httpOptions: { apiVersion: 'v1alpha' },
+        });
       }
 
       // Build session config once, reuse on reconnects

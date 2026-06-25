@@ -169,7 +169,7 @@ Respond with a JSON object only (no markdown, no code block) with exactly these 
 }`;
 
     const response = await client.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: prompt,
     });
 

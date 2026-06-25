@@ -281,7 +281,7 @@ export async function analyzeScamRisk(input: AnalyzeScamInput): Promise<ScamRisk
       : promptText;
 
     const response = await client.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: contents as never,
     });
 
