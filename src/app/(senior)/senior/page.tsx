@@ -14,6 +14,7 @@ import { eq } from 'drizzle-orm';
 import { Clock, Heart, Shield, ArrowRight } from 'lucide-react';
 import { LanguageSelector } from '@/components/language-selector';
 import { GetHelpButton } from '@/components/senior/get-help-button';
+import { PauseCheckButton } from '@/components/senior/pause-check-button';
 import { getSessionHistory } from '@/lib/actions/support';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
@@ -81,12 +82,13 @@ export default async function SeniorPage() {
             </p>
           </div>
 
-          {/* Get Help Now Button - fills width on mobile */}
-          <div className="mb-6 sm:mb-8 px-0 sm:px-4">
+          {/* Two co-equal pillars: Get Help Now (tech support) + Is this safe? (scam-safety) */}
+          <div className="mb-6 sm:mb-8 px-0 sm:px-4 flex flex-col items-center gap-4 sm:gap-5">
             <GetHelpButton
               variant="extra-large"
               className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-xl"
             />
+            <PauseCheckButton variant="large" className="w-full sm:w-auto" />
           </div>
 
           <div className="mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-base sm:text-lg text-[#5A6B7F]">
