@@ -139,7 +139,7 @@ export function ScamCheck() {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('letshelp-helper-context', buildHelperContext());
     }
-    const res = await createSupportSession();
+    const res = await createSupportSession({ source: 'pause_check' });
     if (res.success && res.sessionId) {
       router.push(`/senior/session/${res.sessionId}`);
     } else {

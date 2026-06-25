@@ -112,9 +112,11 @@ export default async function SeniorHistoryPage() {
                 : null;
 
               const rawCategory = sessionItem.issueCategory && sessionItem.issueCategory !== 'other' ? sessionItem.issueCategory : null;
-              const categoryLabel = rawCategory
-                ? rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1)
-                : "General Help";
+              const categoryLabel = sessionItem.issueCategory === 'scam_safety'
+                ? 'Pause & Check'
+                : rawCategory
+                  ? rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1)
+                  : "General Help";
 
               return (
                 <Card key={sessionItem.id} className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl border-0 shadow-md bg-white">

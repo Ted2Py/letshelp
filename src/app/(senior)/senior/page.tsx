@@ -198,9 +198,11 @@ export default async function SeniorPage() {
 
                     <div className="min-w-0">
                       <p className="text-base sm:text-xl font-semibold text-[#1E3A5F] truncate">
-                        {s.issueCategory && s.issueCategory !== 'other'
-                          ? s.issueCategory.charAt(0).toUpperCase() + s.issueCategory.slice(1)
-                          : 'General Help'}
+                        {s.issueCategory === 'scam_safety'
+                          ? 'Pause & Check'
+                          : s.issueCategory && s.issueCategory !== 'other'
+                            ? s.issueCategory.charAt(0).toUpperCase() + s.issueCategory.slice(1)
+                            : 'General Help'}
                       </p>
                       <p className="text-sm sm:text-lg text-[#5A6B7F]">
                         {new Date(s.startTime).toLocaleDateString('en-US', {

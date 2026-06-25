@@ -49,9 +49,13 @@ export interface SessionResult {
 }
 
 /**
- * Create a new AI support session
+ * Create a new AI support session.
+ * @param options.source - Where the session was started from. 'pause_check' tags
+ *   the session so it shows as "Pause & Check" in history.
  */
-export async function createSupportSession(): Promise<CreateSessionResult> {
+export async function createSupportSession(
+  options?: { source?: 'pause_check' }
+): Promise<CreateSessionResult> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -123,6 +127,8 @@ export async function createSupportSession(): Promise<CreateSessionResult> {
       facilityId: resident.facilityId || undefined,
       status: 'active',
       aiModel: 'gemini-2.5-flash-native-audio-preview-12-2025',
+      // Tag Pause & Check sessions so they're labelled correctly in history.
+      ...(options?.source === 'pause_check' ? { issueCategory: 'scam_safety' } : {}),
     })
     .returning();
 
@@ -337,7 +343,10 @@ export async function endSupportSession(params: {
       resolution: params.resolution,
       transcript: params.transcript,
       summary: aiSummary,
-      ...(aiIssueCategory ? { issueCategory: aiIssueCategory } : {}),
+      // Keep the Pause & Check tag — don't let the AI summary relabel it.
+      ...(aiIssueCategory && supportSession.issueCategory !== 'scam_safety'
+        ? { issueCategory: aiIssueCategory }
+        : {}),
     })
     .where(eq(supportSessions.id, params.sessionId));
 
