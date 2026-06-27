@@ -2,13 +2,6 @@ import { headers } from "next/headers"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { SignInButton } from "@/components/auth/sign-in-button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { auth } from "@/lib/auth"
 
 export default async function LoginPage({
@@ -25,49 +18,64 @@ export default async function LoginPage({
   const { reset } = await searchParams
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to LetsHelp</CardTitle>
-          <CardDescription className="text-base">
-            Sign in to your account.{" "}
-            <Link href="/register" className="font-semibold text-[#1E5A8D] hover:underline">
-              New here? Create an account →
-            </Link>
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#FEF9F3] px-4 py-10">
+      <div className="w-full max-w-md">
+        {/* Brand */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="h-16 w-16 rounded-3xl bg-gradient-to-br from-[#1E5A8D] to-[#2563EB] flex items-center justify-center shadow-lg mb-4">
+            <span className="text-white text-3xl">💬</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A5F] font-[Fraunces,serif]">
+            Welcome to LetsHelp
+          </h1>
+          <p className="text-lg text-[#5A6B7F] mt-2 text-center">
+            Patient tech help and scam protection.
+          </p>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6 sm:p-8 space-y-5">
           {reset === "success" && (
-            <p className="mb-4 text-sm text-green-600 dark:text-green-400">
+            <p className="text-center text-base text-teal-700 bg-teal-50 rounded-xl py-3 px-4">
               Password reset successfully. Please sign in with your new password.
             </p>
           )}
 
-          {/* Access code login for seniors - promoted to top */}
-          <div className="w-full">
-            <p className="mb-3 text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-              Are you a senior with an access code?
+          {/* Access code login for seniors — promoted to top */}
+          <div>
+            <p className="mb-3 text-center text-lg font-medium text-[#1E3A5F]">
+              Have an access code?
             </p>
             <Link
               href="/code-login"
-              className="flex w-full items-center justify-center rounded-xl border-2 border-[#1E5A8D] bg-[#EEF4FB] px-4 py-4 text-lg font-bold text-[#1E5A8D] transition-colors hover:bg-[#DDEAF7] dark:bg-blue-900/20 dark:text-blue-300"
+              className="flex w-full items-center justify-center rounded-2xl bg-[#1E5A8D] hover:bg-[#1E4A6D] px-4 py-4 text-xl font-bold text-white transition-colors btn-press"
             >
               Sign in with Access Code
             </Link>
           </div>
 
-          <div className="relative w-full">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-200" />
+              <span className="w-full border-t border-[#F0E9DF]" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or sign in another way</span>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-3 text-sm uppercase tracking-wide text-[#9AA8BC]">
+                Or sign in another way
+              </span>
             </div>
           </div>
 
-          <SignInButton />
-        </CardContent>
-      </Card>
+          <div className="flex justify-center">
+            <SignInButton />
+          </div>
+        </div>
+
+        <p className="text-center text-lg text-[#5A6B7F] mt-6">
+          New here?{" "}
+          <Link href="/register" className="font-bold text-[#1E5A8D] hover:underline">
+            Create an account →
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }
