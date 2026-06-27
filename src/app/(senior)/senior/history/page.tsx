@@ -19,11 +19,13 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { GetHelpButton } from "@/components/senior/get-help-button";
+import { SeniorBottomNav } from "@/components/senior/senior-bottom-nav";
 import { Card } from "@/components/ui/card";
 import { getSessionHistory } from "@/lib/actions/support";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { residents, supportSessions } from "@/lib/schema-letshelp";
+import { sessionCategoryLabel } from "@/lib/session-labels";
 
 export const dynamic = 'force-dynamic';
 
@@ -59,7 +61,7 @@ export default async function SeniorHistoryPage() {
   const fontSizeClass = fontSize === 'extra-large' ? 'text-[22px]' : fontSize === 'large' ? 'text-[19px]' : 'text-[17px]';
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 ${fontSizeClass} ${highContrast ? 'high-contrast' : ''}`}>
+    <div className={`min-h-screen bg-[#FEF9F3] ${fontSizeClass} ${highContrast ? 'high-contrast' : ''}`}>
       {/* Header */}
       <header className="bg-gradient-to-r from-[#1E5A8D] to-[#2563EB] text-white shadow-lg">
         <div className="max-w-4xl mx-auto px-4 py-4 sm:py-5 flex items-center gap-3">
@@ -74,7 +76,7 @@ export default async function SeniorHistoryPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+      <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8 pb-28">
         {history.length === 0 ? (
           // Empty State
           <div className="text-center py-16">
@@ -111,12 +113,7 @@ export default async function SeniorHistoryPage() {
                 ? mins > 0 ? `${mins} min${secs && secs > 0 ? ` ${secs}s` : ''}` : `${secs}s`
                 : null;
 
-              const rawCategory = sessionItem.issueCategory && sessionItem.issueCategory !== 'other' ? sessionItem.issueCategory : null;
-              const categoryLabel = sessionItem.issueCategory === 'scam_safety'
-                ? 'Pause & Check'
-                : rawCategory
-                  ? rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1)
-                  : "General Help";
+              const categoryLabel = sessionCategoryLabel(sessionItem.issueCategory);
 
               return (
                 <Card key={sessionItem.id} className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl border-0 shadow-md bg-white">
@@ -202,6 +199,8 @@ export default async function SeniorHistoryPage() {
           </div>
         )}
       </main>
+
+      <SeniorBottomNav />
     </div>
   );
 }

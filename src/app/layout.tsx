@@ -22,18 +22,19 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "LetsHelp - Patient Tech Support for Seniors",
+    default: "LetsHelp - Patient Tech Support & Scam Protection for Seniors",
     template: "%s | LetsHelp",
   },
   description:
-    "AI-powered tech support for seniors. An assistant that sees your screen, hears your voice, and guides you step-by-step through any tech problem. Available 24/7.",
+    "AI-powered tech help and scam protection for seniors. An assistant that sees your screen and guides you step-by-step — plus Pause & Check, which helps you spot scam texts, calls, and pop-ups before you click, call, or pay. Available 24/7.",
   keywords: [
     "senior tech support",
     "elderly tech help",
     "AI tech support",
     "senior computer help",
-    "elderly assistance",
-    "senior living technology",
+    "scam protection for seniors",
+    "scam detection",
+    "senior scam prevention",
     "patient tech support",
     "screen sharing support",
     "senior-friendly technology",
@@ -45,9 +46,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "LetsHelp",
-    title: "LetsHelp - Patient Tech Support for Seniors",
+    title: "LetsHelp - Patient Tech Support & Scam Protection for Seniors",
     description:
-      "AI-powered tech support that sees your screen and guides you step-by-step. Perfect for seniors who need patient, on-demand help with technology.",
+      "AI-powered tech help that sees your screen and guides you step-by-step — plus Pause & Check to help seniors spot scams before they click, call, or pay.",
     images: [
       {
         url: "/og-image.png",
@@ -59,9 +60,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "LetsHelp - Patient Tech Support for Seniors",
+    title: "LetsHelp - Patient Tech Support & Scam Protection for Seniors",
     description:
-      "AI-powered tech support that sees your screen and guides you step-by-step. Available 24/7 for seniors.",
+      "AI tech help that sees your screen and guides you step-by-step, plus Pause & Check scam protection. Available 24/7 for seniors.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -76,7 +77,7 @@ const jsonLd = {
   "@type": "WebApplication",
   name: "LetsHelp",
   description:
-    "AI-powered tech support for seniors. An assistant that sees your screen, hears your voice, and guides you step-by-step through any tech problem.",
+    "AI-powered tech help and scam protection for seniors. An assistant that sees your screen and guides you step-by-step, plus Pause & Check to help spot scam texts, calls, and pop-ups before you click, call, or pay.",
   applicationCategory: "UtilitiesApplication",
   operatingSystem: "Any",
   offers: {

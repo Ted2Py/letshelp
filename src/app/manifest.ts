@@ -2,14 +2,14 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Agentic Coding Boilerplate",
-    short_name: "Agentic",
+    name: "LetsHelp - Tech Support & Scam Protection for Seniors",
+    short_name: "LetsHelp",
     description:
-      "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling",
+      "Patient AI tech help for seniors, plus Pause & Check to spot scam texts, calls, and pop-ups before you click, call, or pay.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#000000",
+    background_color: "#FEF9F3",
+    theme_color: "#1E5A8D",
     icons: [
       {
         src: "/favicon.ico",

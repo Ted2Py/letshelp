@@ -133,7 +133,7 @@ export default function LandingPage() {
                 {[
                   { icon: Video, label: 'Screen Sharing', description: 'AI sees exactly what you see', color: 'from-white/25 to-white/15', iconColor: 'text-[#60A5FA]' },
                   { icon: MessageSquare, label: 'Voice Guidance', description: 'Talk naturally, step-by-step', color: 'from-white/25 to-white/15', iconColor: 'text-[#34D399]' },
-                  { icon: Shield, label: 'Private & Secure', description: 'Encrypted, private sessions', color: 'from-white/25 to-white/15', iconColor: 'text-[#A78BFA]' },
+                  { icon: ShieldAlert, label: 'Scam Protection', description: 'Check texts, calls & pop-ups', color: 'from-white/25 to-white/15', iconColor: 'text-[#FBBF24]' },
                   { icon: Clock, label: '24/7 Available', description: 'Help whenever you need it', color: 'from-white/25 to-white/15', iconColor: 'text-[#FCD34D]' },
                 ].map((feature, i) => (
                   <div
@@ -238,6 +238,11 @@ export default function LandingPage() {
                   title: 'Available 24/7',
                   description: 'Get help whenever you need it. Day or night, weekday or weekend. No waiting, no appointments.',
                 },
+                {
+                  icon: ShieldAlert,
+                  title: 'Spots Scams Before You Do',
+                  description: 'Unsure about a text, call, or pop-up? Pause & Check helps you decide if it is safe before you click, call, or pay.',
+                },
               ].map((feature, i) => (
                 <div key={i} className="flex gap-5 items-start">
                   <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
@@ -282,7 +287,7 @@ export default function LandingPage() {
               How It Works
             </h2>
             <p className="text-xl md:text-2xl text-[#5A6B7F] max-w-2xl mx-auto">
-              Getting help is as easy as pressing a button
+              Getting help — or checking if something is a scam — is as easy as pressing a button
             </p>
           </div>
 

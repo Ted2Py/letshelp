@@ -12,6 +12,7 @@ import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { ArrowLeft, ShieldQuestion } from 'lucide-react';
 import { ScamCheck } from '@/components/senior/scam-check';
+import { SeniorBottomNav } from '@/components/senior/senior-bottom-nav';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { residents } from '@/lib/schema-letshelp';
@@ -59,7 +60,7 @@ export default async function CheckPage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10">
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10 pb-28">
         <section className="text-center mb-6 sm:mb-10">
           <h2 className="text-2xl sm:text-4xl font-bold text-[#1E3A5F] mb-3 sm:mb-4 font-[Fraunces,serif]">
             Not sure about a message or call?
@@ -72,6 +73,8 @@ export default async function CheckPage() {
 
         <ScamCheck />
       </main>
+
+      <SeniorBottomNav />
     </div>
   );
 }
