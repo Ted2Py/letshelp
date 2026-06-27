@@ -66,15 +66,15 @@ export default function ProfilePage() {
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Your Profile</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A5F] font-[Fraunces,serif]">Your Profile</h1>
         <Button
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={() => router.push("/senior")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 rounded-xl text-base font-semibold"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to LetsHelp
+          <ArrowLeft className="h-5 w-5" />
+          Back
         </Button>
       </div>
 

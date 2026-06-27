@@ -24,6 +24,7 @@ import {
   ShieldQuestion,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileMenu } from "@/components/marketing/mobile-menu";
 
 export default function LandingPage() {
   return (
@@ -63,11 +64,12 @@ export default function LandingPage() {
                   Sign In
                 </Button>
               </Link>
-              <Link href="/register">
+              <Link href="/register" className="hidden md:block">
                 <Button size="lg" className="rounded-full font-semibold bg-[#1E5A8D] hover:bg-[#1E4A6D] text-white text-sm sm:text-base px-4 sm:px-6 h-9 sm:h-11 shadow-md">
                   Get Started
                 </Button>
               </Link>
+              <MobileMenu />
             </div>
           </div>
         </div>

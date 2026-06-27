@@ -17,14 +17,14 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#FEF9F3]">
       <div className="max-w-lg w-full text-center">
         <div className="flex justify-center mb-6">
-          <div className="h-20 w-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-            <AlertCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
+          <div className="h-20 w-20 rounded-3xl bg-amber-100 flex items-center justify-center">
+            <AlertCircle className="h-10 w-10 text-amber-700" />
           </div>
         </div>
-        <h1 className="text-3xl font-bold mb-4">Something went wrong</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-[#1E3A5F] font-[Fraunces,serif]">Something went wrong</h1>
         <p className="text-lg text-muted-foreground mb-4">
           We&apos;re sorry, but something unexpected happened. This isn&apos;t your
           fault—our team has been notified.
